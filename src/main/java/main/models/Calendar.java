@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.models;
+package main.models;
 
 public class Calendar {
     String id = null;

@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.exceptions;
+package main.exceptions;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

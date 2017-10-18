@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.rest;
+package main.rest;
 
 import org.glassfish.jersey.server.ResourceConfig;
 

@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.helpers;
+package main.helpers;
 
 import java.security.Key;
 import javax.crypto.Cipher;

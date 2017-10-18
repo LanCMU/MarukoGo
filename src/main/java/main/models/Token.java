@@ -1,6 +1,6 @@
-package edu.cmu.sv.app17.models;
+package main.models;
 
-import edu.cmu.sv.app17.helpers.APPCrypt;
+import main.helpers.APPCrypt;
 
 public class Token {
 

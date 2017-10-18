@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.rest;
+package main.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,26 +7,16 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import edu.cmu.sv.app17.exceptions.APPBadRequestException;
-import edu.cmu.sv.app17.exceptions.APPInternalServerException;
-import edu.cmu.sv.app17.exceptions.APPNotFoundException;
-import edu.cmu.sv.app17.helpers.APPCrypt;
-import edu.cmu.sv.app17.helpers.APPResponse;
-import edu.cmu.sv.app17.helpers.APPResponseMaker;
-import edu.cmu.sv.app17.models.Driver;
-import edu.cmu.sv.app17.models.Token;
+import main.exceptions.APPBadRequestException;
+import main.exceptions.APPInternalServerException;
+import main.exceptions.APPNotFoundException;
+import main.helpers.APPCrypt;
+import main.helpers.APPResponse;
+import main.models.Driver;
+import main.models.Token;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.json.JSONObject;
-import javax.ws.rs.core.Response;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-
-import javax.crypto.Cipher;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -56,7 +46,7 @@ public class SessionsInterface {
     @POST
     @Consumes({ MediaType.APPLICATION_JSON})
     @Produces({ MediaType.APPLICATION_JSON})
-    public APPResponse create( Object request) {
+    public APPResponse create(Object request) {
         JSONObject json = null;
         try {
             json = new JSONObject(ow.writeValueAsString(request));

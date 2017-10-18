@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.helpers;
+package main.helpers;
 
 import javax.ws.rs.HttpMethod;
 import java.lang.annotation.ElementType;

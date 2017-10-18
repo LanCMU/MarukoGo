@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.rest;
+package main.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,14 +9,12 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
-import edu.cmu.sv.app17.exceptions.APPBadRequestException;
-import edu.cmu.sv.app17.exceptions.APPInternalServerException;
-import edu.cmu.sv.app17.exceptions.APPNotFoundException;
-import edu.cmu.sv.app17.helpers.APPCrypt;
-import edu.cmu.sv.app17.helpers.APPResponse;
-import edu.cmu.sv.app17.helpers.PATCH;
-import edu.cmu.sv.app17.models.Calendar;
-import edu.cmu.sv.app17.models.Event;
+import main.exceptions.APPBadRequestException;
+import main.exceptions.APPInternalServerException;
+import main.exceptions.APPNotFoundException;
+import main.helpers.PATCH;
+import main.models.Calendar;
+import main.models.Event;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONException;

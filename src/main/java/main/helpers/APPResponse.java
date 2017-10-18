@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.helpers;
+package main.helpers;
 
 public class APPResponse {
     public boolean success;

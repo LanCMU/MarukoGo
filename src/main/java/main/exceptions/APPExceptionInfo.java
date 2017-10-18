@@ -1,4 +1,4 @@
-package edu.cmu.sv.app17.exceptions;
+package main.exceptions;
 
 public class APPExceptionInfo {
     private int httpStatusCode;
