@@ -12,7 +12,6 @@ import main.exceptions.APPInternalServerException;
 import main.exceptions.APPNotFoundException;
 import main.helpers.APPCrypt;
 import main.helpers.APPResponse;
-import main.models.Driver;
 import main.models.Token;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -27,8 +26,8 @@ import javax.ws.rs.core.MediaType;
 
 public class SessionsInterface {
 
-    private MongoCollection<Document> driverCollection;
-    private MongoCollection<Document> carCollection;
+    private MongoCollection<Document> calendarCollection;
+    private MongoCollection<Document> eventCollection;
     private ObjectWriter ow;
 
 
@@ -36,8 +35,8 @@ public class SessionsInterface {
         MongoClient mongoClient = new MongoClient();
         MongoDatabase database = mongoClient.getDatabase("app17-6");
 
-        this.driverCollection = database.getCollection("drivers");
-        this.carCollection = database.getCollection("cars");
+        this.userCollection = database.getCollection("users");
+        this.calendarCollection = database.getCollection("calendars");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     }
@@ -58,17 +57,16 @@ public class SessionsInterface {
 
             query.put("emailAddress", json.getString("emailAddress"));
             query.put("password", APPCrypt.encrypt(json.getString("password")));
-            Document item = driverCollection.find(query).first();
+            Document item = userCollection.find(query).first();
             if (item == null) {
                 throw new APPNotFoundException(0, "No user found matching credentials");
             }
-            Driver driver = new Driver(
+            User user = new User(
                     item.getString("firstName"),
                     item.getString("lastName"),
-                    item.getString("emailAddress")
             );
-            driver.setId(item.getObjectId("_id").toString());
-            APPResponse r = new APPResponse(new Token(driver));
+            user.setId(item.getObjectId("_id").toString());
+            APPResponse r = new APPResponse(new Token(user));
             return r;
         }
         catch (JsonProcessingException e) {

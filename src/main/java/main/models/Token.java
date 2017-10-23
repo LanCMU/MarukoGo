@@ -9,10 +9,10 @@ public class Token {
     String firstName = null;
     String lastName = null;
 
-    public Token(Driver driver) throws Exception{
-        this.userId = driver.id;
-        this.token = APPCrypt.encrypt(driver.id);
-        this.firstName = driver.firstName;
-        this.lastName = driver.lastName;
+    public Token(User user) throws Exception{
+        this.userId = user.id;
+        this.token = APPCrypt.encrypt(user.id);
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
     }
 }

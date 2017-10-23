@@ -34,14 +34,20 @@ getDbConnection(function(){
 
 function addCalendar() {
     cal = [{
-        "calendarName":    "Study Plan",
-        "discription":     "This calendar is all the regular classes every week.",
+        "calendarName":    "The events I must attend",
+        "discription":     "This calendar is the events I must attend every week.",
         "userId":       "liulanm518",
         "displayOfCalendar":     "weekly"
     },
         {
-            "calendarName":    "Job Events",
-            "discription":     "This calendar includes all the career events I would like to attend.",
+            "calendarName":    "The events that are very interested, probably would go",
+            "discription":     "This calendar includes all the career events that are interetsing and I would like to attend.",
+            "userId":       "nanica123",
+            "displayOfCalendar":     "daily"
+        },
+        {
+            "calendarName":    "I would seek time to attend",
+            "discription":     "This calendar includes all the career events I would like to attend but may not have.",
             "userId":       "nanica123",
             "displayOfCalendar":     "daily"
         }];
@@ -51,19 +57,28 @@ function addCalendar() {
             console.log("Could not add calendar 1");
         }
         else {
-            addEventstoCalendar0(doc.ops[0]._id.toString());
+            addEventstoCalendar(doc.ops[0]._id.toString(),50);
         }
     })
     calendars.insertOne(cal[1], function(err,doc){
         if (err){
-            console.log("Could not add calendar 2");
+            console.log("Could not add calendar 1");
         }
         else {
-            addEventstoCalendar1(doc.ops[0]._id.toString());
+            addEventstoCalendar(doc.ops[0]._id.toString(),120);
+        }
+    })
+    calendars.insertOne(cal[2], function(err,doc){
+        if (err){
+            console.log("Could not add calendar 1");
+        }
+        else {
+            addEventstoCalendar(doc.ops[0]._id.toString(),150);
         }
     })
 }
 
+/*
 function addEventstoCalendar0(calendarId) {
     eve = [{
         "eventName" : "APP Class",
@@ -102,7 +117,8 @@ function addEventstoCalendar0(calendarId) {
     })
 
 }
-
+*/
+/*
 function addEventstoCalendar1(calendarId) {
     eve = [{
         "eventName" : "Unity ML Talk",
@@ -131,5 +147,53 @@ function addEventstoCalendar1(calendarId) {
     })
 
 }
+*/
+
+eventList = ['Job Fair','Seminar','Keynote Speech','Festival','Party','Meetup','Family and Friends Reunion'];
+eventLocationList = ['School BLVD 23','School BLVD 19', 'San Francisco','Sunnyvare','Santa Clara']
+eventColorList = ['red','blue','green','yellow','pink','orange','purple']
+importantLevelList = ['!','!!','!!!', null]
+
+function addEventstoCalendar (calendarId,count) {
+    sequence = Array(count);
+    console.log("sequence",sequence);
+    var eve = [];
+    for (i=0;i<count;i++){
+        console.log("Trying")
+        var eventName = eventList[Math.floor(Math.random()* eventList.length)];
+        var eventLocation = eventLocationList[Math.floor(Math.random() * eventLocationList.length)];
+        var eventColor = eventColorList [Math.floor(Math.random() * eventColorList.length)];
+        var importantLevel = importantLevelList [Math.floor(Math.random() * importantLevelList.length)];
+        var collabratorId = Number(Math.floor[Math.random()*100000]);
+
+        eve.push({
+            eventName: eventName,
+            eventLocation: eventLocation,
+            eventColor:eventColor,
+            importantLevel:importantLevel,
+            collabratorId:collabratorId,
+            calendarId:calendarId
+
+        });
+    }
+
+    eve.forEach(function (event) {
+        var event =  dbConnection.collection('events');
+        events.insertOne(event);
+
+    })
+
+}
+
 
 setTimeout(closeConnection,5000);
+
+
+
+
+
+
+
+
+
+
