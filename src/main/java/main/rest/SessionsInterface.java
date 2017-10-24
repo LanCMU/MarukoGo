@@ -13,6 +13,7 @@ import main.exceptions.APPNotFoundException;
 import main.helpers.APPCrypt;
 import main.helpers.APPResponse;
 import main.models.Token;
+import main.models.User;
 import org.bson.Document;
 import org.json.JSONObject;
 
@@ -26,14 +27,14 @@ import javax.ws.rs.core.MediaType;
 
 public class SessionsInterface {
 
+    private MongoCollection<Document> userCollection;
     private MongoCollection<Document> calendarCollection;
-    private MongoCollection<Document> eventCollection;
     private ObjectWriter ow;
 
 
     public SessionsInterface() {
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase database = mongoClient.getDatabase("app17-6");
+        MongoDatabase database = mongoClient.getDatabase("Maruko");
 
         this.userCollection = database.getCollection("users");
         this.calendarCollection = database.getCollection("calendars");
@@ -49,13 +50,13 @@ public class SessionsInterface {
         JSONObject json = null;
         try {
             json = new JSONObject(ow.writeValueAsString(request));
-            if (!json.has("emailAddress"))
-                throw new APPBadRequestException(55, "missing emailAddress");
+            if (!json.has("userName"))
+                throw new APPBadRequestException(55, "missing user name!");
             if (!json.has("password"))
-                throw new APPBadRequestException(55, "missing password");
+                throw new APPBadRequestException(55, "missing password!");
             BasicDBObject query = new BasicDBObject();
 
-            query.put("emailAddress", json.getString("emailAddress"));
+            query.put("userName", json.getString("userName"));
             query.put("password", APPCrypt.encrypt(json.getString("password")));
             Document item = userCollection.find(query).first();
             if (item == null) {
@@ -64,6 +65,10 @@ public class SessionsInterface {
             User user = new User(
                     item.getString("firstName"),
                     item.getString("lastName"),
+                    item.getString("userName"),
+                    item.getString("phoneNumber"),
+                    item.getString("emailAddress"),
+                    item.getString("profilePhotoURL")
             );
             user.setId(item.getObjectId("_id").toString());
             APPResponse r = new APPResponse(new Token(user));

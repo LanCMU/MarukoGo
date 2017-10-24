@@ -56,8 +56,7 @@ public class CalendarInterface {
             Calendar calendar = new Calendar(
                     item.getString("calendarName"),
                     item.getString("discription"),
-                    item.getString("userId"),
-                    item.getString("displayOfCalendar")
+                    item.getString("userId")
             );
             calendar.setId(item.getObjectId("_id").toString());
             calendarList.add(calendar);
@@ -81,8 +80,7 @@ public class CalendarInterface {
         Calendar calendar = new Calendar(
                 item.getString("calendarName"),
                 item.getString("discription"),
-                item.getString("userId"),
-                item.getString("displayOfCalendar")
+                item.getString("userId")
         );
         calendar.setId(item.getObjectId("_id").toString());
 
@@ -107,8 +105,7 @@ public class CalendarInterface {
             Calendar calendar = new Calendar(
                     item.getString("calendarName"),
                     item.getString("discription"),
-                    item.getString("userId"),
-                    item.getString("displayOfCalendar"));
+                    item.getString("userId"));
             calendar.setId(item.getObjectId("_id").toString());
             return calendar;
         } catch (IllegalArgumentException e) {
