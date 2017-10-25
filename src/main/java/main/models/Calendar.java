@@ -2,12 +2,12 @@ package main.models;
 
 public class Calendar {
     String id = null;
-    String calendarName, discription, userId;
+    String calendarName, description, userId;
 
 
-    public Calendar(String userId, String calendarName, String discription) {
+    public Calendar(String userId, String calendarName, String description) {
         this.calendarName = calendarName;
-        this.discription = discription;
+        this.description = description;
         this.userId = userId;
     }
     public void setId(String id) {

@@ -32,6 +32,7 @@ public class Util {
         return format.parse(json.getString("remindTime"));
     }
 
+
     public static void checkAuthentication(HttpHeaders headers, String id) throws Exception {
         List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
         if (authHeaders == null)
