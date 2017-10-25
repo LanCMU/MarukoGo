@@ -17,10 +17,7 @@ import main.models.User;
 import org.bson.Document;
 import org.json.JSONObject;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("sessions")
@@ -34,12 +31,19 @@ public class SessionsInterface {
 
     public SessionsInterface() {
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase database = mongoClient.getDatabase("Maruko");
+        MongoDatabase database = mongoClient.getDatabase("maruko");
 
         this.userCollection = database.getCollection("users");
         this.calendarCollection = database.getCollection("calendars");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
+    }
+
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON})
+    public APPResponse login() {
+
+        return new APPResponse();
     }
 
 
@@ -50,13 +54,13 @@ public class SessionsInterface {
         JSONObject json = null;
         try {
             json = new JSONObject(ow.writeValueAsString(request));
-            if (!json.has("userName"))
-                throw new APPBadRequestException(55, "missing user name!");
+            if (!json.has("emailAddress"))
+                throw new APPBadRequestException(55, "missing email address!");
             if (!json.has("password"))
                 throw new APPBadRequestException(55, "missing password!");
             BasicDBObject query = new BasicDBObject();
 
-            query.put("userName", json.getString("userName"));
+            query.put("emailAddress", json.getString("emailAddress"));
             query.put("password", APPCrypt.encrypt(json.getString("password")));
             Document item = userCollection.find(query).first();
             if (item == null) {

@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 public class APPApplication extends ResourceConfig {
     public APPApplication() {
         // Define the package which contains the service classes.
-        packages("edu.cmu.sv.app17.rest");
+        packages("main.rest");
     }
 
     @GET

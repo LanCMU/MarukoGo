@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import main.exceptions.*;
+import main.helpers.APPCrypt;
 import main.helpers.APPListResponse;
 import main.helpers.APPResponse;
 import main.helpers.PATCH;
@@ -39,7 +40,7 @@ public class CalendarInterface {
 
     public CalendarInterface() {
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase database = mongoClient.getDatabase("Maruko");
+        MongoDatabase database = mongoClient.getDatabase("maruko");
 
         this.calendarCollection = database.getCollection("calendars");
         this.eventCollection = database.getCollection("events");
@@ -52,7 +53,6 @@ public class CalendarInterface {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public APPResponse getAll() {
-
         ArrayList<Calendar> calendarList = new ArrayList<>();
 
         try
@@ -81,11 +81,10 @@ public class CalendarInterface {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON})
-
-    public APPResponse getOne(@Context HttpHeaders headers, @PathParam("id") String id) {
+    public APPResponse getOne(/*@Context HttpHeaders headers,*/ @PathParam("id") String id) {
 
         try {
-            checkAuthentication(headers, id);
+            //checkAuthentication(headers, id);
             BasicDBObject query = new BasicDBObject();
 
             query.put("_id", new ObjectId(id));
@@ -119,31 +118,32 @@ public class CalendarInterface {
 
 
 
-    //GET Method : Get a calendar by its name
+    //GET Method : Get a calendar by user id
 
     @GET
-    @Path("{name}")
+    @Path("calendar/{userId}")
     @Produces({MediaType.APPLICATION_JSON})
-    public APPResponse getByName(@PathParam("name") String name) {
-
+    public APPResponse getByUserId(@PathParam("userId") String userId) {
+        ArrayList<Calendar> calendarList = new ArrayList<>();
         try{
 
             BasicDBObject query = new BasicDBObject();
-            query.put("calendarName", name);
-            Document item = calendarCollection.find(query).first();
-
-            if (item == null) {
-                throw new APPNotFoundException(ErrorCode.NOT_FOUND.getErrorCode(),
-                        "Are you sure it is the name?");
+            query.put("userId", userId);
+            FindIterable<Document> items = calendarCollection.find(query);
+            for (Document item : items) {
+                if (item == null) {
+                    throw new APPNotFoundException(ErrorCode.NOT_FOUND.getErrorCode(),
+                            "Are you sure it is the user?");
+                }
+                Calendar calendar = new Calendar(
+                        item.getString("calendarName"),
+                        item.getString("description"),
+                        item.getString("userId")
+                );
+                calendar.setId(item.getObjectId("_id").toString());
+                calendarList.add(calendar);
             }
-            Calendar calendar = new Calendar(
-                    item.getString("calendarName"),
-                    item.getString("description"),
-                    item.getString("userId")
-            );
-            calendar.setId(item.getObjectId("_id").toString());
-
-            return new APPResponse(calendar);
+            return new APPResponse(calendarList);
 
         }
         catch (APPNotFoundException e){
@@ -162,7 +162,7 @@ public class CalendarInterface {
     @Path("{id}/events")
     @Produces({MediaType.APPLICATION_JSON})
 
-    public APPListResponse getEventinCalendar(@Context HttpHeaders headers, @PathParam("id") String id,
+    public APPListResponse getEventinCalendar(/*@Context HttpHeaders headers,*/ @PathParam("id") String id,
                                               @DefaultValue("_id") @QueryParam("sort") String sortArg,
                                               @DefaultValue("10") @QueryParam("count") int count,
                                               @DefaultValue("0") @QueryParam("offset") int offset
@@ -184,7 +184,7 @@ public class CalendarInterface {
 
 
         try {
-            checkAuthentication(headers, id);
+            //checkAuthentication(headers, id);
 
             BasicDBObject query = new BasicDBObject();
             query.put("calendarId", id);

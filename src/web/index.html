@@ -1,73 +1,123 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <script
-            src="https://code.jquery.com/jquery-3.2.1.min.js"
-            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"></script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous"></script>
-    <script src="app.js">
-    </script>
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <script
+                src="https://code.jquery.com/jquery-3.2.1.min.js"
+                integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+                crossorigin="anonymous"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+              rel="stylesheet"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+              crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+                crossorigin="anonymous"></script>
+        <script src="app.js">
+        </script>
+        <style>
+            #eventCard,#calendarRow{display: none}
+        </style>
+    </head>
 
-</head>
+
+    <body>
 
 
-<body>
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-3">MY CALENDAR</h1>
+                <p class="lead">Organize your day.</p>
+            </div>
+        </div>
 
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <h1 class="display-3">MY CALENDAR</h1>
-        <p class="lead">Organize your day.</p>
-    </div>
-</div>
+        </br>
 
-</br>
 
-<div class="container">
 
-    <div class="input-group">
-        <span class="input-group-addon" id="basic-addon1">Calendar Name</span>
-        <input type="text" class="form-control" id="inputName" placeholder="Study Plan / Job Events " aria-label="Username" aria-describedby="basic-addon1">
-    </div>
-    <br>
-    <button id="getCalendar" class="btn btn-primary" type="submit">Get Calendar</button>
-    <br>
-    <h6 id="greeting"></h6>
+        <div class="container">
+        <form>
+            <div class="form-group">
+                <label f>Email address</label>
+                <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp" placeholder="Email address" value="liulanm518@gmail.com" required autofocus>
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </div>
+            <div class="form-group">
+                <label >Password</label>
+                <input type="password" id="inputPassword" class="form-control"  placeholder="Password" value="pangchao" required>
+            </div>
+            <button type="submit" id="login" class="btn btn-primary">Log in</button>
+            <h6 id="greeting"> Welcome to your calendar. </h6>
+        </form>
+        </div>
 
-    <button id="getEvent" class="btn btn-primary" type="submit">Get Events</button>
 
-    </br>
-    </br>
-    </br>
+        </br>
+        </br>
+        </br>
 
-    <table class="table table-striped" id="eventTable">
-        <tr align="center">
-            <td>Name</td>
-            <td>Start Time</td>
-            <td>End Time</td>
-            <td>Location</td>
-            <td>Important Level</td>
+        <div class="container" id="myCalendar">
+            <table class="table table-striped" id="calendarList">
+                <h4> My Calendars </h4>
+                </br>
+                <tr align="center">
+                    <td>Calendar Name</td>
+                    <td>Description</td>
+                    <td>Check Events</td>
+                </tr>
+                <tr align="center" id="calendarRow" >
+                    <td class="calendarName"></td>
+                    <td class="description"></td>
+                    <td><button type="button" class="btn btn-light getEvent">Go</button></td>
+                </tr>
+            </table>
+        </div>
 
-        </tr>
-        <tr align="center" id="eventCard">
-            <td id="eventName"></td>
-            <td id="eventStartTime"></td>
-            <td id="eventEndTime"></td>
-            <td id="eventLocation"></td>
-            <td id="importantLevel"></td>
-        </tr>
-    </table>
-</div>
 
-</body>
+        </br>
+        </br>
+        </br>
+
+        <div class="container" id="myEvents">
+
+            <table class="table table-striped" id="eventTable">
+                <h4> My Events </h4>
+                </br>
+                <tr align="center">
+                    <td>Name</td>
+                    <td>Start Time</td>
+                    <td>End Time</td>
+                    <td>Location</td>
+                    <td>Important Level</td>
+
+                </tr>
+                <tr align="center" id="eventCard">
+                    <td class="eventName"></td>
+                    <td class="eventStartTime"></td>
+                    <td class="eventEndTime"></td>
+                    <td class="eventLocation"></td>
+                    <td class="importantLevel"></td>
+                </tr>
+            </table>
+
+
+            <nav aria-label="...">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0)" tabindex="-1" id="previous">Previous</a>
+                    </li>
+                    <li><span id="page"></span></li>
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0)" id="next">Next</a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+
+
+
+    </body>
 
 </html>

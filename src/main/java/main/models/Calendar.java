@@ -5,7 +5,7 @@ public class Calendar {
     String calendarName, description, userId;
 
 
-    public Calendar(String userId, String calendarName, String description) {
+    public Calendar( String calendarName, String description, String userId) {
         this.calendarName = calendarName;
         this.description = description;
         this.userId = userId;

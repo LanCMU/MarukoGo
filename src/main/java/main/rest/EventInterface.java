@@ -37,7 +37,7 @@ public class EventInterface {
 
     public EventInterface() {
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase database = mongoClient.getDatabase("Maruko");
+        MongoDatabase database = mongoClient.getDatabase("maruko");
         eventCollection = database.getCollection("events");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
     }
