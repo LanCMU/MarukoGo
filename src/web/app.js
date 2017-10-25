@@ -130,9 +130,9 @@ $(function() {
                 data.content.forEach(function (item) {
                     $("#eventCard").clone().prop("id", item.id).appendTo("#eventTable");
                     $("#" + item.id).find(".eventName").text(item.eventName);
-                    $("#" + item.id).find(".eventStartTime").text(item.eventStartTime);
-                    $("#" + item.id).find(".eventEndTime").text(item.eventEndTime);
                     $("#" + item.id).find(".eventLocation").text(item.eventLocation);
+                    $("#" + item.id).find(".eventColor").text(item.eventColor);
+                    $("#" + item.id).find(".description").text(item.description);
                     $("#" + item.id).find(".importantLevel").text(item.importantLevel);
                     $("#" + item.id).prop("class", "cloned");
                     $("#" + item.id).show();
