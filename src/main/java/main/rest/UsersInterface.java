@@ -12,9 +12,11 @@ import com.mongodb.client.result.DeleteResult;
 import main.exceptions.*;
 import main.helpers.*;
 import main.models.Calendar;
+import main.models.Note;
 import main.models.User;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +24,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,21 +32,22 @@ import java.util.List;
 
 
 @Path("users")
-public class UserInterface {
+public class UsersInterface {
 
     private MongoCollection<Document> collection;
     private MongoCollection<Document> calendarCollection;
+    private MongoCollection<Document> noteCollection;
     private ObjectWriter ow;
 
 
-    public UserInterface() {
+    public UsersInterface() {
         MongoClient mongoClient = new MongoClient();
         MongoDatabase database = mongoClient.getDatabase("maruko");
 
         this.collection = database.getCollection("users");
         this.calendarCollection = database.getCollection("calendars");
+        this.noteCollection = database.getCollection("notes");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-
     }
 
     @GET
@@ -105,6 +109,56 @@ public class UserInterface {
         } catch (IllegalArgumentException e) {
             throw new APPBadRequestException(ErrorCode.INVALID_MONGO_ID.getErrorCode(),
                     "Invalid MongoDB ID!");
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+    }
+
+    @GET
+    @Path("{id}/notes")
+    @Produces({MediaType.APPLICATION_JSON})
+    public APPListResponse getNotesForUser(@Context HttpHeaders headers, @PathParam("id") String id,
+                                           @DefaultValue("_id") @QueryParam("sort") String sortArg,
+                                           @DefaultValue("20") @QueryParam("count") int count,
+                                           @DefaultValue("0") @QueryParam("offset") int offset) {
+
+        ArrayList<Note> noteList = new ArrayList<Note>();
+
+        BasicDBObject sortParams = new BasicDBObject();
+        List<String> sortList = Arrays.asList(sortArg.split(","));
+        sortList.forEach(sortItem -> {
+            if (sortItem.startsWith("-")) {
+                sortParams.put(sortItem.substring(1, sortItem.length()), -1); // Descending order.
+            } else {
+                sortParams.put(sortItem, 1); // Ascending order.
+            }
+        });
+
+        try {
+            Util.checkAuthentication(headers, id);
+            BasicDBObject query = new BasicDBObject();
+            query.put("userId", id);
+
+            long resultCount = noteCollection.count(query);
+            FindIterable<Document> results = noteCollection.find(query).sort(sortParams).skip(offset).limit(count);
+            for (Document item : results) {
+                Note note = new Note(
+                        item.getString("userId"),
+                        item.getString("noteCaption"),
+                        (List<String>) item.get("noteContent"),
+                        item.getInteger("noteType"),
+                        item.getBoolean("isPinned"),
+                        Util.getStringFromDate(item)
+                );
+                note.setId(item.getObjectId("_id").toString());
+                noteList.add(note);
+            }
+            return new APPListResponse(noteList, resultCount, offset, noteList.size());
+        } catch (APPBadRequestException e) {
+            throw e;
+        } catch (APPUnauthorizedException e) {
+            throw e;
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                     "Internal Server Error!");
@@ -270,10 +324,119 @@ public class UserInterface {
     }
 
     @POST
-    @Path("{id}/calendars")
+    @Path("{id}/notes")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public APPResponse createNote(@Context HttpHeaders headers, @PathParam("id") String id, Object request) {
+        try {
+            Util.checkAuthentication(headers, id);
+        } catch (APPUnauthorizedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+
+        JSONObject json = null;
+        try {
+            json = new JSONObject(ow.writeValueAsString(request));
+        } catch (JsonProcessingException e) {
+            throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
+        }
+
+        if (json.has("userId")) {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "You should not pass User Id!");
+        }
+
+        Document doc = new Document("userId", id);
+
+        // Note caption is required.
+        if (json.has("noteCaption")) {
+            try {
+                doc.append("noteCaption", json.getString("noteCaption"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Note Caption!");
+            }
+        } else {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "Missing Note Caption!");
+        }
+
+        // Note content is optional.
+        if (json.has("noteContent")) {
+            try {
+                List<String> noteContentList = new ArrayList<String>();
+                JSONArray noteContentArray = json.getJSONArray("noteContent");
+                for (int i = 0; i < noteContentArray.length(); i++) {
+                    noteContentList.add(noteContentArray.getString(i));
+                }
+                doc.append("noteContent", noteContentList);
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Note Content!");
+            }
+        }
+
+        // Note type is optional, and its value should be 0 (memo) or 1 (checklist).
+        // Its default value is 0 (memo).
+        int noteType = 0;
+        if (json.has("noteType")) {
+            try {
+                noteType = json.getInt("noteType");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Note Type!");
+            }
+        }
+        if (noteType != 0 && noteType != 1) {
+            throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                    "Note Type must be 0 or 1!");
+        } else {
+            doc.append("noteType", noteType);
+        }
+
+        // isPinned is optional. Default value is false (not pinned).
+        boolean isPinned = false;
+        if (json.has("isPinned")) {
+            try {
+                isPinned = json.getBoolean("isPinned");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid isPinned Value!");
+            }
+        }
+        doc.append("isPinned", isPinned);
+
+        // Remind time is optional.
+        if (json.has("remindTime")) {
+            try {
+                doc.append("remindTime", Util.getDateFromString(json));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid remindTime!");
+            } catch (ParseException e) {
+                throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                        "Remind Time should be " + Util.DATE_FORMAT);
+            }
+        }
+
+        try {
+            noteCollection.insertOne(doc);
+            return new APPResponse();
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+    }
+
+
+    @POST
+    @Path("{id}/calendars")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public APPResponse createCalendar(@Context HttpHeaders headers, @PathParam("id") String id, Object request) {
         try {
             Util.checkAuthentication(headers, id);
         } catch (APPUnauthorizedException e) {
@@ -440,12 +603,17 @@ public class UserInterface {
 
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(id));
+        BasicDBObject noteQuery = new BasicDBObject();
+        noteQuery.put("userId", id);
         BasicDBObject calendarQuery = new BasicDBObject();
         calendarQuery.put("userId", id);
 
         DeleteResult deleteResult;
         try {
             deleteResult = collection.deleteOne(query);
+
+            // Deletes all the notes owned by the user.
+            noteCollection.deleteMany(noteQuery);
 
             // Deletes all the calendars owned by the user.
             calendarCollection.deleteMany(calendarQuery);
