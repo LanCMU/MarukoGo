@@ -53,28 +53,36 @@ public class CalendarInterface {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public APPResponse getAll() {
+
         ArrayList<Calendar> calendarList = new ArrayList<>();
+
+        //try add sort
+
+
 
         try
         {
-        FindIterable<Document> results = calendarCollection.find();
-        if (results == null) {
+            FindIterable<Document> results = calendarCollection.find();
+            if (results == null) {
+                return new APPResponse(calendarList);
+            }
+            for (Document item : results) {
+                Calendar calendar = new Calendar(
+                        item.getString("calendarName"),
+                        item.getString("description"),
+                        item.getString("userId")
+                );
+                calendar.setId(item.getObjectId("_id").toString());
+                calendarList.add(calendar);
+            }
             return new APPResponse(calendarList);
-            }
-        for (Document item : results) {
-            Calendar calendar = new Calendar(
-                    item.getString("calendarName"),
-                    item.getString("description"),
-                    item.getString("userId"));
-            calendar.setId(item.getObjectId("_id").toString());
-            calendarList.add(calendar);
-            }
-        return new APPResponse(calendarList);
+
         } catch (Exception e){
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                     "Oops, there is an internal service error occurred, please try again later!");
         }
     }
+
 
     // GET Method : Get one calendar by its id
 
@@ -365,6 +373,12 @@ public class CalendarInterface {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Object update(@PathParam("id") String id, Object request) {
+
+
+        //need authentication
+
+
+
         JSONObject json = null;
         try {
             json = new JSONObject(ow.writeValueAsString(request));
@@ -405,10 +419,24 @@ public class CalendarInterface {
 
     public APPResponse delete( @PathParam("id") String id) {
 
+
+        //need authentication
+
+
+
+
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(id));
 
-        DeleteResult deleteResult = calendarCollection.deleteOne(query);
+
+        DeleteResult deleteResult;
+        try {
+            deleteResult = calendarCollection.deleteOne(query);
+        } catch (Exception e){
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+
         if (deleteResult.getDeletedCount() < 1)
             throw new APPNotFoundException(ErrorCode.COULD_NOT_DELETE.getErrorCode(),
                     "Could not delete");

@@ -85,6 +85,9 @@ $(function() {
         setPageStyle();
         loadEvents(nowCalendarId);
     })
+
+
+
     function bindBtnClick(){
         $(".getEvent").click(function(){
             var calendarId = nowCalendarId = $(this).attr("attr-cid");

@@ -38,7 +38,7 @@ public class UserInterface {
 
     public UserInterface() {
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase database = mongoClient.getDatabase("maruko");
+        MongoDatabase database = mongoClient.getDatabase("mmongoaruko");
 
         this.collection = database.getCollection("users");
         this.calendarCollection = database.getCollection("calendars");

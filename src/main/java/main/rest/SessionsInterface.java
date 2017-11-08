@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import main.exceptions.APPBadRequestException;
 import main.exceptions.APPInternalServerException;
 import main.exceptions.APPNotFoundException;
+import main.exceptions.ErrorCode;
 import main.helpers.APPCrypt;
 import main.helpers.APPResponse;
 import main.models.Token;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 public class SessionsInterface {
 
     private MongoCollection<Document> userCollection;
+    private MongoCollection<Document> noteCollection;
     private MongoCollection<Document> calendarCollection;
     private ObjectWriter ow;
 
@@ -35,6 +37,7 @@ public class SessionsInterface {
 
         this.userCollection = database.getCollection("users");
         this.calendarCollection = database.getCollection("calendars");
+        this.noteCollection = database.getCollection("notes");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     }
@@ -55,16 +58,20 @@ public class SessionsInterface {
         try {
             json = new JSONObject(ow.writeValueAsString(request));
             if (!json.has("emailAddress"))
-                throw new APPBadRequestException(55, "missing email address!");
+                throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                        "missing email address!");
             if (!json.has("password"))
-                throw new APPBadRequestException(55, "missing password!");
+                throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                        "missing password!");
             BasicDBObject query = new BasicDBObject();
 
+
+            query.put("userName", json.getString("userName"));
             query.put("emailAddress", json.getString("emailAddress"));
             query.put("password", APPCrypt.encrypt(json.getString("password")));
             Document item = userCollection.find(query).first();
             if (item == null) {
-                throw new APPNotFoundException(0, "No user found matching credentials");
+                throw new APPNotFoundException(ErrorCode.NOT_FOUND.getErrorCode(), "No user found matching credentials");
             }
             User user = new User(
                     item.getString("firstName"),
@@ -79,7 +86,7 @@ public class SessionsInterface {
             return r;
         }
         catch (JsonProcessingException e) {
-            throw new APPBadRequestException(33, e.getMessage());
+            throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
         }
         catch (APPBadRequestException e) {
             throw e;
@@ -88,7 +95,7 @@ public class SessionsInterface {
             throw e;
         }
         catch (Exception e) {
-            throw new APPInternalServerException(0, e.getMessage());
+            throw new APPInternalServerException(ErrorCode.NOT_FOUND.getErrorCode(), e.getMessage());
         }
     }
 
