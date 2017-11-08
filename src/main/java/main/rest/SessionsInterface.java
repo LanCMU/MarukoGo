@@ -65,8 +65,6 @@ public class SessionsInterface {
                         "missing password!");
             BasicDBObject query = new BasicDBObject();
 
-
-            query.put("userName", json.getString("userName"));
             query.put("emailAddress", json.getString("emailAddress"));
             query.put("password", APPCrypt.encrypt(json.getString("password")));
             Document item = userCollection.find(query).first();

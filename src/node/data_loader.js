@@ -80,54 +80,13 @@ function addUser() {
     ];
     var users = dbConnection.collection('users');
 
-    //add calendars
+    //add calendars and events
     users.insertOne(u[0], function (err, doc) {
         if (err) {
             console.log("Could not add user 1.");
         }
         else {
             addCalendarToUser(doc.ops[0]._id.toString(), 5);
-        }
-    })
-    users.insertOne(u[1], function (err, doc) {
-        if (err) {
-            console.log("Could not add user 2.");
-        }
-        else {
-            addCalendarToUser(doc.ops[0]._id.toString(), 5);
-        }
-    })
-    users.insertOne(u[2], function (err, doc) {
-        if (err) {
-            console.log("Could not add user 3.");
-        }
-        else {
-            addCalendarToUser(doc.ops[0]._id.toString(), 5);
-        }
-    })
-    users.insertOne(u[3], function (err, doc) {
-        if (err) {
-            console.log("Could not add user 4.");
-        }
-        else {
-            addCalendarToUser(doc.ops[0]._id.toString(), 5);
-        }
-    })
-    users.insertOne(u[4], function (err, doc) {
-        if (err) {
-            console.log("Could not add user 5.");
-        }
-        else {
-            addCalendarToUser(doc.ops[0]._id.toString(), 5);
-        }
-    })
-
-    // add notes
-    users.insertOne(u[0], function (err, doc) {
-        if (err) {
-            console.log("Could not add user 1.");
-        }
-        else {
             addNotesToUser(doc.ops[0]._id.toString(), 100);
         }
     })
@@ -136,6 +95,7 @@ function addUser() {
             console.log("Could not add user 2.");
         }
         else {
+            addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 110);
         }
     })
@@ -144,6 +104,7 @@ function addUser() {
             console.log("Could not add user 3.");
         }
         else {
+            addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 120);
         }
     })
@@ -152,6 +113,7 @@ function addUser() {
             console.log("Could not add user 4.");
         }
         else {
+            addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 110);
         }
     })
@@ -160,13 +122,11 @@ function addUser() {
             console.log("Could not add user 5.");
         }
         else {
+            addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 120);
         }
     })
-
 }
-
-
 
 //generate calendar lists
 
