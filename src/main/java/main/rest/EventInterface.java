@@ -47,9 +47,19 @@ public class EventInterface {
 
         @GET
         @Produces({MediaType.APPLICATION_JSON})
-        public APPResponse getAll() {
+        public APPResponse getAll(@DefaultValue("_id") @QueryParam("sort") String sortArg) {
 
             ArrayList<Event> eventList = new ArrayList<>();
+
+            BasicDBObject sortParams = new BasicDBObject();
+            List<String> sortList = Arrays.asList(sortArg.split(","));
+            sortList.forEach(sortItem -> {
+                if (sortItem.startsWith("-")) {
+                    sortParams.put(sortItem.substring(1, sortItem.length()), -1); // Descending order.
+                } else {
+                    sortParams.put(sortItem, 1); // Ascending order.
+                }
+            });
 
             try {
                 FindIterable<Document> results = eventCollection.find();
@@ -108,7 +118,9 @@ public class EventInterface {
                 );
 
                 event.setEventId(item.getObjectId("_id").toString());
+
                 return new APPResponse(event);
+
             } catch (IllegalArgumentException e) {
                 throw new APPBadRequestException(ErrorCode.INVALID_MONGO_ID.getErrorCode(), "Doesn't look like MongoDB ID");
             } catch (Exception e) {
@@ -128,6 +140,7 @@ public class EventInterface {
         @Produces({MediaType.APPLICATION_JSON})
         public APPResponse update (@PathParam("id") String id, Object request){
 
+
             JSONObject json = null;
             try {
                 json = new JSONObject(ow.writeValueAsString(request));
@@ -136,10 +149,8 @@ public class EventInterface {
             }
 
             try {
-
                 BasicDBObject query = new BasicDBObject();
                 query.put("_id", new ObjectId(id));
-
                 Document doc = new Document();
                 if (json.has("eventName"))
                     doc.append("eventName", json.getString("eventName"));
@@ -160,8 +171,7 @@ public class EventInterface {
                 eventCollection.updateOne(query, set);
 
             } catch (JSONException e) {
-                System.out.println("Failed to create a document");
-
+                System.out.println("Failed to create an event!");
             }
             return new APPResponse(request);
         }

@@ -100,7 +100,7 @@ public class CalendarInterface {
 
             if (item == null) {
                 throw new APPNotFoundException(ErrorCode.NOT_FOUND.getErrorCode(),
-                        "You don't have calendar yet :)");
+                        "Can't find calendar :)");
             }
             Calendar calendar = new Calendar(
                     item.getString("calendarName"),
@@ -248,10 +248,8 @@ public class CalendarInterface {
 
         Document doc = new Document();
 
-
         //Calendar Name is required.
-
-        if (!json.has("calendarName"))
+        if (json.has("calendarName"))
             try{
                 doc.append("calendarName", json.getString("calendarName"));
             }catch (JSONException e){
@@ -263,19 +261,16 @@ public class CalendarInterface {
                     "Missing Calendar name!");
         }
 
-
-
         //Calendar Description is optional
-
-        if (!json.has("eventDescription"))
+        if (json.has("description"))
             try{
-                doc.append("eventDescription", json.getString("eventDescription"));
+                doc.append("description", json.getString("description"));
             }catch (JSONException e){
                 throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                         "Unknown error!");
             }
 
-        eventCollection.insertOne(doc);
+        calendarCollection.insertOne(doc);
         return new APPResponse();
     }
 
@@ -300,7 +295,7 @@ public class CalendarInterface {
 
         //Event Name is required.
 
-        if (!json.has("eventName"))
+        if (json.has("eventName"))
             try{
                doc.append("eventName", json.getString("eventName"));
             }catch (JSONException e){
@@ -314,7 +309,7 @@ public class CalendarInterface {
 
         //Event Start time is required.
 
-        if (!json.has("eventStartTime"))
+        if (json.has("eventStartTime"))
             try{
                 doc.append("eventStartTime", json.getString("eventStartTime"));
             }catch (JSONException e){
@@ -324,7 +319,7 @@ public class CalendarInterface {
 
         //Event End time is required.
 
-        if (!json.has("eventEndTime"))
+        if (json.has("eventEndTime"))
             try{
                 doc.append("eventEndTime", json.getString("eventEndTime"));
             }catch (JSONException e){
@@ -334,7 +329,7 @@ public class CalendarInterface {
 
         //Event Location is optional
 
-        if (!json.has("eventLocation"))
+        if (json.has("eventLocation"))
             try{
                 doc.append("eventLocation", json.getString("eventLocation"));
             }catch (JSONException e){
@@ -345,7 +340,7 @@ public class CalendarInterface {
 
         //Event Location is optional
 
-        if (!json.has("eventDescription"))
+        if (json.has("eventDescription"))
             try{
                 doc.append("eventDescription", json.getString("eventDescription"));
             }catch (JSONException e){
@@ -355,7 +350,7 @@ public class CalendarInterface {
 
         //Event Color is optional
 
-        if (!json.has("eventColor"))
+        if (json.has("eventColor"))
             try{
                 doc.append("eventColor", json.getString("eventColor"));
             }catch (JSONException e){
@@ -377,8 +372,6 @@ public class CalendarInterface {
 
         //need authentication
 
-
-
         JSONObject json = null;
         try {
             json = new JSONObject(ow.writeValueAsString(request));
@@ -396,8 +389,6 @@ public class CalendarInterface {
                 doc.append("calendarName", json.getString("calendarName"));
             if (json.has("description"))
                 doc.append("description", json.getString("description"));
-            if (json.has("userId"))
-                doc.append("userId", json.getString("userId"));
 
             Document set = new Document("$set", doc);
             calendarCollection.updateOne(query, set);
@@ -421,9 +412,6 @@ public class CalendarInterface {
 
 
         //need authentication
-
-
-
 
         BasicDBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(id));
