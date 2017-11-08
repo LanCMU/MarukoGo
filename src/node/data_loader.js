@@ -217,7 +217,7 @@ contentList["Shopping List"] = ['Milk', 'Bread', 'Earl Grey', 'Lemonade', 'Pasta
 contentList["APP Homework"] = ['Session 7 - Query Parameters'];
 contentList["Student Work"] = ['Speak to Allison', 'Ask Allison for requirements',
     'Discuss task deadline', 'Upload new photos', 'Organize Hackathon photos', 'Upload student portray'];
-contentList["Hackathon Volunteer"] = ['Saturday 8:00AM ~ 1::00PM'];
+contentList["Hackathon Volunteer"] = ['Saturday 8:00AM ~ 10:00PM'];
 contentList["Submit Job Application Online"] = ['Google', 'Facebook', 'Amazon', 'LinkedIn', 'Apple', 'Oracle'];
 contentList["Buy a car"] = ['2018 Camaro'];
 contentList["Gift Ideas"] = ['Journal', 'Chocolate', 'Cake', 'Pens', 'Wallet', 'Popcorn', 'Books', 'Scarf', 'Tea'];
