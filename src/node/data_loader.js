@@ -130,8 +130,8 @@ function addUser() {
 
 //generate calendar lists
 
-calendarNameList = ['The events I must attend','The events that are very interested, probably would go','I would seek time to attend'];
-descriptionList = ['This calendar is the events I must attend every week.','This calendar includes all the career events that are interesting and I would like to attend.', 'This calendar includes all the career events I would like to attend but may not have']
+calendarNameList = ['School','Others','Exciting Activities','Study Plan','Self Improvement','With friends'];
+descriptionList = ['Do not miss it.','Must Execute.', 'Do not forget to ask for permission first','Had to talk to XX','Have a plan B' ];
 
 function addCalendarToUser(userId, count) {
 
@@ -168,7 +168,7 @@ function addCalendarToUser(userId, count) {
 eventList = ['Job Fair','Seminar','Keynote Speech','Festival','Party','Meetup','Family and Friends Reunion'];
 eventLocationList = ['School BLVD 23','School BLVD 19', 'San Francisco','Sunnyvale','Santa Clara']
 eventColorList = ['red','blue','green','yellow','pink','orange','purple']
-importantLevelList = ['!','!!','!!!', null]
+importantLevelList = ['!','!!','!!!']
 
 function addEventsToCalendar (calendarId,count) {
     var eve = [];

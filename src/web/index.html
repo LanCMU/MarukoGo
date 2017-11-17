@@ -1,164 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <script
-            src="https://code.jquery.com/jquery-3.2.1.min.js"
-            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"></script>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous"></script>
-    <script src="app.js">
-    </script>
-    <style>
-        #eventCard, #calendarRow {
-            display: none
-        }
-    </style>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <script
+                src="https://code.jquery.com/jquery-3.2.1.min.js"
+                integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+                crossorigin="anonymous"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+              rel="stylesheet"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+              crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+                crossorigin="anonymous"></script>
+
+    </head>
 
 
-<body>
-<!-- Navigation Header -->
-<nav class="navbar navbar-default">
-    <div class="container">
-        <nav class="navbar-header">
-            <a href="#" class="navbar-brand">Maruko Go!</a>
-        </nav>
-    </div>
-</nav>
+    <body>
+            <!-- Navigation Header -->
+            <nav class="navbar navbar-default">
+                <div class="container">
+                    <nav class="navbar-header">
+                        <a href="#" class="navbar-brand">Maruko Go!</a>
+                    </nav>
+                </div>
+            </nav>
 
-<div class="container">
-    <div class="row col-md-3 col-md-offset-4">
-        <form class="form-login">
-            <div class="form-group">
-                <h2 class="form-login-heading">Welcome!</h2>
-                <!-- <label f>Email address</label>
-                <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp"
-                    placeholder="Email address" value="liulanm518@gmail.com" required autofocus>
-                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+            <div class="container">
+                <div class="row col-md-3 col-md-offset-4">
+                    <form class="form-login">
+                        <div class="form-group">
+                            <h2 class="form-login-heading">Welcome!</h2>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputUsername" class="sr-only">User Name</label>
+                            <input type="text" id="inputUsername" class="form-control" placeholder="user name" required autofocus>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inputPassword" class="sr-only">Password</label>
+                            <input type="password" id="inputPassword" class="form-control" placeholder="password" required>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="remember-me"> Remember me
+                            </label>
+                        </div>
+
+                        <button id="login" class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
+                    </form>
+                    <h6 id="greeting"></h6>
+                </div>
+
+
+
             </div>
-            <div class="form-group">
-                <label for="inputUsername" class="sr-only">User Name</label>
-                <input type="text" id="inputUsername" class="form-control" placeholder="user name" required autofocus>
-            </div>
-            <div class="form-group">
-                <label for="inputPassword" class="sr-only">Password</label>
-                <input type="password" id="inputPassword" class="form-control" placeholder="password" required>
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" value="remember-me"> Remember me
-                </label>
-            </div>
-            <button id="login" class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
-        </form>
 
+        <script src="app.js"></script>
 
-
-        <h4 id="greeting"></h4>
-        <label for="getnotes" class="sr-only">Load</label>
-        <button id="getnotes" class="btn btn-lg btn-primary btn-block" type="submit">Load</button>
-        <h4 id="hasNote"></h4>
-        <hr>
-
-        <nav aria-label="...">
-            <ul class="pager">
-                <li id="previousNote"><a href="#">Previous</a></li>
-                <li id="nextNote"><a href="#">Next</a></li>
-                <span id="notePage"></span>
-            </ul>
-        </nav>
-         <h6 id="greeting"> Welcome to your calendar. </h6>
-    </div>
-
-
-
-    <table id="noteTable" class="table table-hover table-bordered">
-        <tr align="center">
-            <td><strong>Note Caption</strong></td>
-            <td><strong>Note Content</strong></td>
-            <td><strong>Note Type</strong></td>
-            <td><strong>Is Pinned?</strong></td>
-            <td><strong>Remind Time</strong></td>
-        </tr>
-        <tr id="noteRow">
-            <td id="noteCaption"></td>
-            <td id="noteContent"></td>
-            <td id="noteType"></td>
-            <td id="isPinned"></td>
-            <td id="remindTime"></td>
-        </tr>
-    </table>
-</div>
-
-
-<div class="container" id="myCalendar">
-    <table class="table table-striped" id="calendarList">
-        <h4> My Calendars </h4>
-        </br>
-        <tr align="center">
-            <td>Calendar Name</td>
-            <td>Description</td>
-            <td>Check Events</td>
-        </tr>
-        <tr align="center" id="calendarRow">
-            <td class="calendarName"></td>
-            <td class="description"></td>
-            <td>
-                <button type="button" class="btn btn-light getEvent">Go</button>
-            </td>
-        </tr>
-    </table>
-</div>
-
-
-</br>
-</br>
-</br>
-
-<div class="container" id="myEvents">
-
-    <table class="table table-striped" id="eventTable">
-        <h4> My Events </h4>
-        </br>
-        <tr align="center">
-            <td>Event Name</td>
-            <td>Location</td>
-            <td>Color</td>
-            <td>Important Level</td>
-
-        </tr>
-        <tr align="center" id="eventCard">
-            <td class="eventName"></td>
-            <td class="eventLocation"></td>
-            <td class="eventColor"></td>
-            <td class="importantLevel"></td>
-        </tr>
-    </table>
-
-
-    <nav aria-label="...">
-        <ul class="pagination justify-content-end">
-            <li class="page-item">
-                <a class="page-link" href="javascript:void(0)" tabindex="-1" id="previousEvent">Previous</a>
-            </li>
-            <li><span id="eventPage"></span></li>
-            <li class="page-item">
-                <a class="page-link" href="javascript:void(0)" id="nextEvent">Next</a>
-            </li>
-
-        </ul>
-    </nav>
-</div>
-
-
-
-</body>
+    </body>
 </html>
