@@ -43,7 +43,7 @@ public class SessionsInterface {
     }
 
     @GET
-    @Produces({ MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public APPResponse login() {
 
         return new APPResponse();
@@ -51,25 +51,26 @@ public class SessionsInterface {
 
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON})
-    @Produces({ MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public APPResponse create(Object request) {
         JSONObject json = null;
         try {
             json = new JSONObject(ow.writeValueAsString(request));
-            if (!json.has("emailAddress"))
+            if (!json.has("userName"))
                 throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
-                        "missing email address!");
+                        "missing user name.");
             if (!json.has("password"))
                 throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
-                        "missing password!");
+                        "missing password.");
             BasicDBObject query = new BasicDBObject();
 
-            query.put("emailAddress", json.getString("emailAddress"));
+            query.put("userName", json.getString("userName"));
             query.put("password", APPCrypt.encrypt(json.getString("password")));
             Document item = userCollection.find(query).first();
             if (item == null) {
-                throw new APPNotFoundException(ErrorCode.NOT_FOUND.getErrorCode(), "No user found matching credentials");
+                throw new APPNotFoundException(ErrorCode.NOT_FOUND.getErrorCode(),
+                        "No user found matching credentials");
             }
             User user = new User(
                     item.getString("firstName"),
@@ -82,17 +83,13 @@ public class SessionsInterface {
             user.setId(item.getObjectId("_id").toString());
             APPResponse r = new APPResponse(new Token(user));
             return r;
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
-        }
-        catch (APPBadRequestException e) {
+        } catch (APPBadRequestException e) {
             throw e;
-        }
-        catch (APPNotFoundException e) {
+        } catch (APPNotFoundException e) {
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.NOT_FOUND.getErrorCode(), e.getMessage());
         }
     }
