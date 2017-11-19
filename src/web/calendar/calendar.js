@@ -7,86 +7,47 @@ $(function () {
     var offset = 0;
     var total = -1;
 
+    var calNameCol;
+    var calDescCol;
+    var calRow;
+
     $("#myEvents").hide();
 
-
-
+    getAllcalendars();
     //get all calendar info
+    function getAllcalendars() {
+        jQuery.ajax({
 
-    jQuery.ajax({
-
-        url: "/api/calendars/calendar/" + userId,
-        type: "GET",
-        dataType: "json",
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader ("Authorization", token);
+            url: "/api/calendars/calendar/" + userId,
+            type: "GET",
+            dataType: "json",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader ("Authorization", token);
             },
-        contentType: "application/json; charset=utf-8"
+            contentType: "application/json; charset=utf-8"
 
-    }).done(function (data) {
-        $("#myCalendar").show();
-        calendars = data.content;
-        calendars.forEach(function (cal) {
-            $("#calendarRow").clone().prop("id", cal.id).appendTo("#calendarList");
-            $("#" + cal.id).find(".calendarName").text(cal.calendarName);
-            $("#" + cal.id).find(".description").text(cal.description);
-            $("#" + cal.id).find(".getEvent").attr("attr-cid", cal.id);
-     //       $("#" + cal.id).find(".editCalendar").attr("attr-edit", cal.id);
-    //      $("#" + cal.id).find(".deleEvent").attr("attr-dele", cal.id);
-            $("#" + cal.id).show();
+        }).done(function (data) {
+            $("#myCalendar").show();
+            calendars = data.content;
+            calendars.forEach(function (cal) {
+                $("#calendarRow").clone().prop("id", cal.id).appendTo("#calendarList");
+                $("#" + cal.id).find(".calendarName").text(cal.calendarName);
+                $("#" + cal.id).find(".description").text(cal.description);
+                $("#" + cal.id).find(".getEvent").attr("attr-cid", cal.id);
+                $("#" + cal.id).show();
+                offset = 0;
+                total = -1;
+
+            });
+
+            bindCheckEvent();
+            bindEditCalendar();
+            bindDeleteCalendar();
+        }).fail(function (data) {
             offset = 0;
             total = -1;
-
-
-            });
-
-            bindBtnClick();
-
-            var name;
-            var desc;
-            $(".editCalendar").click(function(){
-                row = $(this).parent().parent();
-                name = row.find('td.calendarName');
-                desc  = row.find('td.description');
-                $("#editFieldCalendar").modal('show');
-            });
-
-            $("#editFieldCalendar").on('show.bs.modal', function () {
-                $("#calendarNameText").val(name.text());
-                $("#descripText").val(desc.text());
-
-                calId = row.attr('id');
-                $('#updateCalendar').click(function(){
-                    newName = $("#calendarNameText").val();
-                    newDesc = $("#descripText").val();
-                    jQuery.ajax({
-                        url: "/api/calendars/" + calId,
-                        type: "PATCH",
-                        dataType:"json",
-                        data: JSON.stringify({
-                            calendarName: newName,
-                            description: newDesc
-                        }),
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader ("Authorization", token);
-                        },
-                        contentType: "application/json; charset=utf-8"
-
-                    }).done(function(data){
-                        // Update immediately
-                        name.text(newName);
-                        desc.text(newDesc);
-                        $("#editFieldCalendar").modal('hide');
-                    });
-                });
-            });
-        })
-    .fail(function (data) {
-         $("#myCalendar").hide();
-         $("#myCalendar").text("You don't have calendar yet :) ");
-         offset = 0;
-         total = -1;
         });
+    }
 
 
     $('#sidebarCollapse').click(function () {
@@ -115,44 +76,16 @@ $(function () {
             contentType: "application/json; charset=utf-8"
 
         }).done(function(data){
-            cal = data.content;
-            alert(cal.id);
-            $("#calendarRow").clone().prop("id", cal.id).appendTo("#calendarList");
-            $("#" + cal.id).find(".calendarName").text(cal.calendarName);
-            $("#" + cal.id).find(".description").text(cal.description);
-            $("#" + cal.id).find(".getEvent").attr("attr-cid", cal.id);
-            $("#" + cal.id).show();
+            addCalendar(data.content);
 
-            bindBtnClick();
+            bindCheckEvent();
+            bindEditCalendar();
+            bindDeleteCalendar();
 
             $("#addFieldCalendar").modal('hide');
+            clearAddCalendarFields();
         });
     });
-
-
-
-    //
-    // // delete calendar info
-    //
-    // jQuery.ajax({
-    //
-    //     url: "/api/calendars/calendar/" + userId,
-    //     type: "DELETE",
-    //     dataType:"json",
-    //     beforeSend: function (xhr) {
-    //         xhr.setRequestHeader ("Authorization", token);
-    //     },
-    //     contentType: "application/json; charset=utf-8"
-    //
-    // }).done(function(data){
-    //
-    //     //edit field come out
-    //
-    //
-    // })
-
-
-
 
 
     // Pagination management
@@ -181,7 +114,7 @@ $(function () {
 
     // onClick functions
 
-    function bindBtnClick() {
+    function bindCheckEvent() {
         $(".getEvent").click(function () {
             var calendarId = nowCalendarId = $(this).attr("attr-cid");
             nowPage = 1;
@@ -189,17 +122,6 @@ $(function () {
             $("#myEvents").show();
         });
     }
-
-
-
-    // function deleBtnClick() {
-    //     $(".deleEvent").click(function () {
-    //         var calendarId = nowCalendarId = $(this).attr("attr-dele");
-    //
-    //     });
-    // }
-
-
 
    // Avoid pagination show inappropriately
     function setPageStyle() {
@@ -219,6 +141,9 @@ $(function () {
         if (!calendarId) {
             return false;
         }
+
+        $('#eventTable').attr('calendarId', calendarId);
+
         if (nowPage < 0) {
             nowPage = 0;
         }
@@ -227,7 +152,6 @@ $(function () {
 
 
         jQuery.ajax({
-
             url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
             type: "GET",
             dataType: "json",
@@ -257,6 +181,11 @@ $(function () {
                     $("#" + item.id).prop("class", "cloned");
                     $("#" + item.id).show();
             });
+
+
+            bindEditEvent();
+            bindDeleteEvent();
+
         }).fail(function (data) {
             $("#eventlist").text("Sorry no events");
             $("#previousEvent").hide();
@@ -265,66 +194,219 @@ $(function () {
         })
     }
 
-
-
-    // edit event
-
-    // jQuery.ajax({
-    //
-    //     url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
-    //     type: "PATCH",
-    //     dataType: "json",
-    //     contentType: "application/json; charset=utf-8"
-    //
-    // }).done(function (data) {
-    //     total = data.metadata.total;
-    //
-    //     //come out edit field
-    //
-    // })
-
-
-
-
-    // delete event
-
-    // jQuery.ajax({
-    //
-    //     url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
-    //     type: "DELETE",
-    //     dataType: "json",
-    //     contentType: "application/json; charset=utf-8"
-    //
-    // }).done(function (data) {
-    //     total = data.metadata.total;
-    //
-    //     //come out edit field
-    //
-    // })
-
-
-
-    // post a new event on the calendar
-
-    // jQuery.ajax({
-    //
-    //     url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
-    //     type: "POST",
-    //     dataType: "json",
-    //     contentType: "application/json; charset=utf-8"
-    //
-    // }).done(function (data) {
-    //     total = data.metadata.total;
-    //
-    //     //come out edit field
-    //
-    // })
-
-
     $("#addEvent").click(function(){
         $("#addFieldEvent").modal('show');
     });
 
+    $("#saveAddEvent").click(function () {
+        newName = $("#addEventNameText").val();
+        newDesc = $('#addEventDescriptionText').val();
+        newLocation = $("#addEventLocationText").val();
+        newColor = $("#addEventColorText").val();
+        newLevel = $("#addEventLevelText").val();
+        newStart = $("#addEventStartTimeText").val();
+        newEnd = $("#addEventEndTimeText").val();
+
+        calId = $('#eventTable').attr('calendarId');
+        jQuery.ajax({
+            url: "/api/calendars/" + calId + "/events",
+            type: "POST",
+            dataType:"json",
+            data: JSON.stringify({
+                eventName: newName,
+                eventStartTime: newStart,
+                eventEndTime: newEnd,
+                eventLocation: newLocation,
+                eventDescription: newDesc,
+                eventColor: newColor,
+                importantLevel: newLevel
+            }),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader ("Authorization", token);
+            },
+            contentType: "application/json; charset=utf-8"
+
+        }).done(function(data){
+            newEvent = data.content;
+            loadEvents(calId);
+            $("#addFieldEvent").modal('hide');
+            clearAddEventFields();
+        }).fail(function(jqXHR, textStatus, error){
+            response = jqXHR.responseJSON;
+            alert(response.errorMessage);
+        });
+    });
+
+    
+    function clearAddEventFields() {
+        $("#addEventNameText").val('');
+        $("#addEventLocationText").val('');
+        $('#addEventDescriptionText').val('');
+        $("#addEventColorText").val('');
+        $("#addEventLevelText").val('');
+        $("#addEventStartTimeText").val('');
+        $("#addEventEndTimeText").val('');
+    }
+
+    function clearAddCalendarFields() {
+        $("#addCalendarNameText").val('');
+        $("#addCalendarDescripText").val('');
+    }
+
+
+    function bindDeleteCalendar() {
+        $(".deleteCalendar").click(function(){
+            var row = $(this).parent().parent();
+            var name = row.find('td.calendarName').text();
+            if (confirm('Are you sure you want to delete calendar: '+name+'? All events will also be deleted!')) {
+                calId = row.attr('id');
+                jQuery.ajax({
+                    url: "/api/calendars/" + calId,
+                    type: "DELETE",
+                    dataType:"json",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader ("Authorization", token);
+                    },
+                    contentType: "application/json; charset=utf-8"
+
+                }).done(function(data){
+                    row.remove();
+                    $("#previousEvent").hide();
+                    $("#nextEvent").hide();
+                    $("#myEvents").hide();
+                });
+            }
+        });
+    }
+    
+    function bindEditCalendar() {
+        $(".editCalendar").click(function(){
+            calRow = $(this).parent().parent();
+            calNameCol = calRow.find('td.calendarName');
+            calDescCol  = calRow.find('td.description');
+            $("#editFieldCalendar").modal('show');
+        });
+
+        $("#editFieldCalendar").on('show.bs.modal', function () {
+            $("#calendarNameText").val(calNameCol.text());
+            $("#descripText").val(calDescCol.text());
+
+            calId = calRow.attr('id');
+            $('#updateCalendar').click(function(){
+                newName = $("#calendarNameText").val();
+                newDesc = $("#descripText").val();
+                jQuery.ajax({
+                    url: "/api/calendars/" + calId,
+                    type: "PATCH",
+                    dataType:"json",
+                    data: JSON.stringify({
+                        calendarName: newName,
+                        description: newDesc
+                    }),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader ("Authorization", token);
+                    },
+                    contentType: "application/json; charset=utf-8"
+
+                }).done(function(data){
+                    // Update immediately
+                    calNameCol.text(newName);
+                    calDescCol.text(newDesc);
+                    $("#editFieldCalendar").modal('hide');
+                });
+            });
+        });
+    }
+
+    function bindEditEvent() {
+        var row;
+        var nameCol;
+        var locationCol;
+        var colorCol;
+        var levelCol;
+        $(".editEvent").click(function(){
+            row = $(this).parent().parent();
+            nameCol = row.find('td.eventName');
+            locationCol = row.find('td.eventLocation');
+            colorCol = row.find('td.eventColor');
+            levelCol = row.find('td.importantLevel');
+            $("#editFieldEvent").modal('show');
+        });
+
+        $("#editFieldEvent").on('show.bs.modal', function () {
+            $("#editEventNameText").val(nameCol.text());
+            $("#editEventLocationText").val(locationCol.text());
+            $("#editEventColorText").val(colorCol.text());
+            $("#editEventLevelText").val(levelCol.text());
+
+            var eveId = row.attr('id');
+            $('#saveEditEvent').click(function(){
+                var newName = $("#editEventNameText").val();
+                var newDesc = $('#editEventDescriptionText').val();
+                var newLocation = $("#editEventLocationText").val();
+                var newColor = $("#editEventColorText").val();
+                var newLevel = $("#editEventLevelText").val();
+                var newStart = $("#editEventStartTimeText").val();
+                var newEnd = $("#editEventEndTimeText").val();
+                jQuery.ajax({
+                    url: "/api/events/" + eveId,
+                    type: "PATCH",
+                    dataType:"json",
+                    data: JSON.stringify({
+                        eventName: newName,
+                        eventStartTime: newStart,
+                        eventEndTime: newEnd,
+                        eventLocation: newLocation,
+                        eventDescription: newDesc,
+                        eventColor: newColor,
+                        importantLevel: newLevel
+                    }),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader ("Authorization", token);
+                    },
+                    contentType: "application/json; charset=utf-8"
+
+                }).done(function(data){
+                    // Update immediately
+                    nameCol.text(newName);
+                    locationCol.text(newLocation);
+                    colorCol.text(newColor);
+                    levelCol.text(newLevel);
+                    $("#editFieldEvent").modal('hide');
+                });
+            });
+        });
+    }
+
+    function bindDeleteEvent() {
+        $(".deleteEvent").click(function(){
+            var row = $(this).parent().parent();
+            var name = row.find('td.eventName').text();
+            if (confirm('Are you sure you want to delete calendar: '+name+'?')) {
+                eveId = row.attr('id');
+                jQuery.ajax({
+                    url: "/api/events/" + eveId,
+                    type: "DELETE",
+                    dataType:"json",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader ("Authorization", token);
+                    },
+                    contentType: "application/json; charset=utf-8"
+
+                }).done(function(data){
+                    row.remove();
+                });
+            }
+        });
+    }
+
+    function addCalendar(cal) {
+        $("#calendarRow").clone().prop("id", cal.id).appendTo("#calendarList");
+        $("#" + cal.id).find(".calendarName").text(cal.calendarName);
+        $("#" + cal.id).find(".description").text(cal.description);
+        $("#" + cal.id).find(".getEvent").attr("attr-cid", cal.id);
+        $("#" + cal.id).show();
+    }
 });
 
 

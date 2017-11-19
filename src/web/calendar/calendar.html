@@ -66,7 +66,7 @@
                             <td>
                                 <button type="button" class="btn btn-light getEvent">Check Events</button>
                                 <button type="button" class="btn btn-light editCalendar">Edit</button>
-                                <button type="button" class="btn btn-light deleCalendar" >Delete</button>
+                                <button type="button" class="btn btn-light deleteCalendar" >Delete</button>
                             </td>
                         </tr>
                     </table>
@@ -163,21 +163,92 @@
                                 <form>
                                     <div class="form-group">
                                         <label class="form-control-label">Event Name</label>
-                                        <input id = "addEventLocationText" type="text" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-control-label">Location</label>
                                         <input id = "addEventNameText" type="text" class="form-control">
                                     </div>
                                     <div class="form-group">
+                                        <label class="form-control-label">Description</label>
+                                        <textarea id = "addEventDescriptionText" class="form-control"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Location</label>
+                                        <input id = "addEventLocationText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
                                         <label class="form-control-label">Color</label>
-                                        <textarea id = "addEventColorText" class="form-control"></textarea>
+                                        <input id = "addEventColorText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Important Level</label>
+                                        <input id = "addEventLevelText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Start Time</label>
+                                        <input id = "addEventStartTimeText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">End Time</label>
+                                        <input id = "addEventEndTimeText" type="text" class="form-control">
                                     </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
                                 <button id = "closeAddEvent" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button id = "saveAddEvent" type="button" style="background-color:#7386D5" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="modal fade" id="editFieldEvent" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Edit event</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Event Name</label>
+                                        <input id = "editEventNameText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Description</label>
+                                        <textarea id = "editEventDescriptionText" class="form-control"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Location</label>
+                                        <input id = "editEventLocationText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Color</label>
+                                        <input id = "editEventColorText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Important Level</label>
+                                        <input id = "editEventLevelText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Start Time</label>
+                                        <input id = "editEventStartTimeText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">End Time</label>
+                                        <input id = "editEventEndTimeText" type="text" class="form-control">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button id = "closeEditEvent" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button id = "saveEditEvent" type="button" style="background-color:#7386D5" class="btn btn-primary">Save</button>
                             </div>
                         </div>
                     </div>
@@ -207,7 +278,7 @@
                             <td class="importantLevel"></td>
                             <td>
                                 <button type="button" class="btn btn-light editEvent">Edit</button>
-                                <button type="button" class="btn btn-light deleEvent">Delete</button>
+                                <button type="button" class="btn btn-light deleteEvent">Delete</button>
                             </td>
                         </tr>
                     </table>

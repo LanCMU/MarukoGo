@@ -292,20 +292,21 @@ public class CalendarInterface {
             throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
         }
 
-    Document doc = new Document();
-
+        Document doc = new Document();
+        doc.append("calendarId", id);
         //Event Name is required.
 
-        if (json.has("eventName"))
-            try{
-               doc.append("eventName", json.getString("eventName"));
-            }catch (JSONException e){
-               throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
-                       "You must enter a valid event name!");
-            }
+        if (!json.has("eventName") || json.getString("eventName").isEmpty()) {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "Missing Event name!");
+        }
         else {
-                throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
-                        "Missing Event name!");
+            try{
+                doc.append("eventName", json.getString("eventName"));
+            }catch (JSONException e){
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "You must enter a valid event name!");
+            }
         }
 
         //Event Start time is required.
@@ -349,6 +350,15 @@ public class CalendarInterface {
                         "Unknown error!");
             }
 
+        if (json.has("importantLevel")) {
+            try {
+                doc.append("importantLevel", json.getString("importantLevel"));
+            } catch (JSONException e) {
+                throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                        "Unknown error!");
+            }
+        }
+
         //Event Color is optional
 
         if (json.has("eventColor"))
@@ -358,9 +368,19 @@ public class CalendarInterface {
                 throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                         "Unknown error!");
             }
-
         eventCollection.insertOne(doc);
-        return new APPResponse();
+        Event event = new Event(
+                doc.getString("eventName"),
+                doc.getString("eventStartTime"),
+                doc.getString("eventEndTime"),
+                doc.getString("eventLocation"),
+                doc.getString("eventDescription"),
+                doc.getString("eventColor"),
+                doc.getString("importantLevel"),
+                doc.getString("calendarId")
+        );
+        event.setEventId(doc.getObjectId("_id").toString());
+        return new APPResponse(event);
     }
 
 
