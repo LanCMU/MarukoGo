@@ -424,7 +424,16 @@ public class UsersInterface {
 
         try {
             noteCollection.insertOne(doc);
-            return new APPResponse();
+            Note note = new Note(
+                    doc.getString("userId"),
+                    doc.getString("noteCaption"),
+                    (List<String>) doc.get("noteContent"),
+                    doc.getInteger("noteType"),
+                    doc.getBoolean("isPinned"),
+                    Util.getStringFromDate(doc)
+            );
+            note.setId(doc.getObjectId("_id").toString());
+            return new APPResponse(note);
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                     "Internal Server Error!");
