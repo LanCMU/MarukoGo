@@ -382,7 +382,7 @@ $(function () {
         $(".deleteEvent").click(function(){
             var row = $(this).parent().parent();
             var name = row.find('td.eventName').text();
-            if (confirm('Are you sure you want to delete calendar: '+name+'?')) {
+            if (confirm('Are you sure you want to delete event: '+name+'?')) {
                 eveId = row.attr('id');
                 jQuery.ajax({
                     url: "/api/events/" + eveId,
