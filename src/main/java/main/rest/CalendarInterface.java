@@ -262,13 +262,14 @@ public class CalendarInterface {
         }
 
         //Calendar Description is optional
-        if (json.has("description"))
-            try{
+        if (json.has("description")) {
+            try {
                 doc.append("description", json.getString("description"));
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                         "Unknown error!");
             }
+        }
 
         calendarCollection.insertOne(doc);
         return new APPResponse();
@@ -407,7 +408,6 @@ public class CalendarInterface {
     @DELETE
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON})
-
     public APPResponse delete( @PathParam("id") String id) {
 
 

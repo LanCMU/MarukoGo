@@ -9,6 +9,10 @@ $(function () {
 
     $("#myEvents").hide();
 
+
+
+    //get all calendar info
+
     jQuery.ajax({
 
         url: "/api/calendars/calendar/" + userId,
@@ -27,11 +31,55 @@ $(function () {
             $("#" + cal.id).find(".calendarName").text(cal.calendarName);
             $("#" + cal.id).find(".description").text(cal.description);
             $("#" + cal.id).find(".getEvent").attr("attr-cid", cal.id);
+     //       $("#" + cal.id).find(".editCalendar").attr("attr-edit", cal.id);
+    //      $("#" + cal.id).find(".deleEvent").attr("attr-dele", cal.id);
             $("#" + cal.id).show();
             offset = 0;
             total = -1;
-            })
-        bindBtnClick();
+
+
+            });
+
+            bindBtnClick();
+
+            var name;
+            var desc;
+            $(".editCalendar").click(function(){
+                row = $(this).parent().parent();
+                name = row.find('td.calendarName');
+                desc  = row.find('td.description');
+                $("#editFieldCalendar").modal('show');
+            });
+
+            $("#editFieldCalendar").on('show.bs.modal', function () {
+                $("#calendarNameText").val(name.text());
+                $("#descripText").val(desc.text());
+
+                calId = row.attr('id');
+                $('#updateCalendar').click(function(){
+                    newName = $("#calendarNameText").val();
+                    newDesc = $("#descripText").val();
+                    jQuery.ajax({
+                        url: "/api/calendars/" + calId,
+                        type: "PATCH",
+                        dataType:"json",
+                        data: JSON.stringify({
+                            calendarName: newName,
+                            description: newDesc
+                        }),
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader ("Authorization", token);
+                        },
+                        contentType: "application/json; charset=utf-8"
+
+                    }).done(function(data){
+                        // Update immediately
+                        name.text(newName);
+                        desc.text(newDesc);
+                        $("#editFieldCalendar").modal('hide');
+                    });
+                });
+            });
         })
     .fail(function (data) {
          $("#myCalendar").hide();
@@ -41,7 +89,73 @@ $(function () {
         });
 
 
-    // Load events by calendar
+    $('#sidebarCollapse').click(function () {
+        $('#sidebar').toggleClass('active');
+    });
+
+
+    $("#addCalendar").click(function(){
+        $("#addFieldCalendar").modal('show');
+    });
+
+    $("#saveAddCalendar").click(function () {
+        newName = $("#addCalendarNameText").val();
+        newDesc = $("#addCalendarDescripText").val();
+        jQuery.ajax({
+            url: "/api/users/" + userId + "/calendars",
+            type: "POST",
+            dataType:"json",
+            data: JSON.stringify({
+                calendarName: newName,
+                description: newDesc
+            }),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader ("Authorization", token);
+            },
+            contentType: "application/json; charset=utf-8"
+
+        }).done(function(data){
+            cal = data.content;
+            alert(cal.id);
+            $("#calendarRow").clone().prop("id", cal.id).appendTo("#calendarList");
+            $("#" + cal.id).find(".calendarName").text(cal.calendarName);
+            $("#" + cal.id).find(".description").text(cal.description);
+            $("#" + cal.id).find(".getEvent").attr("attr-cid", cal.id);
+            $("#" + cal.id).show();
+
+            bindBtnClick();
+
+            $("#addFieldCalendar").modal('hide');
+        });
+    });
+
+
+
+    //
+    // // delete calendar info
+    //
+    // jQuery.ajax({
+    //
+    //     url: "/api/calendars/calendar/" + userId,
+    //     type: "DELETE",
+    //     dataType:"json",
+    //     beforeSend: function (xhr) {
+    //         xhr.setRequestHeader ("Authorization", token);
+    //     },
+    //     contentType: "application/json; charset=utf-8"
+    //
+    // }).done(function(data){
+    //
+    //     //edit field come out
+    //
+    //
+    // })
+
+
+
+
+
+    // Pagination management
 
     var nowPage = 1, maxPage = 1;
     var nowCalendarId = false;
@@ -65,6 +179,8 @@ $(function () {
     });
 
 
+    // onClick functions
+
     function bindBtnClick() {
         $(".getEvent").click(function () {
             var calendarId = nowCalendarId = $(this).attr("attr-cid");
@@ -73,6 +189,15 @@ $(function () {
             $("#myEvents").show();
         });
     }
+
+
+
+    // function deleBtnClick() {
+    //     $(".deleEvent").click(function () {
+    //         var calendarId = nowCalendarId = $(this).attr("attr-dele");
+    //
+    //     });
+    // }
 
 
 
@@ -115,17 +240,14 @@ $(function () {
             $("#eventPage").text("Page " + Math.floor(offset / count + 1) + " of " + (Math.ceil(total / count)));
 
             if (data.content.length == 0) {
-                $("#myEvents").hide();
+                $("#eventPage").hide();
                 $("#previousEvent").hide();
                 $("#nextEvent").hide();
-                $("#eventHandle").text("You have no events yet :)");
-                $("#eventHandle").hide();
-        }
-            else {
-                $("#myEvents").show();
+            }
+            $("#myEvents").show();
 
-                $("#eventTable").find(".cloned").remove();
-                data.content.forEach(function (item) {
+            $("#eventTable").find(".cloned").remove();
+            data.content.forEach(function (item) {
                     $("#eventCard").clone().prop("id", item.id).appendTo("#eventTable");
                     $("#" + item.id).find(".eventName").text(item.eventName);
                     $("#" + item.id).find(".eventLocation").text(item.eventLocation);
@@ -134,8 +256,7 @@ $(function () {
                     $("#" + item.id).find(".importantLevel").text(item.importantLevel);
                     $("#" + item.id).prop("class", "cloned");
                     $("#" + item.id).show();
-                });
-            }
+            });
         }).fail(function (data) {
             $("#eventlist").text("Sorry no events");
             $("#previousEvent").hide();
@@ -143,6 +264,66 @@ $(function () {
             $("#myEvents").hide();
         })
     }
+
+
+
+    // edit event
+
+    // jQuery.ajax({
+    //
+    //     url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
+    //     type: "PATCH",
+    //     dataType: "json",
+    //     contentType: "application/json; charset=utf-8"
+    //
+    // }).done(function (data) {
+    //     total = data.metadata.total;
+    //
+    //     //come out edit field
+    //
+    // })
+
+
+
+
+    // delete event
+
+    // jQuery.ajax({
+    //
+    //     url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
+    //     type: "DELETE",
+    //     dataType: "json",
+    //     contentType: "application/json; charset=utf-8"
+    //
+    // }).done(function (data) {
+    //     total = data.metadata.total;
+    //
+    //     //come out edit field
+    //
+    // })
+
+
+
+    // post a new event on the calendar
+
+    // jQuery.ajax({
+    //
+    //     url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
+    //     type: "POST",
+    //     dataType: "json",
+    //     contentType: "application/json; charset=utf-8"
+    //
+    // }).done(function (data) {
+    //     total = data.metadata.total;
+    //
+    //     //come out edit field
+    //
+    // })
+
+
+    $("#addEvent").click(function(){
+        $("#addFieldEvent").modal('show');
+    });
 
 });
 

@@ -474,9 +474,9 @@ public class UsersInterface {
         }
 
         // Calendar discription is optional.
-        if (json.has("discription")) {
+        if (json.has("description")) {
             try {
-                doc.append("discription", json.getString("discription"));
+                doc.append("description", json.getString("description"));
             } catch (JSONException e) {
                 throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
                         "Invalid Discription!");
@@ -485,7 +485,11 @@ public class UsersInterface {
 
         try {
             calendarCollection.insertOne(doc);
-            return new APPResponse();
+            Calendar calendar = new Calendar(doc.getString("calendarName"),
+                    doc.getString("description"),
+                    doc.getString("userId"));
+            calendar.setId(doc.getObjectId("_id").toString());
+            return new APPResponse(calendar);
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                     "Internal Server Error!");

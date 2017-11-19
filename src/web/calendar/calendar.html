@@ -57,13 +57,16 @@
                         <tr align="center">
                             <td>Calendar Name</td>
                             <td>Description</td>
-                            <td>Check Events</td>
+                            <td>Operations</td>
                         </tr>
+                        <button type="button" id="addCalendar">Add new calendar</button>
                         <tr align="center" id="calendarRow">
                             <td class="calendarName"></td>
                             <td class="description"></td>
                             <td>
-                                <button type="button" class="btn btn-light getEvent">Go</button>
+                                <button type="button" class="btn btn-light getEvent">Check Events</button>
+                                <button type="button" class="btn btn-light editCalendar">Edit</button>
+                                <button type="button" class="btn btn-light deleCalendar" >Delete</button>
                             </td>
                         </tr>
                     </table>
@@ -73,6 +76,114 @@
                 </br>
                 </br>
                 </br>
+                <!--pop out window of add-->
+
+                <div class="modal fade" id="addFieldCalendar" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Add a Calendar</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Calendar Name</label>
+                                        <input id = "addCalendarNameText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Description</label>
+                                        <textarea id = "addCalendarDescripText" class="form-control"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button id = "closeAddCalendar" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button id = "saveAddCalendar" type="button" style="background-color:#7386D5" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--pop out window of editing-->
+
+                <div class="modal fade" id="editFieldCalendar" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+
+
+                        <!-- Modal content-->
+
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Edit Calendar</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Calendar Name</label>
+                                        <input id = "calendarNameText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Description</label>
+                                        <textarea id = "descripText" class="form-control"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button id = "closeEditCalendar" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button id = "updateCalendar" type="button" style="background-color:#7386D5" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal fade" id="addFieldEvent" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Add a event</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Event Name</label>
+                                        <input id = "addEventLocationText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Location</label>
+                                        <input id = "addEventNameText" type="text" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Color</label>
+                                        <textarea id = "addEventColorText" class="form-control"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button id = "closeAddEvent" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button id = "saveAddEvent" type="button" style="background-color:#7386D5" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Event Table-->
 
                 <div id="eventHandle"></div>
                 <div class="container" id="myEvents">
@@ -85,13 +196,19 @@
                             <td>Location</td>
                             <td>Color</td>
                             <td>Important Level</td>
+                            <td>Operations</td>
 
                         </tr>
+                        <button type="button" id="addEvent">Add new event</button>
                         <tr align="center" id="eventCard">
                             <td class="eventName"></td>
                             <td class="eventLocation"></td>
                             <td class="eventColor"></td>
                             <td class="importantLevel"></td>
+                            <td>
+                                <button type="button" class="btn btn-light editEvent">Edit</button>
+                                <button type="button" class="btn btn-light deleEvent">Delete</button>
+                            </td>
                         </tr>
                     </table>
 
@@ -112,18 +229,11 @@
             </div>
         </div>
 
-        <!-- jQuery CDN -->
-        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-        <!-- Bootstrap Js CDN -->
+        <!-- Bootstrap Js CDN -->s
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $('#sidebarCollapse').on('click', function () {
-                    $('#sidebar').toggleClass('active');
-                });
-            });
-        </script>
         <script src="calendar.js"></script>
     </body>
 </html>
