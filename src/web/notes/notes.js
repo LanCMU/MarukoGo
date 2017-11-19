@@ -35,6 +35,8 @@ $(function () {
                         addNoteToTable(item);
                     });
                 }
+
+                bindDeleteNote();
             })
             .fail(function (data) {
                 $("#hasNote").text("Failed.");
@@ -124,9 +126,7 @@ $(function () {
         }).done(function (data) {
             addNoteToTable(data.content);
 
-            // bindCheckEvent();
-            // bindEditCalendar();
-            // bindDeleteCalendar();
+            bindDeleteNote();
 
             $("#addNoteWindow").modal('hide');
             clearAddNoteWindowFields();
@@ -160,6 +160,28 @@ $(function () {
         $("#addNoteType").val('');
         $("#addNoteIsPinned").val('');
         $('#addNoteDatetimepicker').data("DateTimePicker").clear;
+    }
+
+    function bindDeleteNote() {
+        $(".deleteNote").click(function () {
+            var row = $(this).parent().parent();
+            var name = row.find('#noteCaption').text();
+            if (confirm('Are you sure you want to delete note: ' + name + '?')) {
+                calId = row.attr('id');
+                jQuery.ajax({
+                    url: "/api/notes/" + calId,
+                    type: "DELETE",
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", token);
+                    },
+                    contentType: "application/json; charset=utf-8"
+
+                }).done(function (data) {
+                    row.remove();
+                });
+            }
+        });
     }
 
 })

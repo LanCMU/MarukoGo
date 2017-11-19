@@ -247,8 +247,8 @@ $(function () {
         $("#addEventStartTimeText").val('');
         $("#addEventEndTimeText").val('');
     }
-
-    function clearAddCalendarFields() {
+    clearAddCalendarFields(
+    function ) {
         $("#addCalendarNameText").val('');
         $("#addCalendarDescripText").val('');
     }
