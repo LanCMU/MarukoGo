@@ -11,6 +11,12 @@ $(function () {
     var calDescCol;
     var calRow;
 
+    var eventRow;
+    var eventNameCol;
+    var eventLocationCol;
+    var eventColorCol;
+    var eventLevelCol;
+
     $("#myEvents").hide();
 
     getAllcalendars();
@@ -319,27 +325,22 @@ $(function () {
     }
 
     function bindEditEvent() {
-        var row;
-        var nameCol;
-        var locationCol;
-        var colorCol;
-        var levelCol;
         $(".editEvent").click(function(){
-            row = $(this).parent().parent();
-            nameCol = row.find('td.eventName');
-            locationCol = row.find('td.eventLocation');
-            colorCol = row.find('td.eventColor');
-            levelCol = row.find('td.importantLevel');
+            eventRow = $(this).parent().parent();
+            eventNameCol = eventRow.find('td.eventName');
+            eventLocationCol = eventRow.find('td.eventLocation');
+            eventColorCol = eventRow.find('td.eventColor');
+            eventLevelCol = eventRow.find('td.importantLevel');
             $("#editFieldEvent").modal('show');
         });
 
         $("#editFieldEvent").on('show.bs.modal', function () {
-            $("#editEventNameText").val(nameCol.text());
-            $("#editEventLocationText").val(locationCol.text());
-            $("#editEventColorText").val(colorCol.text());
-            $("#editEventLevelText").val(levelCol.text());
+            $("#editEventNameText").val(eventNameCol.text());
+            $("#editEventLocationText").val(eventLocationCol.text());
+            $("#editEventColorText").val(eventColorCol.text());
+            $("#editEventLevelText").val(eventLevelCol.text());
 
-            var eveId = row.attr('id');
+            var eveId = eventRow.attr('id');
             $('#saveEditEvent').click(function(){
                 var newName = $("#editEventNameText").val();
                 var newDesc = $('#editEventDescriptionText').val();
@@ -368,10 +369,10 @@ $(function () {
 
                 }).done(function(data){
                     // Update immediately
-                    nameCol.text(newName);
-                    locationCol.text(newLocation);
-                    colorCol.text(newColor);
-                    levelCol.text(newLevel);
+                    eventNameCol.text(newName);
+                    eventLocationCol.text(newLocation);
+                    eventColorCol.text(newColor);
+                    eventLevelCol.text(newLevel);
                     $("#editFieldEvent").modal('hide');
                 });
             });
