@@ -253,8 +253,7 @@ $(function () {
         $("#addEventStartTimeText").val('');
         $("#addEventEndTimeText").val('');
     }
-    clearAddCalendarFields(
-    function ) {
+    function clearAddCalendarFields() {
         $("#addCalendarNameText").val('');
         $("#addCalendarDescripText").val('');
     }
