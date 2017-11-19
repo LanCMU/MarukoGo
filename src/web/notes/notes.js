@@ -7,6 +7,14 @@ $(function () {
     var noteCount = 20;
     var noteTotal = -1;
 
+    var noteId;
+    var noteRow;
+    var noteCaptionCol;
+    var noteContentCol;
+    var noteTypeCol;
+    var isPinnedCol;
+    var remindTimeCol;
+
     loadNotes();
 
     function loadNotes() {
@@ -36,6 +44,7 @@ $(function () {
                     });
                 }
 
+                bindEditNote();
                 bindDeleteNote();
             })
             .fail(function (data) {
@@ -49,6 +58,11 @@ $(function () {
 
     $('#sidebarCollapse').click(function () {
         $('#sidebar').toggleClass('active');
+    });
+
+
+    $("#addNote").click(function () {
+        $("#addNoteWindow").modal('show');
     });
 
 
@@ -126,6 +140,7 @@ $(function () {
         }).done(function (data) {
             addNoteToTable(data.content);
 
+            bindEditNote();
             bindDeleteNote();
 
             $("#addNoteWindow").modal('hide');
@@ -137,7 +152,7 @@ $(function () {
     function addNoteToTable(item) {
         $("#noteRow").clone().prop("id", item.id).appendTo("#noteTable");
         $("#" + item.id).find("#noteCaption").text(item.noteCaption);
-        $("#" + item.id).find("#noteContent").text(item.noteContent);
+        $("#" + item.id).find("#noteContent").text(item.noteContent.join("\n"));
         if (item.noteType == 0) {
             $("#" + item.id).find("#noteType").text("Memo");
         } else {
@@ -183,5 +198,106 @@ $(function () {
             }
         });
     }
+
+    function bindEditNote() {
+        $(".editNote").click(function () {
+            noteRow = $(this).parent().parent();
+            noteCaptionCol = noteRow.find('#noteCaption');
+            noteContentCol = noteRow.find('#noteContent');
+            noteTypeCol = noteRow.find('#noteType');
+            isPinnedCol = noteRow.find('#isPinned');
+            remindTimeCol = noteRow.find('#remindTime');
+            $("#editNoteWindow").modal('show');
+        });
+
+        $("#editNoteWindow").on('show.bs.modal', function () {
+            $("#editNoteWindowCaption").val(noteCaptionCol.text());
+            $("#editNoteWindowContent").val(noteContentCol.text());
+            if (noteTypeCol.text() == 'Memo') {
+                $("#editNoteWindowType").val('0');
+            } else {
+                $("#editNoteWindowType").val('1');
+            }
+            if (isPinnedCol.text() == 'No') {
+                $("#editNoteWindowIsPinned").val('false');
+            } else {
+                $("#editNoteWindowIsPinned").val('true');
+            }
+            $('#editNoteDatetimepicker').data("DateTimePicker").date(new Date(remindTimeCol.text()));
+
+            noteId = noteRow.attr('id');
+
+        });
+    }
+
+    $('#saveEditNoteWindow').click(function () {
+        editedNoteCaption = $("#editNoteWindowCaption").val();
+        if (editedNoteCaption == "") {
+            alert("Please input note caption!");
+            return;
+        }
+
+        editedNoteContent = $("#editNoteWindowContent").val().split("\n");
+
+        editedNoteType = 0;
+        if ($("#editNoteWindowType").val() == '0') {
+            editedNoteType = 0;
+        } else {
+            editedNoteType = 1;
+        }
+
+        editedNoteIsPinned = $("#editNoteWindowIsPinned").val() == "true"
+
+        editedNoteRemindTime = null;
+        if ($('#editNoteDatetimepicker').data("DateTimePicker").date() != null) {
+            editedNoteRemindTime = $('#editNoteDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
+            queryDate = JSON.stringify({
+                noteCaption: editedNoteCaption,
+                noteContent: editedNoteContent,
+                noteType: editedNoteType,
+                isPinned: editedNoteIsPinned,
+                remindTime: editedNoteRemindTime
+            });
+        } else {
+            queryDate = JSON.stringify({
+                noteCaption: editedNoteCaption,
+                noteContent: editedNoteContent,
+                noteType: editedNoteType,
+                isPinned: editedNoteIsPinned
+            });
+        }
+
+        jQuery.ajax({
+            url: "/api/notes/" + noteId,
+            type: "PATCH",
+            dataType: "json",
+            data: queryDate,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", token);
+            },
+            contentType: "application/json; charset=utf-8"
+
+        }).done(function (data) {
+            // Update immediately
+            noteCaptionCol.text(editedNoteCaption);
+            noteContentCol.text(editedNoteContent.join("\n"));
+            if (editedNoteType == 0) {
+                noteTypeCol.text('Memo');
+            } else {
+                noteTypeCol.text('Checklist');
+            }
+            if (editedNoteIsPinned) {
+                isPinnedCol.text('Yes');
+            } else {
+                isPinnedCol.text('No');
+            }
+            if (editedNoteRemindTime != null) {
+                remindTimeCol.text(editedNoteRemindTime);
+            }
+
+            $("#editNoteWindow").modal('hide');
+            alert("Note modified successfully!");
+        });
+    });
 
 })

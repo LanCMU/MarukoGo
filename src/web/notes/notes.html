@@ -71,7 +71,7 @@
                 <button type="button" id="addNote">Add New Notes</button>
                 <tr align="center" id="noteRow">
                     <td id="noteCaption"></td>
-                    <td id="noteContent"></td>
+                    <td textarea id="noteContent"></td>
                     <td id="noteType"></td>
                     <td id="isPinned"></td>
                     <td id="remindTime"></td>
@@ -174,21 +174,43 @@
                     </div>
                     <div class="form-group">
                         <label class="form-control-label">Note Type</label>
-                        <textarea id = "editNoteWindowType" class="form-control"></textarea>
+                        <select id = "editNoteWindowType">
+                            <option value="0">Memo</option>
+                            <option value="1">Checklist</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-control-label">Is Pinned?</label>
-                        <textarea id = "editNoteWindowIsPinned" class="form-control"></textarea>
+                        <select id = "editNoteWindowIsPinned">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-control-label">Remind Time</label>
-                        <textarea id = "editNoteWindowRemindTime" class="form-control"></textarea>
+                        <div class="container">
+                            <div class="row">
+                                <div class='col-sm-6'>
+                                    <div class="form-group">
+                                        <div class='input-group date' id='editNoteDatetimepicker'>
+                                            <input type='text' class="form-control"/>
+                                            <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script type="text/javascript">
+                                    $(function () {
+                                        $('#editNoteDatetimepicker').datetimepicker();
+                                    });
+                                </script>
+                            </div>
+                        </div>
                     </div>
+                        <button id = "closeEditNoteWindow" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id = "saveEditNoteWindow" type="button" style="background-color:#7386D5" class="btn btn-primary">Save</button>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button id = "closeEditNoteWindow" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id = "saveEditNoteWindow" type="button" style="background-color:#7386D5" class="btn btn-primary">Save</button>
             </div>
         </div>
         </div>
