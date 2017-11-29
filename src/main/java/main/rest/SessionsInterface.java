@@ -28,6 +28,7 @@ public class SessionsInterface {
     private MongoCollection<Document> userCollection;
     private MongoCollection<Document> noteCollection;
     private MongoCollection<Document> calendarCollection;
+    private MongoCollection<Document> healthCollection;
     private ObjectWriter ow;
 
 
@@ -38,6 +39,7 @@ public class SessionsInterface {
         this.userCollection = database.getCollection("users");
         this.calendarCollection = database.getCollection("calendars");
         this.noteCollection = database.getCollection("notes");
+        this.healthCollection = database.getCollection("healths");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
     }
@@ -93,7 +95,6 @@ public class SessionsInterface {
             throw new APPInternalServerException(ErrorCode.NOT_FOUND.getErrorCode(), e.getMessage());
         }
     }
-
 }
 
 

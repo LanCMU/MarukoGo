@@ -3,12 +3,11 @@ var dbConnection = null;
 var lockCount = 0;
 
 
-
-function getDbConnection(callback){
-    MongoClient.connect("mongodb://localhost/maruko", function(err, db){
-        if(err){
+function getDbConnection(callback) {
+    MongoClient.connect("mongodb://localhost/maruko", function (err, db) {
+        if (err) {
             console.log("Unable to connect to Mongodb");
-        }else{
+        } else {
             dbConnection = db;
             callback();
         }
@@ -21,8 +20,8 @@ function closeConnection() {
 
 }
 
-getDbConnection(function(){
-    dbConnection.dropDatabase(function(err,doc){
+getDbConnection(function () {
+    dbConnection.dropDatabase(function (err, doc) {
         if (err)
             console.log("Could not drop database");
         else
@@ -130,15 +129,15 @@ function addUser() {
 
 //generate calendar lists
 
-calendarNameList = ['School','Others','Exciting Activities','Study Plan','Self Improvement','With friends'];
-descriptionList = ['Do not miss it.','Must Execute.', 'Do not forget to ask for permission first','Had to talk to XX','Have a plan B' ];
+calendarNameList = ['School', 'Others', 'Exciting Activities', 'Study Plan', 'Self Improvement', 'With friends'];
+descriptionList = ['Do not miss it.', 'Must Execute.', 'Do not forget to ask for permission first', 'Had to talk to XX', 'Have a plan B'];
 
 function addCalendarToUser(userId, count) {
 
     var cal = [];
 
     for (i = 0; i < count; i++) {
-        var calendarName = calendarNameList[Math.floor(Math.random()* calendarNameList.length)];
+        var calendarName = calendarNameList[Math.floor(Math.random() * calendarNameList.length)];
         var description = descriptionList[Math.floor(Math.random() * descriptionList.length)];
 
         cal.push({
@@ -151,7 +150,7 @@ function addCalendarToUser(userId, count) {
     cal.forEach(function (calendar) {
         var calendars = dbConnection.collection('calendars');
         calendars.insertOne(calendar, function (err, doc) {
-            if (err){
+            if (err) {
                 console.log("Could not add driver 1");
             }
             else {
@@ -162,18 +161,17 @@ function addCalendarToUser(userId, count) {
 }
 
 
-
 //generate event list
 
-eventList = ['Job Fair','Seminar','Keynote Speech','Festival','Party','Meetup','Family and Friends Reunion'];
-eventLocationList = ['School BLVD 23','School BLVD 19', 'San Francisco','Sunnyvale','Santa Clara']
-eventColorList = ['red','blue','green','yellow','pink','orange','purple']
-importantLevelList = ['!','!!','!!!']
+eventList = ['Job Fair', 'Seminar', 'Keynote Speech', 'Festival', 'Party', 'Meetup', 'Family and Friends Reunion'];
+eventLocationList = ['School BLVD 23', 'School BLVD 19', 'San Francisco', 'Sunnyvale', 'Santa Clara']
+eventColorList = ['red', 'blue', 'green', 'yellow', 'pink', 'orange', 'purple']
+importantLevelList = ['!', '!!', '!!!']
 
-function addEventsToCalendar (calendarId,count) {
+function addEventsToCalendar(calendarId, count) {
     var eve = [];
-    for (i=0;i<count;i++){
-        var eventName = eventList[Math.floor(Math.random()* eventList.length)];
+    for (i = 0; i < count; i++) {
+        var eventName = eventList[Math.floor(Math.random() * eventList.length)];
         var eventLocation = eventLocationList[Math.floor(Math.random() * eventLocationList.length)];
         var eventColor = eventColorList [Math.floor(Math.random() * eventColorList.length)];
         var importantLevel = importantLevelList [Math.floor(Math.random() * importantLevelList.length)];
@@ -183,31 +181,25 @@ function addEventsToCalendar (calendarId,count) {
         eve.push({
             eventName: eventName,
             eventLocation: eventLocation,
-            eventColor:eventColor,
-            importantLevel:importantLevel,
-            calendarId:calendarId,
-            description:description
+            eventColor: eventColor,
+            importantLevel: importantLevel,
+            calendarId: calendarId,
+            description: description
 
         });
     }
 
     eve.forEach(function (event) {
-        var events =  dbConnection.collection('events');
+        var events = dbConnection.collection('events');
         events.insertOne(event);
     })
 
 }
 
 
-setTimeout(closeConnection,5000);
-
-
-//6zHCVMaK3eCH5Z0R9GDwbQ==
-//06pEQujcQHqtiTTvEND20A==
-
+setTimeout(closeConnection, 5000);
 
 //generate note list
-
 
 captionList = ['Call Jennifer', 'Shopping List', 'APP Homework', 'Student Work', 'Hackathon Volunteer',
     'Submit Job Application Online', 'Buy a car', 'Gift Ideas', 'Youtube Description', 'Personal Blog'];
@@ -271,6 +263,58 @@ function addNotesToUser(userId, count) {
         notes.insertOne(note);
     })
 
+    //generate health list
+
+    // recordTime range: 2017-01-01 00:00 to 3017-01-01 00:00.
+    startRecordTime = 1485903600000;
+    endRecordTime = 33042812400000;
+    hoursOfSleepList = [5, 6, 7, 8, 9, 10];
+    threeMealsList = ['Egg', 'Milk', 'Pork', 'Vegetables', 'Pasta', 'Rice', 'Beef', 'Salad',
+        'Lemonade', 'Red Wine', 'Noodle', 'Chicken', 'Tomato', 'Potato'];
+    weightList = [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70];
+    moodDiaryList = ['Very Happy', 'Happy', 'Normal', 'Unhappy', 'Very Unhappy'];
+    moodDiaryList = {};
+
+    function addHealthsToUser(userId, count) {
+        sequence = Array(count);
+        console.log("sequence", sequence);
+        var h = [];
+        for (i = 0; i < count; i++) {
+            console.log("Trying")
+
+            var recordTime = Number(Math.floor((Math.random()
+                * (endRecordTime - startRecordTime) + startRecordTime) / 100000) * 100000);
+            var goToBedOnTime = Math.random() >= 0.5;
+            var wakeUpOnTime = Math.random() >= 0.5;
+            var hoursOfSleep = hoursOfSleepList[Math.floor(Math.random() * hoursOfSleepList.length)];
+            var haveExercise = Math.random() >= 0.5;
+            var threeMeals = [];
+            for (j = 0; j < Number(Math.floor(Math.random() * threeMealsList.length)) + 1; j++) {
+                threeMealsList.push(
+                    threeMealsList [Math.floor(Math.random() * threeMealsList.length)]
+                );
+            }
+            var weight = weightList[Math.floor(Math.random() * hoursOfSleepList.length)];
+            var moodDiary = moodDiaryList[Math.floor(Math.random() * moodDiaryList.length)];
+
+            h.push({
+                userId: userId,
+                recordTime: new Date(recordTime),
+                goToBedOnTime: goToBedOnTime,
+                wakeUpOnTime: wakeUpOnTime,
+                hoursOfSleep: hoursOfSleep,
+                haveExercise: haveExercise,
+                threeMeals: threeMeals,
+                weight: weight,
+                moodDiary: moodDiary
+            });
+        }
+
+        h.forEach(function (health) {
+            var healths = dbConnection.collection('healths');
+            healths.insertOne(health);
+        })
+    }
 }
 
 

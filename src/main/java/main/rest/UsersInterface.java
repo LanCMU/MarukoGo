@@ -12,6 +12,7 @@ import com.mongodb.client.result.DeleteResult;
 import main.exceptions.*;
 import main.helpers.*;
 import main.models.Calendar;
+import main.models.Health;
 import main.models.Note;
 import main.models.User;
 import org.bson.Document;
@@ -37,6 +38,7 @@ public class UsersInterface {
     private MongoCollection<Document> collection;
     private MongoCollection<Document> calendarCollection;
     private MongoCollection<Document> noteCollection;
+    private MongoCollection<Document> healthCollection;
     private ObjectWriter ow;
 
 
@@ -47,6 +49,7 @@ public class UsersInterface {
         this.collection = database.getCollection("users");
         this.calendarCollection = database.getCollection("calendars");
         this.noteCollection = database.getCollection("notes");
+        this.healthCollection = database.getCollection("healths");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
     }
 
@@ -155,6 +158,59 @@ public class UsersInterface {
                 noteList.add(note);
             }
             return new APPListResponse(noteList, resultCount, offset, noteList.size());
+        } catch (APPBadRequestException e) {
+            throw e;
+        } catch (APPUnauthorizedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+    }
+
+    @GET
+    @Path("{id}/healths")
+    @Produces({MediaType.APPLICATION_JSON})
+    public APPListResponse getHealthsForUser(@Context HttpHeaders headers, @PathParam("id") String id,
+                                           @DefaultValue("_id") @QueryParam("sort") String sortArg,
+                                           @DefaultValue("20") @QueryParam("count") int count,
+                                           @DefaultValue("0") @QueryParam("offset") int offset) {
+
+        ArrayList<Health> healthList = new ArrayList<Health>();
+
+        BasicDBObject sortParams = new BasicDBObject();
+        List<String> sortList = Arrays.asList(sortArg.split(","));
+        sortList.forEach(sortItem -> {
+            if (sortItem.startsWith("-")) {
+                sortParams.put(sortItem.substring(1, sortItem.length()), -1); // Descending order.
+            } else {
+                sortParams.put(sortItem, 1); // Ascending order.
+            }
+        });
+
+        try {
+            Util.checkAuthentication(headers, id);
+            BasicDBObject query = new BasicDBObject();
+            query.put("userId", id);
+
+            long resultCount = healthCollection.count(query);
+            FindIterable<Document> results = healthCollection.find(query).sort(sortParams).skip(offset).limit(count);
+            for (Document item : results) {
+                Health health = new Health(
+                        item.getString("userId"),
+                        Util.getStringFromDate(item),
+                        item.getBoolean("goToBedOnTime"),
+                        item.getBoolean("wakeUpOnTime"),
+                        item.getInteger("hoursOfSleep"),
+                        item.getBoolean("haveExercise"),
+                        (List<String>) item.get("threeMeals"),
+                        item.getDouble("weight"),
+                        item.getString("moodDiary")
+                );
+                health.setId(item.getObjectId("_id").toString());
+                healthList.add(health);
+            }
+            return new APPListResponse(healthList, resultCount, offset, healthList.size());
         } catch (APPBadRequestException e) {
             throw e;
         } catch (APPUnauthorizedException e) {
@@ -440,6 +496,168 @@ public class UsersInterface {
         }
     }
 
+    @POST
+    @Path("{id}/healths")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public APPResponse createHealth(@Context HttpHeaders headers, @PathParam("id") String id, Object request) {
+        try {
+            Util.checkAuthentication(headers, id);
+        } catch (APPUnauthorizedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+
+        JSONObject json = null;
+        try {
+            json = new JSONObject(ow.writeValueAsString(request));
+        } catch (JsonProcessingException e) {
+            throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
+        }
+
+        if (json.has("userId")) {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "You should not pass User Id!");
+        }
+
+        Document doc = new Document("userId", id);
+
+        // Record time is required.
+        if (json.has("recordTime")) {
+            try {
+                doc.append("recordTime", Util.getDateFromString(json));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid recordTime!");
+            } catch (ParseException e) {
+                throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                        "Record Time should be " + Util.DATE_FORMAT);
+            }
+        } else {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "Missing Record Time!");
+        }
+
+        // goToBedOnTime is optional. Default value is true (go to bed on time).
+        boolean goToBedOnTime = true;
+        if (json.has("goToBedOnTime")) {
+            try {
+                goToBedOnTime = json.getBoolean("goToBedOnTime");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid goToBedOnTime Value!");
+            }
+        }
+        doc.append("goToBedOnTime", goToBedOnTime);
+
+        // wakeUpOnTime is optional. Default value is true (wake up on time).
+        boolean wakeUpOnTime = true;
+        if (json.has("wakeUpOnTime")) {
+            try {
+                wakeUpOnTime = json.getBoolean("wakeUpOnTime");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid wakeUpOnTime Value!");
+            }
+        }
+        doc.append("wakeUpOnTime", wakeUpOnTime);
+
+
+        // hoursOfSleep is optional, and its value should be more than 0.
+        // Its default value is 8 hours.
+        int hoursOfSleep = 8;
+        if (json.has("hoursOfSleep")) {
+            try {
+                hoursOfSleep = json.getInt("hoursOfSleep");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid hoursOfSleep!");
+            }
+        }
+        if (hoursOfSleep < 0) {
+            throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                    "Hours of Sleep must be more than 0!");
+        } else {
+            doc.append("hoursOfSleep", hoursOfSleep);
+        }
+
+        // haveExercise is optional. Default value is true (have exercise).
+        boolean haveExercise = true;
+        if (json.has("haveExercise")) {
+            try {
+                haveExercise = json.getBoolean("haveExercise");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid haveExercise Value!");
+            }
+        }
+        doc.append("haveExercise", haveExercise);
+
+        // Three Meals is optional.
+        if (json.has("threeMeals")) {
+            try {
+                List<String> threeMealsList = new ArrayList<String>();
+                JSONArray threeMealsArray = json.getJSONArray("threeMeals");
+                for (int i = 0; i < threeMealsArray.length(); i++) {
+                    threeMealsList.add(threeMealsArray.getString(i));
+                }
+                doc.append("threeMeals", threeMealsList);
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Three Meals!");
+            }
+        }
+
+        // Weight is optional, and its value should be more than 0.
+        // Its default value is 0.
+        double weight = 0.00;
+        if (json.has("weight")) {
+            try {
+                weight = json.getDouble("weight");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Weight!");
+            }
+        }
+        if (weight < 0) {
+            throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                    "Weight must be more than 0!");
+        } else {
+            doc.append("weight", weight);
+        }
+
+        // moodDiary is optional.
+        if (json.has("moodDiary")) {
+            try {
+                doc.append("moodDiary", json.getString("moodDiary"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Mood Diary!");
+            }
+        }
+
+        try {
+            healthCollection.insertOne(doc);
+            Health health = new Health(
+                    doc.getString("userId"),
+                    Util.getStringFromDate(doc),
+                    doc.getBoolean("goToBedOnTime"),
+                    doc.getBoolean("wakeUpOnTime"),
+                    doc.getInteger("hoursOfSleep"),
+                    doc.getBoolean("haveExercise"),
+                    (List<String>) doc.get("threeMeals"),
+                    doc.getDouble("weight"),
+                    doc.getString("moodDiary")
+            );
+            health.setId(doc.getObjectId("_id").toString());
+            return new APPResponse(health);
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+    }
 
     @POST
     @Path("{id}/calendars")
@@ -482,7 +700,7 @@ public class UsersInterface {
                     "Missing calendar name!");
         }
 
-        // Calendar discription is optional.
+        // Calendar description is optional.
         if (json.has("description")) {
             try {
                 doc.append("description", json.getString("description"));
@@ -620,6 +838,8 @@ public class UsersInterface {
         noteQuery.put("userId", id);
         BasicDBObject calendarQuery = new BasicDBObject();
         calendarQuery.put("userId", id);
+        BasicDBObject healthQuery = new BasicDBObject();
+        healthQuery.put("userId", id);
 
         DeleteResult deleteResult;
         try {
@@ -630,6 +850,9 @@ public class UsersInterface {
 
             // Deletes all the calendars owned by the user.
             calendarCollection.deleteMany(calendarQuery);
+
+            // Deletes all the healths owned by the user.
+            healthCollection.deleteMany(healthQuery);
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                     "Internal Server Error!");

@@ -66,11 +66,6 @@ $(function () {
     });
 
 
-    $("#addNote").click(function () {
-        $("#addNoteWindow").modal('show');
-    });
-
-
     // Get Notes.
     $("#getnotes").click(function (e) {
         e.preventDefault();
@@ -93,7 +88,6 @@ $(function () {
         }
     })
 
-
     $("#saveAddNoteWindow").click(function () {
         newNoteName = $("#addNoteWindowCaption").val();
         if (newNoteName == "") {
@@ -102,15 +96,18 @@ $(function () {
         }
 
         newNoteContent = $("#addNoteWindowContent").val().split("\n");
+
         newNoteType = 0;
-        if ($("#addNoteType").val() == '0') {
+        if ($("#addNoteWindowType").val() == '0') {
             newNoteType = 0;
         } else {
             newNoteType = 1;
         }
-        newNoteIsPinned = $("#addNoteIsPinned").val() == "true"
-        if ($('#addNoteDatetimepicker').data("DateTimePicker").date() != null) {
-            newNoteRemindTime = $('#addNoteDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
+
+        newNoteIsPinned = $("#addNoteWindowIsPinned").val() == "true"
+
+        if ($('#addNoteWindowDatetimepicker').data("DateTimePicker").date() != null) {
+            newNoteRemindTime = $('#addNoteWindowDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
             queryDate = JSON.stringify({
                 noteCaption: newNoteName,
                 noteContent: newNoteContent,
@@ -137,15 +134,17 @@ $(function () {
             },
             contentType: "application/json; charset=utf-8"
 
-        }).done(function (data) {
-            addNoteToTable(data.content);
+        }).done(function () {
+            // addNoteToTable(data.content);
 
             bindEditNote();
             bindDeleteNote();
 
             $("#addNoteWindow").modal('hide');
-            clearAddNoteWindowFields();
             alert("Note added successfully!");
+            clearAddNoteWindowFields();
+
+            loadNotes();
         });
     });
 
@@ -172,9 +171,9 @@ $(function () {
     function clearAddNoteWindowFields() {
         $("#addNoteWindowCaption").val('');
         $("#addNoteWindowContent").val('');
-        $("#addNoteType").val('');
-        $("#addNoteIsPinned").val('');
-        $('#addNoteDatetimepicker').data("DateTimePicker").clear;
+        $("#addNoteWindowType").val('0');
+        $("#addNoteWindowIsPinned").val('false');
+        $('#addNoteWindowDatetimepicker').data("DateTimePicker").clear();
     }
 
     function bindDeleteNote() {
@@ -223,7 +222,11 @@ $(function () {
             } else {
                 $("#editNoteWindowIsPinned").val('true');
             }
-            $('#editNoteDatetimepicker').data("DateTimePicker").date(new Date(remindTimeCol.text()));
+            if (remindTimeCol.text() == '') {
+                $('#editNoteWindowDatetimepicker').data("DateTimePicker").clear();
+            } else {
+                $('#editNoteWindowDatetimepicker').data("DateTimePicker").date(new Date(remindTimeCol.text()));
+            }
 
             noteId = noteRow.attr('id');
 
@@ -249,8 +252,8 @@ $(function () {
         editedNoteIsPinned = $("#editNoteWindowIsPinned").val() == "true"
 
         editedNoteRemindTime = null;
-        if ($('#editNoteDatetimepicker').data("DateTimePicker").date() != null) {
-            editedNoteRemindTime = $('#editNoteDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
+        if ($('#editNoteWindowDatetimepicker').data("DateTimePicker").date() != null) {
+            editedNoteRemindTime = $('#editNoteWindowDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
             queryDate = JSON.stringify({
                 noteCaption: editedNoteCaption,
                 noteContent: editedNoteContent,
@@ -299,5 +302,4 @@ $(function () {
             alert("Note modified successfully!");
         });
     });
-
 })
