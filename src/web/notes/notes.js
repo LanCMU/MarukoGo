@@ -6,6 +6,7 @@ $(function () {
     var noteOffset = 0;
     var noteCount = 20;
     var noteTotal = -1;
+    var noteSort = "-_id";
 
     var noteId;
     var noteRow;
@@ -19,7 +20,7 @@ $(function () {
 
     function loadNotes() {
         jQuery.ajax({
-            url: "/api/users/" + userId + "/notes?offset=" + noteOffset + "&noteCount=" + noteCount,
+            url: "/api/users/" + userId + "/notes?offset=" + noteOffset + "&noteCount=" + noteCount + "&sort=" + noteSort,
             type: "GET",
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", token);
@@ -302,4 +303,77 @@ $(function () {
             alert("Note modified successfully!");
         });
     });
+
+
+    // Sort Way
+    $("#noteCreationTimeAsc").click(function () {
+        noteSort = "_id";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteCreationTimeDesc").click(function () {
+        noteSort = "-_id";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteCaptionAsc").click(function () {
+        noteSort = "noteCaption";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteCaptionDesc").click(function () {
+        noteSort = "-noteCaption";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteTypeAsc").click(function () {
+        noteSort = "noteType";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteTypeDesc").click(function () {
+        noteSort = "-noteType";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteIsPinnedAsc").click(function () {
+        noteSort = "isPinned";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteIsPinnedDesc").click(function () {
+        noteSort = "-isPinned";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteRemindTimeAsc").click(function () {
+        noteSort = "remindTime";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteRemindTimeDesc").click(function () {
+        noteSort = "-remindTime";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    $("#noteSortDefaultWay").click(function () {
+        noteSort = "-_id";
+        noteOffset = 0;
+        loadNotes();
+    });
+
+    // $("#").click(function () {
+    //     noteSort = "-";
+    //     loadNotes();
+    // });
 })

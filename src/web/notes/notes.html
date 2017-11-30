@@ -34,6 +34,7 @@
             <li><a href="../calendar/calendar.html">CALENDAR</a></li>
             <li><a href="../healths/healths.html">HEALTHS</a></li>
             <li><a href="../notes/notes.html">NOTES</a></li>
+            <li><a href="../todos/todos.html">TODOS</a></li>
             <li><a href="../settings/settings.html">SETTINGS</a></li>
             <li><a href="../index.html">SIGN OUT</a></li>
         </ul>
@@ -70,18 +71,23 @@
                     <!-- Split button -->
                     <div class="btn-group">
                         <button type="button" class="btn btn-default">Sort by</button>
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                             <span class="caret"></span>
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Note Caption</a></li>
-                            <li><a href="#">Note Content</a></li>
-                            <li><a href="#">Note Type</a></li>
-                            <li><a href="#">Is Important?</a></li>
-                            <li><a href="#">Remind Time</a></li>
+                            <li><a href="#" id="noteCreationTimeAsc">Creation Time (Ascending)</a></li>
+                            <li><a href="#" id="noteCreationTimeDesc">Creation Time (Descending)</a></li>
+                            <li><a href="#" id="noteCaptionAsc">Note Caption (Ascending)</a></li>
+                            <li><a href="#" id="noteCaptionDesc">Note Caption (Descending)</a></li>
+                            <li><a href="#" id="noteTypeAsc">Note Type (Memo -> Checklist)</a></li>
+                            <li><a href="#" id="noteTypeDesc">Note Type (Checklist -> Memo)</a></li>
+                            <li><a href="#" id="noteIsPinnedDesc">Is Important? (Yes -> No)</a></li>
+                            <li><a href="#" id="noteIsPinnedAsc">Is Important? (No -> Yes)</a></li>
+                            <li><a href="#" id="noteRemindTimeAsc">Remind Time (Ascending)</a></li>
+                            <li><a href="#" id="noteRemindTimeDesc">Remind Time (Descending)</a></li>
                             <li role="separator" class="divider"></li>
-                            <li><a href="#">Default</a></li>
+                            <li><a href="#" id="noteSortDefaultWay">Default</a></li>
                         </ul>
                     </div>
 

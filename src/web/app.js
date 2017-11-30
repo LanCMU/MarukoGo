@@ -60,7 +60,6 @@ $(function () {
                 noteOffset = 0;
                 total = -1;
                 noteTotal = -1;
-                //$("#getCalendar").hide();
             })
     });
 })
