@@ -61,11 +61,30 @@
                         <td><strong>Note Caption</strong></td>
                         <td><strong>Note Content</strong></td>
                         <td><strong>Note Type</strong></td>
-                        <td><strong>Is Pinned?</strong></td>
+                        <td><strong>Is Important?</strong></td>
                         <td><strong>Remind Time</strong></td>
-                        <td>Operations</td>
+                        <td><strong>Operations</strong></td>
                     </tr>
                     <button type="button" id="addNote">Add New Notes</button>
+
+                    <!-- Split button -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default">Sort by</button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Note Caption</a></li>
+                            <li><a href="#">Note Content</a></li>
+                            <li><a href="#">Note Type</a></li>
+                            <li><a href="#">Is Important?</a></li>
+                            <li><a href="#">Remind Time</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#">Default</a></li>
+                        </ul>
+                    </div>
+
                     <tr align="center" id="noteRow">
                         <td id="noteCaption"></td>
                         <td textarea id="noteContent"></td>
@@ -112,7 +131,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-control-label">Is Pinned?</label>
+                                <label class="form-control-label">Is Important?</label>
                                 <select id="addNoteWindowIsPinned">
                                     <option value="false">No</option>
                                     <option value="true">Yes</option>
@@ -182,7 +201,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-control-label">Is Pinned?</label>
+                                <label class="form-control-label">Is Important?</label>
                                 <select id="editNoteWindowIsPinned">
                                     <option value="false">No</option>
                                     <option value="true">Yes</option>

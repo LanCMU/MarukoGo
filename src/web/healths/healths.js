@@ -92,15 +92,15 @@ $(function () {
     })
 
     $("#saveAddHealthWindow").click(function () {
-        newHealthGoToBedOnTime = $("#addHealthGoToBedOnTime").val() == "true";
-        newHealthWakeUpOnTime = $("#addHealthWakeUpOnTime").val() == "true";
-        newHealthHoursOfSleep = $("#addHealthHoursOfSleep").val();
-        newHealthHaveExercise = $("#addHealthHaveExercise").val() == "true";
-        newHealthThreeMeals = $("#addHealthThreeMeals").val().split("\n");
-        newHealthWeight = $("#addHealthWeight").val();
-        newHealthMoodDiary = $("#addHealthMoodDiary").val();
+        newHealthGoToBedOnTime = $("#addHealthWindowGoToBedOnTime").val() == "true";
+        newHealthWakeUpOnTime = $("#addHealthWindowWakeUpOnTime").val() == "true";
+        newHealthHoursOfSleep = $("#addHealthWindowHoursOfSleep").val();
+        newHealthHaveExercise = $("#addHealthWindowHaveExercise").val() == "true";
+        newHealthThreeMeals = $("#addHealthWindowThreeMeals").val().split("\n");
+        newHealthWeight = $("#addHealthWindowWeight").val();
+        newHealthMoodDiary = $("#addHealthWindowMoodDiary").val();
 
-        if ($('#addHealthDatetimepicker').data("DateTimePicker").date() != null) {
+        if ($('#addHealthWindowDatetimepicker').data("DateTimePicker").date() != null) {
             newHealthRecordTime = $('#addHealthDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
             queryDate = JSON.stringify({
                 recordTime: newHealthRecordTime,
@@ -167,15 +167,15 @@ $(function () {
     }
 
     function clearAddHealthWindowFields() {
-        $('#addHealthDatetimepicker').data("DateTimePicker").clear;
-        $("#addHealthGoToBedOnTime").val('');
-        $("#addHealthWakeUpOnTime").val('');
+        $('#addHealthWindowDatetimepicker').data("DateTimePicker").clear;
+        $("#addHealthWindowGoToBedOnTime").val('');
+        $("#addHealthWindowWakeUpOnTime").val('');
 
-        $("#addHealthHoursOfSleep").val('');
-        $("#addHealthHaveExercise").val('');
-        $("#addHealthThreeMeals").val('');
-        $("#addHealthWeight").val('');
-        $("#addHealthMoodDiary").val('');
+        $("#addHealthWindowHoursOfSleep").val('');
+        $("#addHealthWindowHaveExercise").val('');
+        $("#addHealthWindowThreeMeals").val('');
+        $("#addHealthWindowWeight").val('');
+        $("#addHealthWindowMoodDiary").val('');
     }
 
     function bindDeleteHealth() {
@@ -215,7 +215,7 @@ $(function () {
         });
 
         $("#editHealthWindow").on('show.bs.modal', function () {
-            $('#addHealthDatetimepicker').data("DateTimePicker").date(new Date(recordTimeCol.text()));
+            $('#addHealthWindowDatetimepicker').data("DateTimePicker").date(new Date(recordTimeCol.text()));
             if (addHealthGoToBedOnTimeCol.text() == 'Yes') {
                 $("#editHealthGoToBedOnTime").val('true');
             } else {
