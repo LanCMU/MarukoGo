@@ -65,7 +65,7 @@ public class HealthsInterface {
             for (Document item : results) {
                 Health health = new Health(
                         item.getString("userId"),
-                        Util.getStringFromDate(item),
+                        Util.getStringFromDate(item, "recordTime"),
                         item.getBoolean("goToBedOnTime"),
                         item.getBoolean("wakeUpOnTime"),
                         item.getInteger("hoursOfSleep"),
@@ -101,7 +101,7 @@ public class HealthsInterface {
             }
             Health health = new Health(
                     item.getString("userId"),
-                    Util.getStringFromDate(item),
+                    Util.getStringFromDate(item, "recordTime"),
                     item.getBoolean("goToBedOnTime"),
                     item.getBoolean("wakeUpOnTime"),
                     item.getInteger("hoursOfSleep"),
@@ -167,7 +167,7 @@ public class HealthsInterface {
 
         if (json.has("recordTime")) {
             try {
-                doc.append("recordTime", Util.getDateFromString(json));
+                doc.append("recordTime", Util.getDateFromString(json, "recordTime"));
             } catch (JSONException e) {
                 throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
                         "Invalid recordTime!");

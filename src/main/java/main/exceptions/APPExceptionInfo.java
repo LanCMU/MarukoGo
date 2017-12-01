@@ -13,6 +13,6 @@ public class APPExceptionInfo {
     }
     public int getHttpStatusCode() { return httpStatusCode; }
     public String getHttpStatusMessage() { return httpStatusMessage; }
-    public int getErroCode() { return errorCode; }
+    public int getErrorCode() { return errorCode; }
     public String getErrorMessage() {return errorMessage; }
 }

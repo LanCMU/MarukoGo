@@ -79,7 +79,7 @@ function addUser() {
     ];
     var users = dbConnection.collection('users');
 
-    //add calendars and events
+    //add calendars, events, healths
     users.insertOne(u[0], function (err, doc) {
         if (err) {
             console.log("Could not add user 1.");
@@ -87,6 +87,7 @@ function addUser() {
         else {
             addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 100);
+            addHealthsToUser(doc.ops[0]._id.toString(), 100);
         }
     })
     users.insertOne(u[1], function (err, doc) {
@@ -96,6 +97,7 @@ function addUser() {
         else {
             addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 110);
+            addHealthsToUser(doc.ops[0]._id.toString(), 110);
         }
     })
     users.insertOne(u[2], function (err, doc) {
@@ -105,6 +107,7 @@ function addUser() {
         else {
             addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 120);
+            addHealthsToUser(doc.ops[0]._id.toString(), 120);
         }
     })
     users.insertOne(u[3], function (err, doc) {
@@ -114,6 +117,7 @@ function addUser() {
         else {
             addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 110);
+            addHealthsToUser(doc.ops[0]._id.toString(), 110);
         }
     })
     users.insertOne(u[4], function (err, doc) {
@@ -123,6 +127,7 @@ function addUser() {
         else {
             addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 120);
+            addHealthsToUser(doc.ops[0]._id.toString(), 120);
         }
     })
 }
@@ -193,7 +198,6 @@ function addEventsToCalendar(calendarId, count) {
         var events = dbConnection.collection('events');
         events.insertOne(event);
     })
-
 }
 
 
@@ -262,59 +266,58 @@ function addNotesToUser(userId, count) {
         var notes = dbConnection.collection('notes');
         notes.insertOne(note);
     })
+}
 
-    //generate health list
+//generate health list
 
-    // recordTime range: 2017-01-01 00:00 to 3017-01-01 00:00.
-    startRecordTime = 1485903600000;
-    endRecordTime = 33042812400000;
-    hoursOfSleepList = [5, 6, 7, 8, 9, 10];
-    threeMealsList = ['Egg', 'Milk', 'Pork', 'Vegetables', 'Pasta', 'Rice', 'Beef', 'Salad',
-        'Lemonade', 'Red Wine', 'Noodle', 'Chicken', 'Tomato', 'Potato'];
-    weightList = [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70];
-    moodDiaryList = ['Very Happy', 'Happy', 'Normal', 'Unhappy', 'Very Unhappy'];
-    moodDiaryList = {};
+// recordTime range: 2017-01-01 00:00 to 3017-01-01 00:00.
+startRecordTime = 1485903600000;
+endRecordTime = 33042812400000;
+hoursOfSleepList = [5, 6, 7, 8, 9, 10];
+threeMealsList = ['Egg', 'Milk', 'Pork', 'Vegetables', 'Pasta', 'Rice', 'Beef', 'Salad',
+    'Lemonade', 'Red Wine', 'Noodle', 'Chicken', 'Tomato', 'Potato'];
+weightList = [50.0, 51.1, 52.2, 53.3, 54.4, 55.5, 56.6, 57.7, 58.8, 59.9, 60.0, 61.1, 62.2, 63.3, 64.4, 65.5, 66.6, 67.7, 68.8, 69.9, 70.0];
+moodDiaryList = ['Very Happy', 'Happy', 'Normal', 'Unhappy', 'Very Unhappy'];
 
-    function addHealthsToUser(userId, count) {
-        sequence = Array(count);
-        console.log("sequence", sequence);
-        var h = [];
-        for (i = 0; i < count; i++) {
-            console.log("Trying")
+function addHealthsToUser(userId, count) {
+    sequence = Array(count);
+    console.log("sequence", sequence);
+    var h = [];
+    for (i = 0; i < count; i++) {
+        console.log("Trying")
 
-            var recordTime = Number(Math.floor((Math.random()
-                * (endRecordTime - startRecordTime) + startRecordTime) / 100000) * 100000);
-            var goToBedOnTime = Math.random() >= 0.5;
-            var wakeUpOnTime = Math.random() >= 0.5;
-            var hoursOfSleep = hoursOfSleepList[Math.floor(Math.random() * hoursOfSleepList.length)];
-            var haveExercise = Math.random() >= 0.5;
-            var threeMeals = [];
-            for (j = 0; j < Number(Math.floor(Math.random() * threeMealsList.length)) + 1; j++) {
-                threeMealsList.push(
-                    threeMealsList [Math.floor(Math.random() * threeMealsList.length)]
-                );
-            }
-            var weight = weightList[Math.floor(Math.random() * hoursOfSleepList.length)];
-            var moodDiary = moodDiaryList[Math.floor(Math.random() * moodDiaryList.length)];
-
-            h.push({
-                userId: userId,
-                recordTime: new Date(recordTime),
-                goToBedOnTime: goToBedOnTime,
-                wakeUpOnTime: wakeUpOnTime,
-                hoursOfSleep: hoursOfSleep,
-                haveExercise: haveExercise,
-                threeMeals: threeMeals,
-                weight: weight,
-                moodDiary: moodDiary
-            });
+        var recordTime = Number(Math.floor((Math.random()
+            * (endRecordTime - startRecordTime) + startRecordTime) / 100000) * 100000);
+        var goToBedOnTime = Math.random() >= 0.5;
+        var wakeUpOnTime = Math.random() >= 0.5;
+        var hoursOfSleep = hoursOfSleepList[Math.floor(Math.random() * hoursOfSleepList.length)];
+        var haveExercise = Math.random() >= 0.5;
+        var threeMeals = [];
+        for (j = 0; j < Number(Math.floor(Math.random() * threeMealsList.length)) + 1; j++) {
+            threeMeals.push(
+                threeMealsList [Math.floor(Math.random() * threeMealsList.length)]
+            );
         }
+        var weight = weightList[Math.floor(Math.random() * hoursOfSleepList.length)];
+        var moodDiary = moodDiaryList[Math.floor(Math.random() * moodDiaryList.length)];
 
-        h.forEach(function (health) {
-            var healths = dbConnection.collection('healths');
-            healths.insertOne(health);
-        })
+        h.push({
+            userId: userId,
+            recordTime: new Date(recordTime),
+            goToBedOnTime: goToBedOnTime,
+            wakeUpOnTime: wakeUpOnTime,
+            hoursOfSleep: hoursOfSleep,
+            haveExercise: haveExercise,
+            threeMeals: threeMeals,
+            weight: weight,
+            moodDiary: moodDiary
+        });
     }
+
+    h.forEach(function (health) {
+        var healths = dbConnection.collection('healths');
+        healths.insertOne(health);
+    })
 }
 
 

@@ -70,7 +70,7 @@ public class NotesInterface {
                         (List<String>) item.get("noteContent"),
                         item.getInteger("noteType"),
                         item.getBoolean("isPinned"),
-                        Util.getStringFromDate(item)
+                        Util.getStringFromDate(item, "remindTime")
                 );
                 note.setId(item.getObjectId("_id").toString());
                 noteList.add(note);
@@ -103,7 +103,7 @@ public class NotesInterface {
                     (List<String>) item.get("noteContent"),
                     item.getInteger("noteType"),
                     item.getBoolean("isPinned"),
-                    Util.getStringFromDate(item)
+                    Util.getStringFromDate(item, "remindTime")
             );
             note.setId(item.getObjectId("_id").toString());
 
@@ -204,7 +204,7 @@ public class NotesInterface {
         }
         if (json.has("remindTime")) {
             try {
-                doc.append("remindTime", Util.getDateFromString(json));
+                doc.append("remindTime", Util.getDateFromString(json, "remindTime"));
             } catch (JSONException e) {
                 throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
                         "Invalid remindTime!");

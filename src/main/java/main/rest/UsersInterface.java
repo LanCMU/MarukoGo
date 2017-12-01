@@ -152,7 +152,7 @@ public class UsersInterface {
                         (List<String>) item.get("noteContent"),
                         item.getInteger("noteType"),
                         item.getBoolean("isPinned"),
-                        Util.getStringFromDate(item)
+                        Util.getStringFromDate(item, "remindTime")
                 );
                 note.setId(item.getObjectId("_id").toString());
                 noteList.add(note);
@@ -198,13 +198,13 @@ public class UsersInterface {
             for (Document item : results) {
                 Health health = new Health(
                         item.getString("userId"),
-                        Util.getStringFromDate(item),
+                        Util.getStringFromDate(item, "recordTime"),
                         item.getBoolean("goToBedOnTime"),
                         item.getBoolean("wakeUpOnTime"),
                         item.getInteger("hoursOfSleep"),
                         item.getBoolean("haveExercise"),
                         (List<String>) item.get("threeMeals"),
-                        item.getDouble("weight"),
+                        ((Number) item.get("weight")).doubleValue(),
                         item.getString("moodDiary")
                 );
                 health.setId(item.getObjectId("_id").toString());
@@ -217,7 +217,8 @@ public class UsersInterface {
             throw e;
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
-                    "Internal Server Error!");
+                    e.getMessage());
+//                    "Internal Server Error!");
         }
     }
 
@@ -468,7 +469,7 @@ public class UsersInterface {
         // Remind time is optional.
         if (json.has("remindTime")) {
             try {
-                doc.append("remindTime", Util.getDateFromString(json));
+                doc.append("remindTime", Util.getDateFromString(json, "remindTime"));
             } catch (JSONException e) {
                 throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
                         "Invalid remindTime!");
@@ -486,7 +487,7 @@ public class UsersInterface {
                     (List<String>) doc.get("noteContent"),
                     doc.getInteger("noteType"),
                     doc.getBoolean("isPinned"),
-                    Util.getStringFromDate(doc)
+                    Util.getStringFromDate(doc, "remindTime")
             );
             note.setId(doc.getObjectId("_id").toString());
             return new APPResponse(note);
@@ -527,7 +528,7 @@ public class UsersInterface {
         // Record time is required.
         if (json.has("recordTime")) {
             try {
-                doc.append("recordTime", Util.getDateFromString(json));
+                doc.append("recordTime", Util.getDateFromString(json, "recordTime"));
             } catch (JSONException e) {
                 throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
                         "Invalid recordTime!");
@@ -642,7 +643,7 @@ public class UsersInterface {
             healthCollection.insertOne(doc);
             Health health = new Health(
                     doc.getString("userId"),
-                    Util.getStringFromDate(doc),
+                    Util.getStringFromDate(doc, "recordTime"),
                     doc.getBoolean("goToBedOnTime"),
                     doc.getBoolean("wakeUpOnTime"),
                     doc.getInteger("hoursOfSleep"),

@@ -18,18 +18,18 @@ import java.util.List;
 public class Util {
     public final static String DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
-    public static String getStringFromDate(Document item) {
-        if (item.containsKey("remindTime")) {
+    public static String getStringFromDate(Document item, String key) {
+        if (key != null && item.containsKey(key)) {
             SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-            return format.format(item.getDate("remindTime"));
+            return format.format(item.getDate(key));
         } else {
             return "";
         }
     }
 
-    public static Date getDateFromString(JSONObject json) throws JSONException, ParseException {
+    public static Date getDateFromString(JSONObject json, String key) throws JSONException, ParseException {
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-        return format.parse(json.getString("remindTime"));
+        return format.parse(json.getString(key));
     }
 
 
