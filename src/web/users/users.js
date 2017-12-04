@@ -109,7 +109,7 @@ $(function () {
 
         if ($('#addNoteWindowDatetimepicker').data("DateTimePicker").date() != null) {
             newNoteRemindTime = $('#addNoteWindowDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
-            queryData = JSON.stringify({
+            queryDate = JSON.stringify({
                 noteCaption: newNoteName,
                 noteContent: newNoteContent,
                 noteType: newNoteType,
@@ -117,7 +117,7 @@ $(function () {
                 remindTime: newNoteRemindTime
             });
         } else {
-            queryData = JSON.stringify({
+            queryDate = JSON.stringify({
                 noteCaption: newNoteName,
                 noteContent: newNoteContent,
                 noteType: newNoteType,
@@ -129,7 +129,7 @@ $(function () {
             url: "/api/users/" + userId + "/notes",
             type: "POST",
             dataType: "json",
-            data: queryData,
+            data: queryDate,
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", token);
             },
@@ -256,7 +256,7 @@ $(function () {
         editedNoteRemindTime = null;
         if ($('#editNoteWindowDatetimepicker').data("DateTimePicker").date() != null) {
             editedNoteRemindTime = $('#editNoteWindowDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
-            queryData = JSON.stringify({
+            queryDate = JSON.stringify({
                 noteCaption: editedNoteCaption,
                 noteContent: editedNoteContent,
                 noteType: editedNoteType,
@@ -264,7 +264,7 @@ $(function () {
                 remindTime: editedNoteRemindTime
             });
         } else {
-            queryData = JSON.stringify({
+            queryDate = JSON.stringify({
                 noteCaption: editedNoteCaption,
                 noteContent: editedNoteContent,
                 noteType: editedNoteType,
@@ -276,7 +276,7 @@ $(function () {
             url: "/api/notes/" + noteId,
             type: "PATCH",
             dataType: "json",
-            data: queryData,
+            data: queryDate,
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", token);
             },

@@ -37,7 +37,7 @@ public class Util {
         List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
         if (authHeaders == null)
             throw new APPUnauthorizedException(ErrorCode.NO_AUTHORIZATION_HEADERS.getErrorCode(),
-                    "No Auhthorization Headers");
+                    "No Authorization Headers");
         String token = authHeaders.get(0);
         String clearToken = APPCrypt.decrypt(token);
         if (id.compareTo(clearToken) != 0) {

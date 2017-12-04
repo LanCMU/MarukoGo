@@ -22,7 +22,7 @@ $(function () {
 
     function loadHealths() {
         jQuery.ajax({
-            url: "/api/users/" + userId + "/healths?offset=" + healthOffset + "&healthCount=" + healthCount,
+            url: "/api/users/" + userId + "/healths?offset=" + healthOffset + "&count=" + healthCount,
             type: "GET",
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", token);
@@ -55,8 +55,8 @@ $(function () {
                 $("#hasHealth").text("Failed.");
                 $("#previousHealth").hide();
                 $("#nextHealth").hide();
-                $("#noteHealth").find(".cloned").remove();
-                $("#noteHealth").hide();
+                $("#healthTable").find(".cloned").remove();
+                $("#healthTable").hide();
             })
     }
 
@@ -98,11 +98,14 @@ $(function () {
         newHealthHaveExercise = $("#addHealthWindowHaveExercise").val() == "true";
         newHealthThreeMeals = $("#addHealthWindowThreeMeals").val().split("\n");
         newHealthWeight = $("#addHealthWindowWeight").val();
+        if (newHealthWeight == '') {
+            newHealthWeight = '0';
+        }
         newHealthMoodDiary = $("#addHealthWindowMoodDiary").val();
 
         if ($('#addHealthWindowDatetimepicker').data("DateTimePicker").date() != null) {
-            newHealthRecordTime = $('#addHealthDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
-            queryDate = JSON.stringify({
+            newHealthRecordTime = $('#addHealthWindowDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
+            queryData = JSON.stringify({
                 recordTime: newHealthRecordTime,
                 goToBedOnTime: newHealthGoToBedOnTime,
                 wakeUpOnTime: newHealthWakeUpOnTime,
@@ -121,14 +124,14 @@ $(function () {
             url: "/api/users/" + userId + "/healths",
             type: "POST",
             dataType: "json",
-            data: queryDate,
+            data: queryData,
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", token);
             },
             contentType: "application/json; charset=utf-8"
 
         }).done(function (data) {
-            addHealthToTable(data.content);
+            // addHealthToTable(data.content);
 
             bindEditHealth();
             bindDeleteHealth();
@@ -136,6 +139,11 @@ $(function () {
             $("#addHealthWindow").modal('hide');
             clearAddHealthWindowFields();
             alert("Health added successfully!");
+
+            loadHealths();
+        }).fail(function (jqXHR) {
+            responseTextJson = JSON.parse(jqXHR.responseText);
+            alert(responseTextJson.errorMessage);
         });
     });
 
@@ -167,12 +175,12 @@ $(function () {
     }
 
     function clearAddHealthWindowFields() {
-        $('#addHealthWindowDatetimepicker').data("DateTimePicker").clear;
-        $("#addHealthWindowGoToBedOnTime").val('');
-        $("#addHealthWindowWakeUpOnTime").val('');
+        $('#addHealthWindowDatetimepicker').data("DateTimePicker").clear();
+        $("#addHealthWindowGoToBedOnTime").val('true');
+        $("#addHealthWindowWakeUpOnTime").val('true');
 
-        $("#addHealthWindowHoursOfSleep").val('');
-        $("#addHealthWindowHaveExercise").val('');
+        $("#addHealthWindowHoursOfSleep").val('8');
+        $("#addHealthWindowHaveExercise").val('true');
         $("#addHealthWindowThreeMeals").val('');
         $("#addHealthWindowWeight").val('');
         $("#addHealthWindowMoodDiary").val('');
@@ -183,9 +191,9 @@ $(function () {
             var row = $(this).parent().parent();
             var name = row.find('#recordTime').text();
             if (confirm('Are you sure you want to delete this day\'s record: ' + name + '?')) {
-                calId = row.attr('id');
+                healthId = row.attr('id');
                 jQuery.ajax({
-                    url: "/api/healths/" + calId,
+                    url: "/api/healths/" + healthId,
                     type: "DELETE",
                     dataType: "json",
                     beforeSend: function (xhr) {
@@ -194,7 +202,9 @@ $(function () {
                     contentType: "application/json; charset=utf-8"
 
                 }).done(function (data) {
-                    row.remove();
+                    alert(name + ' health information is deleted successfully! We\'ll go back to the first page!');
+                    healthOffset = 0;
+                    loadHealths();
                 });
             }
         });
@@ -216,12 +226,12 @@ $(function () {
 
         $("#editHealthWindow").on('show.bs.modal', function () {
             $('#addHealthWindowDatetimepicker').data("DateTimePicker").date(new Date(recordTimeCol.text()));
-            if (addHealthGoToBedOnTimeCol.text() == 'Yes') {
+            if ($("#addHealthWindowGoToBedOnTime").text() == 'Yes') {
                 $("#editHealthGoToBedOnTime").val('true');
             } else {
                 $("#editHealthGoToBedOnTime").val('false');
             }
-            if (addHealthWakeUpOnTimeCol.text() == 'Yes') {
+            if ($("#addHealthWindowGoToBedOnTime").text() == 'Yes') {
                 $("#editHealthWakeUpOnTime").val('true');
             } else {
                 $("#editHealthWakeUpOnTime").val('false');
@@ -239,7 +249,7 @@ $(function () {
         editedHealthRecordTime = null;
         if ($('#editHealthDatetimepicker').data("DateTimePicker").date() != null) {
             editedHealthRecordTime = $('#editHealthDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
-            queryDate = JSON.stringify({
+            queryData = JSON.stringify({
                 recordTime: newHealthRecordTime,
                 goToBedOnTime: newHealthGoToBedOnTime,
                 wakeUpOnTime: newHealthWakeUpOnTime,
@@ -265,7 +275,7 @@ $(function () {
             url: "/api/healths/" + healthId,
             type: "PATCH",
             dataType: "json",
-            data: queryDate,
+            data: queryData,
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", token);
             },
@@ -300,5 +310,20 @@ $(function () {
             $("#editHealthWindow").modal('hide');
             alert("Health modified successfully!");
         });
+    });
+
+    $("#showHealthEntries").change(function () {
+        if ($("#showHealthEntries").val() == '20') {
+            healthCount = 20;
+        } else if ($("#showHealthEntries").val() == '50') {
+            healthCount = 50;
+        } else if ($("#showHealthEntries").val() == '100') {
+            healthCount = 100;
+        } else if ($("#showHealthEntries").val() == '200') {
+            healthCount = 200;
+        }
+
+        healthOffset = 0;
+        loadHealths();
     });
 })

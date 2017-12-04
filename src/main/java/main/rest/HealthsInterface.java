@@ -71,7 +71,7 @@ public class HealthsInterface {
                         item.getInteger("hoursOfSleep"),
                         item.getBoolean("haveExercise"),
                         (List<String>) item.get("threeMeals"),
-                        item.getDouble("weight"),
+                        ((Number) item.get("weight")).doubleValue(),
                         item.getString("moodDiary")
                 );
                 health.setId(item.getObjectId("_id").toString());
@@ -107,7 +107,7 @@ public class HealthsInterface {
                     item.getInteger("hoursOfSleep"),
                     item.getBoolean("haveExercise"),
                     (List<String>) item.get("threeMeals"),
-                    item.getDouble("weight"),
+                    ((Number) item.get("weight")).doubleValue(),
                     item.getString("moodDiary")
             );
             health.setId(item.getObjectId("_id").toString());

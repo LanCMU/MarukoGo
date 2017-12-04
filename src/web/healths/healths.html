@@ -80,10 +80,21 @@
                         <td id="weight"></td>
                         <td id="moodDiary"></td>
                         <td>
-                            <button type="button" class="btn btn-light editNote">Edit</button>
-                            <button type="button" class="btn btn-light deleteNote">Delete</button>
+                            <button type="button" class="btn btn-light editHealth">Edit</button>
+                            <button type="button" class="btn btn-light deleteHealth">Delete</button>
                         </td>
                     </tr>
+
+                    <div class="form-group">
+                        <label class="form-control-label">Show </label>
+                        <select id="showHealthEntries">
+                            <option id="show20HealthEntries" value="20">20</option>
+                            <option id="show50HealthEntries" value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                        </select>
+                        <label class="form-control-label"> Entries</label>
+                    </div>
                 </table>
             </table>
         </div>
@@ -189,10 +200,10 @@
                                 <input id="addHealthWindowMoodDiary" type="text" class="form-control">
                             </div>
 
-                            <button id="closeAddNoteWindow" type="button" class="btn btn-secondary"
+                            <button id="closeAddHealthWindow" type="button" class="btn btn-secondary"
                                     data-dismiss="modal">Close
                             </button>
-                            <button id="saveAddNoteWindow" type="button" style="background-color:#7386D5"
+                            <button id="saveAddHealthWindow" type="button" style="background-color:#7386D5"
                                     class="btn btn-primary">Save
                             </button>
                         </form>
@@ -314,9 +325,9 @@
 
         <nav aria-label="...">
             <ul class="pager">
-                <li id="previousNote"><a href="#">Previous</a></li>
-                <li id="nextNote"><a href="#">Next</a></li>
-                <span id="notePage"></span>
+                <li id="previousHealth"><a href="#">Previous</a></li>
+                <li id="nextHealth"><a href="#">Next</a></li>
+                <span id="healthPage"></span>
             </ul>
         </nav>
     </div>

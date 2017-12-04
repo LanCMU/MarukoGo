@@ -217,8 +217,7 @@ public class UsersInterface {
             throw e;
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
-                    e.getMessage());
-//                    "Internal Server Error!");
+                    "Internal Server Error!");
         }
     }
 
@@ -649,7 +648,7 @@ public class UsersInterface {
                     doc.getInteger("hoursOfSleep"),
                     doc.getBoolean("haveExercise"),
                     (List<String>) doc.get("threeMeals"),
-                    doc.getDouble("weight"),
+                    ((Number) doc.get("weight")).doubleValue(),
                     doc.getString("moodDiary")
             );
             health.setId(doc.getObjectId("_id").toString());
