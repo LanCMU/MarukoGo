@@ -1,7 +1,8 @@
 $(function () {
     var token = localStorage.getItem("token");
     var userId = localStorage.getItem("userId");
-//  var isAdmin = localStorage.getItem("isAdmin");
+    var firstName = localStorage.getItem("firstName");
+    var isPrime = localStorage.getItem("isPrime");
 
     var count = 20;
     var offset = 0;
@@ -16,6 +17,13 @@ $(function () {
     var eventLocationCol;
     var eventColorCol;
     var eventLevelCol;
+
+    $('#helloName').text('Hello, ' + firstName);
+    if (isPrime == "true") {
+        $('#helloPrime').text("PRIME user!");
+    } else {
+        $('#helloPrime').text("FREE user!");
+    }
 
     $("#myEvents").hide();
 

@@ -1,6 +1,8 @@
 $(function () {
     var token = localStorage.getItem("token");
     var userId = localStorage.getItem("userId");
+    var firstName = localStorage.getItem("firstName");
+    var isPrime = localStorage.getItem("isPrime");
 
     var healthOffset = 0;
     var healthCount = 20;
@@ -16,6 +18,13 @@ $(function () {
     var threeMealsCol;
     var weightCol;
     var moodDiaryCol;
+
+    $('#helloName').text('Hello, ' + firstName);
+    if (isPrime == "true") {
+        $('#helloPrime').text("PRIME user!");
+    } else {
+        $('#helloPrime').text("FREE user!");
+    }
 
     loadHealths();
 

@@ -1,6 +1,8 @@
 $(function () {
     var token = localStorage.getItem("token");
     var userId = localStorage.getItem("userId");
+    var firstName = localStorage.getItem("firstName");
+    var isPrime = localStorage.getItem("isPrime");
 
     var noteOffset = 0;
     var noteCount = 20;
@@ -14,6 +16,13 @@ $(function () {
     var noteTypeCol;
     var isPinnedCol;
     var remindTimeCol;
+
+    $('#helloName').text('Hello, ' + firstName);
+    if (isPrime == "true") {
+        $('#helloPrime').text("PRIME user!");
+    } else {
+        $('#helloPrime').text("FREE user!");
+    }
 
     loadNotes();
 

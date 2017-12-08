@@ -2,6 +2,7 @@ $(function () {
     var token = null;
     var userId = null;
     var isPrime = null;
+    var firstName = null;
     var offset = 0;
     var total = -1;
 
@@ -45,9 +46,11 @@ $(function () {
                 token = data.content.token;
                 userId = data.content.userId;
                 isPrime = data.content.isPrime;
+                firstName = data.content.firstName;
                 localStorage.setItem("token", token);
                 localStorage.setItem("userId", userId);
                 localStorage.setItem("isPrime", isPrime);
+                localStorage.setItem("firstName", firstName);
                 location.href = "calendar/calendar.html"
             })
             .fail(function (data) {

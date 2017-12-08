@@ -1,6 +1,7 @@
 $(function () {
     var token = localStorage.getItem("token");
     var userId = localStorage.getItem("userId");
+    var firstName = localStorage.getItem("firstName");
     var isPrime = localStorage.getItem("isPrime");
 
     var todoId;
@@ -12,12 +13,11 @@ $(function () {
     var isFinishedCol;
 
 
+    $('#helloName').text('Hello, ' + firstName);
     if (isPrime == "true") {
-        alert("is prime");
-        loadTodos();
+        $('#helloPrime').text("PRIME user!");
     } else {
-        alert("not prime");
-        // hide elements, and show message for user
+        $('#helloPrime').text("FREE user!");
     }
 
     function loadTodos() {
