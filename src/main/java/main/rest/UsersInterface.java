@@ -11,10 +11,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import main.exceptions.*;
 import main.helpers.*;
-import main.models.Calendar;
-import main.models.Health;
-import main.models.Note;
-import main.models.User;
+import main.models.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
@@ -39,6 +36,8 @@ public class UsersInterface {
     private MongoCollection<Document> calendarCollection;
     private MongoCollection<Document> noteCollection;
     private MongoCollection<Document> healthCollection;
+    private MongoCollection<Document> todoCollection;
+
     private ObjectWriter ow;
 
 
@@ -50,6 +49,7 @@ public class UsersInterface {
         this.calendarCollection = database.getCollection("calendars");
         this.noteCollection = database.getCollection("notes");
         this.healthCollection = database.getCollection("healths");
+        this.todoCollection = database.getCollection("todos");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
     }
 
@@ -71,7 +71,8 @@ public class UsersInterface {
                         item.getString("userName"),
                         item.getString("phoneNumber"),
                         item.getString("emailAddress"),
-                        item.getString("profilePhotoURL")
+                        item.getString("profilePhotoURL"),
+                        item.getBoolean("isPrime")
                 );
                 user.setId(item.getObjectId("_id").toString());
                 userList.add(user);
@@ -102,7 +103,8 @@ public class UsersInterface {
                     item.getString("userName"),
                     item.getString("phoneNumber"),
                     item.getString("emailAddress"),
-                    item.getString("profilePhotoURL")
+                    item.getString("profilePhotoURL"),
+                    item.getBoolean("isPrime")
             );
             user.setId(item.getObjectId("_id").toString());
             return new APPResponse(user);
@@ -211,6 +213,56 @@ public class UsersInterface {
                 healthList.add(health);
             }
             return new APPListResponse(healthList, resultCount, offset, healthList.size());
+        } catch (APPBadRequestException e) {
+            throw e;
+        } catch (APPUnauthorizedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+    }
+
+    @GET
+    @Path("{id}/todos")
+    @Produces({MediaType.APPLICATION_JSON})
+    public APPListResponse getTodosForUser(@Context HttpHeaders headers, @PathParam("id") String id,
+                                             @DefaultValue("_id") @QueryParam("sort") String sortArg,
+                                             @DefaultValue("20") @QueryParam("count") int count,
+                                             @DefaultValue("0") @QueryParam("offset") int offset) {
+
+        ArrayList<Todo> todoList = new ArrayList<Todo>();
+
+        BasicDBObject sortParams = new BasicDBObject();
+        List<String> sortList = Arrays.asList(sortArg.split(","));
+        sortList.forEach(sortItem -> {
+            if (sortItem.startsWith("-")) {
+                sortParams.put(sortItem.substring(1, sortItem.length()), -1); // Descending order.
+            } else {
+                sortParams.put(sortItem, 1); // Ascending order.
+            }
+        });
+
+        try {
+            Util.checkAuthentication(headers, id);
+            BasicDBObject query = new BasicDBObject();
+            query.put("userId", id);
+
+            long resultCount = todoCollection.count(query);
+            FindIterable<Document> results = todoCollection.find(query).sort(sortParams).skip(offset).limit(count);
+            for (Document item : results) {
+                Todo todo = new Todo(
+                        item.getString("userId"),
+                        item.getString("todoCategory"),
+                        item.getString("todoContent"),
+                        item.getBoolean("isImportant"),
+                        Util.getStringFromDate(item, "dueDate"),
+                        item.getBoolean("isFinished")
+                );
+                todo.setId(item.getObjectId("_id").toString());
+                todoList.add(todo);
+            }
+            return new APPListResponse(todoList, resultCount, offset, todoList.size());
         } catch (APPBadRequestException e) {
             throw e;
         } catch (APPUnauthorizedException e) {
@@ -660,6 +712,128 @@ public class UsersInterface {
     }
 
     @POST
+    @Path("{id}/todos")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public APPResponse createTodo(@Context HttpHeaders headers, @PathParam("id") String id, Object request) {
+        try {
+            Util.checkAuthentication(headers, id);
+        } catch (APPUnauthorizedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+
+        JSONObject json = null;
+        try {
+            json = new JSONObject(ow.writeValueAsString(request));
+        } catch (JsonProcessingException e) {
+            throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
+        }
+
+        if (json.has("userId")) {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "You should not pass User Id!");
+        }
+
+        Document doc = new Document("userId", id);
+
+        // share Id
+        if (json.has("shareId")) {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "You should not pass Share Id!");
+        }
+
+        Document docShare = new Document("shareId", id);
+
+        // Todos' category is optional.
+        if (json.has("todoCategory")) {
+            try {
+                List<String> todoCategoryList = new ArrayList<String>();
+                JSONArray todoCategoryArray = json.getJSONArray("todoCategory");
+                for (int i = 0; i < todoCategoryArray.length(); i++) {
+                    todoCategoryList.add(todoCategoryArray.getString(i));
+                }
+                doc.append("todoCategory", todoCategoryList);
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Todo Category!");
+            }
+        }
+
+        // Todos' Content is required.
+        if (json.has("todoContent")) {
+            try {
+                doc.append("todoContent", json.getString("todoContent"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Todo Content!");
+            }
+        } else {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "Missing Todo Content!");
+        }
+
+        // isImportant is optional. Default value is false (not important).
+        boolean isImportant = false;
+        if (json.has("isImportant")) {
+            try {
+                isImportant = json.getBoolean("isImportant");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid isImportant Value!");
+            }
+        }
+        doc.append("isImportant", isImportant);
+
+        // Due date is required.
+        if (json.has("dueDate")) {
+            try {
+                doc.append("dueDate", Util.getDateFromString(json, "dueDate"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid dueDate!");
+            } catch (ParseException e) {
+                throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                        "Due Date should be " + Util.DATE_FORMAT);
+            }
+        } else {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "Missing Due Date!");
+        }
+
+        // isFinished is optional. Default value is false (haven't finished).
+        boolean isFinished = false;
+        if (json.has("isFinished")) {
+            try {
+                isFinished = json.getBoolean("isFinished");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid isFinished Value!");
+            }
+        }
+        doc.append("isFinished", isFinished);
+
+        try {
+            todoCollection.insertOne(doc);
+            Todo todo = new Todo(
+                    doc.getString("userId"),
+                    doc.getString("todoCategory"),
+                    doc.getString("todoContent"),
+                    doc.getBoolean("isImportant"),
+                    Util.getStringFromDate(doc, "dueDate"),
+                    doc.getBoolean("isFinished")
+            );
+            todo.setId(doc.getObjectId("_id").toString());
+            return new APPResponse(todo);
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+    }
+
+    @POST
     @Path("{id}/calendars")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
@@ -840,6 +1014,8 @@ public class UsersInterface {
         calendarQuery.put("userId", id);
         BasicDBObject healthQuery = new BasicDBObject();
         healthQuery.put("userId", id);
+        BasicDBObject todoQuery = new BasicDBObject();
+        todoQuery.put("userId", id);
 
         DeleteResult deleteResult;
         try {
@@ -853,6 +1029,9 @@ public class UsersInterface {
 
             // Deletes all the healths owned by the user.
             healthCollection.deleteMany(healthQuery);
+
+            // Deletes all the todos owned by the user.
+            todoCollection.deleteMany(todoQuery);
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                     "Internal Server Error!");

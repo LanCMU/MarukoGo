@@ -1,7 +1,6 @@
 $(function () {
     var token = localStorage.getItem("token");
     var userId = localStorage.getItem("userId");
-    // var isAdmin = localStorage.getItem("isAdmin");
 
     var healthOffset = 0;
     var healthCount = 20;

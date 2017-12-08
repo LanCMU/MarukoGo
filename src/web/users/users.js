@@ -1,93 +1,22 @@
 $(function () {
     var token = localStorage.getItem("token");
     var userId = localStorage.getItem("userId");
-    // var isAdmin = localStorage.getItem("isAdmin");
 
-    var noteOffset = 0;
-    var noteCount = 20;
-    var noteTotal = -1;
-    var noteSort = "-_id";
-
-    var noteId;
-    var noteRow;
-    var noteCaptionCol;
-    var noteContentCol;
-    var noteTypeCol;
-    var isPinnedCol;
-    var remindTimeCol;
-
-    loadNotes();
-
-    function loadNotes() {
-        jQuery.ajax({
-            url: "/api/users/" + userId + "/notes?offset=" + noteOffset + "&count=" + noteCount + "&sort=" + noteSort,
-            type: "GET",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Authorization", token);
-            }
-        })
-            .done(function (data) {
-                $("#noteRow").hide();
-                $("#previousNote").show();
-                $("#nextNote").show();
-                $("#noteTable").find(".cloned").remove();
-                $("#noteTable").show();
-
-                noteTotal = data.metadata.total;
-                $("#notePage").text("Page " + Math.floor(noteOffset / noteCount + 1) + " of " + (Math.ceil(noteTotal / noteCount)));
-
-                if (data.content.length == 0) {
-                    $("#hasNote").text("Sorry, you don't have notes.");
-                } else {
-                    $("#hasNote").text("");
-                    data.content.forEach(function (item) {
-                        addNoteToTable(item);
-                    });
-                }
-
-                bindEditNote();
-                bindDeleteNote();
-            })
-            .fail(function (data) {
-                $("#hasNote").text("Failed.");
-                $("#previousNote").hide();
-                $("#nextNote").hide();
-                $("#noteTable").find(".cloned").remove();
-                $("#noteTable").hide();
-            })
-    }
-
-    $('#sidebarCollapse').click(function () {
-        $('#sidebar').toggleClass('active');
+    $("#addUser").click(function () {
+        $("#addUserWindow").modal('show');
     });
 
 
-    $("#addNote").click(function () {
-        $("#addNoteWindow").modal('show');
-    });
 
 
-    // Get Notes.
-    $("#getnotes").click(function (e) {
-        e.preventDefault();
-        loadNotes();
-    });
 
-    $("#nextNote").click(function (e) {
-        e.preventDefault();
-        if (noteOffset + noteCount < noteTotal) {
-            noteOffset = noteOffset + noteCount;
-            loadNotes();
-        }
-    })
 
-    $("#previousNote").click(function (e) {
-        e.preventDefault();
-        if (noteOffset - noteCount >= 0) {
-            noteOffset = noteOffset - noteCount;
-            loadNotes();
-        }
-    })
+
+
+
+
+
+
 
     $("#saveAddNoteWindow").click(function () {
         newNoteName = $("#addNoteWindowCaption").val();

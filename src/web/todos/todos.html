@@ -5,85 +5,270 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Weight</title>
+    <title>Todos</title>
 
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!-- Our Custom CSS -->
     <link rel="stylesheet" href="style.css">
+
+    <!--Bootstrap 3 Datepicker-->
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.slim.js"></script>
+    <script type="text/javascript" src="/bower_components/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css"/>
 </head>
+
 <body>
-
-
-
 <div class="wrapper">
     <!-- Sidebar Holder -->
     <nav id="sidebar">
         <div class="sidebar-header">
-            <h3>Maruko Go </h3>
+            <h3>Maruko Go</h3>
         </div>
 
         <ul class="list-unstyled components">
             <p>Organize your time</p>
-
-
-            <li>
-                <a href="../calendar/calendar.html">CALENDAR</a>
-            </li>
-
-            <li>
-                <a href="../healths/healths.html">HEALTHS</a>
-            </li>
-            <li>
-                <a href="../notes/notes.html">NOTES</a>
-            </li>
-            <li>
-                <a href="../todos/todos.html">TODOS</a>
-            </li>
-            <li>
-                <a href="../settings/settings.html">SETTINGS</a>
-            </li>
-            <li>
-                <a href="../index.html">SIGN OUT</a>
-            </li>
+            <li><a href="../calendar/calendar.html">CALENDAR</a></li>
+            <li><a href="../healths/healths.html">HEALTHS</a></li>
+            <li><a href="../notes/notes.html">NOTES</a></li>
+            <li><a href="../todos/todos.html">TODOS</a></li>
+            <li><a href="../settings/settings.html">SETTINGS</a></li>
+            <li><a href="../index.html">SIGN OUT</a></li>
         </ul>
     </nav>
 
     <!-- Page Content Holder -->
     <div id="content">
-
         <nav class="navbar navbar-default">
             <div class="container-fluid">
-
                 <div class="navbar-header">
                     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
-                        <i class="glyphicon glyphicon-align-right"></i>
+                        <i class="glyphicon glyphicon-align-left"></i>
                         <span>Don't show navigate bar</span>
                     </button>
-                </div>
-
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav navbar-right">
-
-                    </ul>
                 </div>
             </div>
         </nav>
 
-        <h2>My Weight Controller</h2>
-        <p style="color: white">djfirjbm;ermblmbkvnfbne;rm;ber;nb;tenblmbkvnfb;nb;tblmbkvnfbne;rm;ber;nb;t;btdjfirjeifprejv;v;me;rnbklrem;bme;mb;m;embre;mb;met;mb;rtmb;lrtm;bm;</p>
+        <div class="container">
+            <table class="table table-striped">
+                <h4>My Todos</h4>
+                </br>
+                <table id="todoTable" class="table table-hover table-bordered">
+                    <tr align="center">
+                        <td><strong>Todo Category</strong></td>
+                        <td><strong>Todo Content</strong></td>
+                        <td><strong>Is Important?</strong></td>
+                        <td><strong>Due Date</strong></td>
+                        <td><strong>is Finished?</strong></td>
+                    </tr>
+                    <button type="button" id="addTodo">Add New Todos</button>
 
+                    <!-- Split button -->
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default">Sort by</button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" id="todoCreationTimeAsc">Creation Time (Ascending)</a></li>
+                            <li><a href="#" id="todoCreationTimeDesc">Creation Time (Descending)</a></li>
+                            <li><a href="#" id="todoImportantAsc">Is Important? (Yes -> No)</a></li>
+                            <li><a href="#" id="todoImportantDesc">Is Important? (No -> Yes)</a></li>
+                            <li><a href="#" id="todoDueDateAsc">Due Date (Ascending)</a></li>
+                            <li><a href="#" id="todoDueDateDesc">Due Date (Descending)</a></li>
+                            <li><a href="#" id="todoIsFinishedAsc">Is Finished? (Yes -> No)</a></li>
+                            <li><a href="#" id="todoIsFinishedDesc">Is Finished? (No -> Yes)</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#" id="todoSortDefaultWay">Default</a></li>
+                        </ul>
+                    </div>
+
+                    <tr align="center" id="todoRow">
+                        <td id="Todo Category"></td>
+                        <td id="Todo Content"></td>
+                        <td id="isImportant"></td>
+                        <td id="dueDate"></td>
+                        <td id="isFinished"></td>
+                        <td>
+                            <button type="button" class="btn btn-light editTodo">Edit</button>
+                            <button type="button" class="btn btn-light deleteTode">Delete</button>
+                        </td>
+                    </tr>
+                </table>
+            </table>
+        </div>
+
+        <!--pop out window of add-->
+
+        <div class="modal fade" id="addTodoWindow" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Add a Todo</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label class="form-control-label">Todo Category</label>
+                                <select id="addTodoWindowCategory">
+                                    <option value="Study">Study</option>
+                                    <option value="Work">Work</option>
+                                    <option value="Life">Personal Life</option>
+                                    <option value="Work">Hobbies</option>
+                                    <option value="Work">Family</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Todo Content</label>
+                                <input id="addTodoWindowContent" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Is Important?</label>
+                                <select id="addTodoWindowIsImportant">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Due Date</label>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class='col-sm-6'>
+                                            <div class="form-group">
+                                                <div class='input-group date' id='addTodoWindowDatetimepicker'>
+                                                    <input type='text' class="form-control"/>
+                                                    <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                $('#addTodoWindowDatetimepicker').datetimepicker();
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Is Finished?</label>
+                                <select id="addTodoWindowIsFinished">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <button id="closeAddTodoWindow" type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Close
+                            </button>
+                            <button id="saveAddTodoWindow" type="button" style="background-color:#7386D5"
+                                    class="btn btn-primary">Save
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--pop out window of editing-->
+        <div class="modal fade" id="editTodoWindow" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Edit the Todo</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label class="form-control-label">Todo Category</label>
+                                <select id="editTodoWindowCategory">
+                                    <option value="Study">Study</option>
+                                    <option value="Work">Work</option>
+                                    <option value="PersonalLife">Personal Life</option>
+                                    <option value="Hobbies">Hobbies</option>
+                                    <option value="Family">Family</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Todo Content</label>
+                                <input id="editTodoWindowContent" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Is Important?</label>
+                                <select id="editTodoWindowIsImportant">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Due Date</label>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class='col-sm-6'>
+                                            <div class="form-group">
+                                                <div class='input-group date' id='editTodoWindowDatetimepicker'>
+                                                    <input type='text' class="form-control"/>
+                                                    <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                $('#editTodoWindowDatetimepicker').datetimepicker();
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Is Finished?</label>
+                                <select id="editTodoWindowIsFinished">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+
+                            <button id="closeEditTodoWindow" type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Close
+                            </button>
+                            <button id="saveEditTodoWindow" type="button" style="background-color:#7386D5"
+                                    class="btn btn-primary">Save
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-
-
 
 
 <!-- jQuery CDN -->
 <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 <!-- Bootstrap Js CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="todos.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -92,5 +277,17 @@
         });
     });
 </script>
+
+<!--Bootstrap 3 Datepicker-->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css"/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+
 </body>
 </html>

@@ -1,7 +1,6 @@
+var aesjs = require('aes-js');
 var MongoClient = require('mongodb').MongoClient;
 var dbConnection = null;
-var lockCount = 0;
-
 
 function getDbConnection(callback) {
     MongoClient.connect("mongodb://localhost/maruko", function (err, db) {
@@ -38,7 +37,8 @@ function addUser() {
             "phoneNumber": "729740375",
             "emailAddress": "liulanm518@gmail.com",
             "password": "6zHCVMaK3eCH5Z0R9GDwbQ==",  // pangchao
-            "profilePhotoURL": "https://goo.gl/UDjm25"
+            "profilePhotoURL": "https://goo.gl/UDjm25",
+            "isPrime": false
         },
         {
             "firstName": "Hechao",
@@ -47,7 +47,8 @@ function addUser() {
             "phoneNumber": "4124787376",
             "emailAddress": "hechaol@outlook.com",
             "password": "06pEQujcQHqtiTTvEND20A==",  // bennan
-            "profilePhotoURL": "https://goo.gl/oiKQ9M"
+            "profilePhotoURL": "https://goo.gl/oiKQ9M",
+            "isPrime": false
         },
         {
             "firstName": "Chandler",
@@ -56,7 +57,8 @@ function addUser() {
             "phoneNumber": "6505262411",
             "emailAddress": "chanandlerbong@gmail.com",
             "password": "6ZGCXooPkxCGYhknU1JPng==",  // qc123
-            "profilePhotoURL": "https://goo.gl/7q7qD2"
+            "profilePhotoURL": "https://goo.gl/7q7qD2",
+            "isPrime": true
         },
         {
             "firstName": "Miaozhen",
@@ -65,7 +67,8 @@ function addUser() {
             "phoneNumber": "6692460962",
             "emailAddress": "miaozhenzhang666@gmail.com",
             "password": "dI0i5BfYUtPMvYkJ//XOhg==",  // zmz1010
-            "profilePhotoURL": "https://goo.gl/UDjm25"
+            "profilePhotoURL": "https://goo.gl/UDjm25",
+            "isPrime": true
         },
         {
             "firstName": "Qian",
@@ -74,52 +77,57 @@ function addUser() {
             "phoneNumber": "6505262411",
             "emailAddress": "happyqianchen@gmail.com",
             "password": "6ZGCXooPkxCGYhknU1JPng==",  // qc123
-            "profilePhotoURL": "https://goo.gl/7q7qD2"
+            "profilePhotoURL": "https://goo.gl/7q7qD2",
+            "isPrime": false
         }
     ];
     var users = dbConnection.collection('users');
 
-    //add calendars, events, healths
+    // add calendars, notes, healths, todos
     users.insertOne(u[0], function (err, doc) {
         if (err) {
-            console.log("Could not add user 1.");
-        }
-        else {
-            addCalendarToUser(doc.ops[0]._id.toString(), 5);
-            addNotesToUser(doc.ops[0]._id.toString(), 100);
-            addHealthsToUser(doc.ops[0]._id.toString(), 100);
-        }
-    })
-    users.insertOne(u[1], function (err, doc) {
-        if (err) {
-            console.log("Could not add user 2.");
-        }
-        else {
-            addCalendarToUser(doc.ops[0]._id.toString(), 5);
-            addNotesToUser(doc.ops[0]._id.toString(), 110);
-            addHealthsToUser(doc.ops[0]._id.toString(), 110);
-        }
-    })
-    users.insertOne(u[2], function (err, doc) {
-        if (err) {
-            console.log("Could not add user 3.");
-        }
-        else {
-            addCalendarToUser(doc.ops[0]._id.toString(), 5);
-            addNotesToUser(doc.ops[0]._id.toString(), 120);
-            addHealthsToUser(doc.ops[0]._id.toString(), 120);
-        }
-    })
-    users.insertOne(u[3], function (err, doc) {
-        if (err) {
-            console.log("Could not add user 4.");
-        }
-        else {
-            addCalendarToUser(doc.ops[0]._id.toString(), 5);
-            addNotesToUser(doc.ops[0]._id.toString(), 110);
-            addHealthsToUser(doc.ops[0]._id.toString(), 110);
-        }
-    })
+                console.log("Could not add user 1.");
+            }
+            else {
+                addCalendarToUser(doc.ops[0]._id.toString(), 5);
+                addNotesToUser(doc.ops[0]._id.toString(), 100);
+                addHealthsToUser(doc.ops[0]._id.toString(), 100);
+                addTodosToUser(doc.ops[0]._id.toString(), 10);
+            }
+        })
+        users.insertOne(u[1], function (err, doc) {
+            if (err) {
+                console.log("Could not add user 2.");
+            }
+            else {
+                addCalendarToUser(doc.ops[0]._id.toString(), 5);
+                addNotesToUser(doc.ops[0]._id.toString(), 110);
+                addHealthsToUser(doc.ops[0]._id.toString(), 110);
+                addTodosToUser(doc.ops[0]._id.toString(), 20);
+            }
+        })
+        users.insertOne(u[2], function (err, doc) {
+            if (err) {
+                console.log("Could not add user 3.");
+            }
+            else {
+                addCalendarToUser(doc.ops[0]._id.toString(), 5);
+                addNotesToUser(doc.ops[0]._id.toString(), 120);
+                addHealthsToUser(doc.ops[0]._id.toString(), 120);
+                addTodosToUser(doc.ops[0]._id.toString(), 30);
+            }
+        })
+        users.insertOne(u[3], function (err, doc) {
+            if (err) {
+                console.log("Could not add user 4.");
+            }
+            else {
+                addCalendarToUser(doc.ops[0]._id.toString(), 5);
+                addNotesToUser(doc.ops[0]._id.toString(), 110);
+                addHealthsToUser(doc.ops[0]._id.toString(), 110);
+                addTodosToUser(doc.ops[0]._id.toString(), 40);
+            }
+        })
     users.insertOne(u[4], function (err, doc) {
         if (err) {
             console.log("Could not add user 5.");
@@ -128,6 +136,7 @@ function addUser() {
             addCalendarToUser(doc.ops[0]._id.toString(), 5);
             addNotesToUser(doc.ops[0]._id.toString(), 120);
             addHealthsToUser(doc.ops[0]._id.toString(), 120);
+            addTodosToUser(doc.ops[0]._id.toString(), 50);
         }
     })
 }
@@ -319,6 +328,59 @@ function addHealthsToUser(userId, count) {
         healths.insertOne(health);
     })
 }
+
+
+//generate todos list
+
+todoCategoryList = ['Study', 'Work', 'Life', 'Hobbies', 'Family', 'Others'];
+todoContentList = {};
+todoContentList["Study"] = ['APP project', 'SEM report', 'PDV task1', 'FSM outline1'];
+todoContentList["Work"] = ['one on one meeting with the manager', 'take event photos',
+    'project presentation', 'Ask for customers\' feedback', 'create the new website',
+    'discuss the requirements'];
+todoContentList["Life"] = ['go to the theater', 'go to the concert', 'learn drawing', 'go to the park',
+    'go to the gym', 'play football'];
+todoContentList["Hobbies"] = ['play piano', 'play violin', 'play tennis', 'reading',
+    'listening to music', 'solve maths problems'];
+todoContentList["Family"] = ['watch a movie with mum', 'cook for dad', 'travel with parents',
+    'have dinner with my cousin'];
+todoContentList["Others"] = ['buy groceries', 'take online courses', 'meet with my friends',
+    'go travelling', 'play tennis'];
+// dueDate range: 2017-01-01 00:00 to 3017-01-01 00:00.
+startDueDate = 1485903600000;
+endDueDate = 33042812400000;
+
+function addTodosToUser(userId, count) {
+    sequence = Array(count);
+    console.log("sequence", sequence);
+    var t = [];
+    for (i = 0; i < count; i++) {
+        console.log("Trying")
+
+        var todoCategory = todoCategoryList[Math.floor(Math.random() * todoCategoryList.length)];
+        var todoContent = todoContentList[todoCategory] [Math.floor(Math.random() * todoContentList[todoCategory].length)]
+        var isImportant = Math.random() >= 0.5;
+        var dueDate = Number(Math.floor((Math.random()
+            * (endDueDate - startDueDate) + startDueDate) / 100000) * 100000);
+        var isFinished = Math.random() >= 0.5;
+
+        t.push({
+            userId: userId,
+            todoCategory: todoCategory,
+            todoContent: todoContent,
+            isImportant: isImportant,
+            dueDate: new Date(dueDate),
+            isFinished: isFinished
+        });
+    }
+
+    t.forEach(function (todo) {
+        var todos = dbConnection.collection('todos');
+        todos.insertOne(todo);
+    })
+}
+
+
 
 
 

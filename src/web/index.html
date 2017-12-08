@@ -55,9 +55,74 @@
                     </form>
                     <div>
                         <h5>Don't have an account?</h5>
-                        <a>Join Now!</a>
+                        <a id = "addUser">Join Now!</a>
                     </div>
                     <h6 id="greeting"></h6>
+                </div>
+            </div>
+
+            <!--pop out window of add New Users-->
+            <div class="modal fade" id="addUserWindow" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Join now and Organize your days with us!</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="addFirstName" class="sr-only">First Name</label>
+                                    <input type="text" id="addFirstName" class="form-control" placeholder="First Name" required autofocus>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addLastName" class="sr-only">Last Name</label>
+                                    <input type="text" id="addLastName" class="form-control" placeholder="Last Name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addUserName" class="sr-only">User Name</label>
+                                    <input type="text" id="addUserName" class="form-control" placeholder="User Name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addPhoneNumber" class="sr-only">Phone Number</label>
+                                    <input type="tel" id="addPhoneNumber" class="form-control" placeholder="Phone Number">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addEmailAddress" class="sr-only">Email Address</label>
+                                    <input type="email" id="addEmailAddress" class="form-control" placeholder="Email Address" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addPassword" class="sr-only">Password</label>
+                                    <input type="password" id="addPassword" class="form-control" placeholder="Password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirmPassword" class="sr-only"> Please Confirm Your Password</label>
+                                    <input type="password" id="confirmPassword" class="form-control" placeholder="Please Confirm Your Password" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="addProfilePhoto" class="sr-only">Upload Your Profile Photo</label>
+                                    <input type="url" id="addProfilePhoto" class="form-control" placeholder="Please Put Your Profile Photo Link here">
+                                </div>
+                                <button id="closeAddUserWindow" type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Close
+                                </button>
+                                <button id="saveAddUserWindow" type="button" style="background-color:#7386D5"
+                                        class="btn btn-primary">Save
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 

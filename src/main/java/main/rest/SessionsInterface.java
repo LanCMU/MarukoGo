@@ -29,6 +29,7 @@ public class SessionsInterface {
     private MongoCollection<Document> noteCollection;
     private MongoCollection<Document> calendarCollection;
     private MongoCollection<Document> healthCollection;
+    private MongoCollection<Document> todoCollection;
     private ObjectWriter ow;
 
 
@@ -40,8 +41,8 @@ public class SessionsInterface {
         this.calendarCollection = database.getCollection("calendars");
         this.noteCollection = database.getCollection("notes");
         this.healthCollection = database.getCollection("healths");
+        this.todoCollection = database.getCollection("todos");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-
     }
 
     @GET
@@ -50,7 +51,6 @@ public class SessionsInterface {
 
         return new APPResponse();
     }
-
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
@@ -80,7 +80,8 @@ public class SessionsInterface {
                     item.getString("userName"),
                     item.getString("phoneNumber"),
                     item.getString("emailAddress"),
-                    item.getString("profilePhotoURL")
+                    item.getString("profilePhotoURL"),
+                    item.getBoolean("isPrime")
             );
             user.setId(item.getObjectId("_id").toString());
             APPResponse r = new APPResponse(new Token(user));
