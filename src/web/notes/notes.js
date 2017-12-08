@@ -1,7 +1,6 @@
 $(function () {
     var token = localStorage.getItem("token");
     var userId = localStorage.getItem("userId");
-    // var isAdmin = localStorage.getItem("isAdmin");
 
     var noteOffset = 0;
     var noteCount = 20;
