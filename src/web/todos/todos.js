@@ -7,7 +7,6 @@ $(function () {
     var todoOffset = 0;
     var todoCount = 20;
     var todoTotal = -1;
-    var todoSort = "-_id";
 
     var todoId;
     var todoRow;
@@ -21,11 +20,17 @@ $(function () {
     $('#helloName').text('Hello, ' + firstName);
     if (isPrime == "true") {
         $('#helloPrime').text("PRIME user!");
+        loadTodos();
     } else {
         $('#helloPrime').text("FREE user!");
-    }
+        $("#previousTodo").hide();
+        $("#nextTodo").hide();
+        $("#todoTable").hide();
+        $("#todoTable").hide();
+        $("#addTodo").hide();
+        $('#todoTitle').text("Sorry, the Todo function is only accessible to PRIME users! ");
 
-    loadTodos();
+    }
 
     function loadTodos() {
         jQuery.ajax({
@@ -101,6 +106,10 @@ $(function () {
     $("#saveAddTodoWindow").click(function () {
         newTodoCategory = $("#addTodoWindowTodoCategory").val();
         newTodoContent = $("#addTodoWindowTodoContent").val();
+        if (newTodoContent == "") {
+            alert("Please input Todo Content!");
+            return;
+        }
         newTodoisImportant = $("#addTodoWindowIsImportant").val() == "false";
         newTodoisFinished = $("#addTodoWindowIsFinished").val() == "false";
         if ($('#addTodoWindowDatetimepicker').data("DateTimePicker").date() != null) {
@@ -225,6 +234,10 @@ $(function () {
     $('#saveEditTodoWindow').click(function () {
         editedTodoCategory = $("#editTodoWindowTodoCategory").val();
         editedTodoContent = $("#editTodoWindowTodoContent").val();
+        if (editedTodoContent == "") {
+            alert("Please input Todo Content!");
+            return;
+        }
         editedTodoIsImportant = $("#editTodoWindowIsImportant").val() == "true";
         editedTodoDueDate = null;
         if ($('#editTodoWindowDatetimepicker').data("DateTimePicker").date() != null) {
@@ -234,7 +247,6 @@ $(function () {
             return;
         }
         editedTodoIsFinished = $("#editTodoWindowIsFinished").val() == "true";
-
 
         queryData = JSON.stringify({
             todoCategory: editedTodoCategory,
