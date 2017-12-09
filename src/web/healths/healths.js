@@ -26,6 +26,7 @@ $(function () {
         $('#helloPrime').text("FREE user!");
     }
 
+    clearAddHealthWindowFields();
     loadHealths();
 
     function loadHealths() {
@@ -233,40 +234,35 @@ $(function () {
         });
 
         $("#editHealthWindow").on('show.bs.modal', function () {
-            $('#addHealthWindowDatetimepicker').data("DateTimePicker").date(new Date(recordTimeCol.text()));
-            if ($("#addHealthWindowGoToBedOnTime").text() == 'Yes') {
-                $("#editHealthGoToBedOnTime").val('true');
+            $('#editHealthWindowDatetimepicker').data("DateTimePicker").date(new Date(recordTimeCol.text()));
+            if (goToBedOnTimeCol.text() == 'Yes') {
+                $("#editHealthWindowGoToBedOnTime").val('true');
             } else {
-                $("#editHealthGoToBedOnTime").val('false');
+                $("#editHealthWindowGoToBedOnTime").val('false');
             }
-            if ($("#addHealthWindowGoToBedOnTime").text() == 'Yes') {
-                $("#editHealthWakeUpOnTime").val('true');
+            if (wakeUpOnTimeCol.text() == 'Yes') {
+                $("#editHealthWindowWakeUpOnTime").val('true');
             } else {
-                $("#editHealthWakeUpOnTime").val('false');
+                $("#editHealthWindowWakeUpOnTime").val('false');
             }
-            $("#editHealthHoursOfSleep").val(hoursOfSleepCol.text());
-            $("#editHealthHaveExercise").val(haveExerciseCol.text());
-            $("#editHealthThreeMeals").val(threeMealsCol.text());
-            $("#editHealthWeight").val(weightCol.text());
-            $("#editHealthMoodDiary").val(moodDiaryCol.text());
+            $("#editHealthWindowHoursOfSleep").val(hoursOfSleepCol.text());
+            if (haveExerciseCol.text() == 'Yes') {
+                $("#editHealthHaveExercise").val('true');
+            } else {
+                $("#editHealthHaveExercise").val('false');
+            }
+            $("#editHealthWindowThreeMeals").val(threeMealsCol.text());
+            $("#editHealthWindowWeight").val(weightCol.text());
+            $("#editHealthWindowMoodDiary").val(moodDiaryCol.text());
             healthId = healthRow.attr('id');
         });
     }
 
     $('#saveEditHealthWindow').click(function () {
         editedHealthRecordTime = null;
-        if ($('#editHealthDatetimepicker').data("DateTimePicker").date() != null) {
-            editedHealthRecordTime = $('#editHealthDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
-            queryData = JSON.stringify({
-                recordTime: newHealthRecordTime,
-                goToBedOnTime: newHealthGoToBedOnTime,
-                wakeUpOnTime: newHealthWakeUpOnTime,
-                hoursOfSleep: newHealthHoursOfSleep,
-                haveExercise: newHealthHaveExercise,
-                threeMeals: newHealthThreeMeals,
-                weight: newHealthWeight,
-                moodDiary: newHealthMoodDiary
-            });
+        if ($('#editHealthWindowDatetimepicker').data("DateTimePicker").date() != null) {
+            editedHealthRecordTime = $('#editHealthWindowDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
+
         } else {
             alert("Please input Record Time!");
             return;
@@ -277,7 +273,18 @@ $(function () {
         editedHealthHaveExercise = $("#editHealthWindowHaveExercise").val() == "true";
         editedHealthThreeMeals = $("#editHealthWindowThreeMeals").val().split("\n");
         editedHealthWeight = $("#editHealthWindowWeight").val();
-        editedHealthMoodDiary = $("#editHealthMoodDiary").val();
+        editedHealthMoodDiary = $("#editHealthWindowMoodDiary").val();
+
+        queryData = JSON.stringify({
+            recordTime: editedHealthRecordTime,
+            goToBedOnTime: editedHealthGoToBedOnTime,
+            wakeUpOnTime: editedHealthWakeUpOnTime,
+            hoursOfSleep: editedHealthHoursOfSleep,
+            haveExercise: editedHealthHaveExercise,
+            threeMeals: editedHealthThreeMeals,
+            weight: editedHealthWeight,
+            moodDiary: editedHealthMoodDiary
+        });
 
         jQuery.ajax({
             url: "/api/healths/" + healthId,
