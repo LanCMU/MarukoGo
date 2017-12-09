@@ -19,7 +19,7 @@ $(function () {
     var eventLevelCol;
 
     $('#helloName').text('Hello, ' + firstName);
-    if (isPrime == "true") {
+    if (isPrime === "true") {
         $('#helloPrime').text("PRIME user!");
     } else {
         $('#helloPrime').text("FREE user!");
@@ -42,7 +42,7 @@ $(function () {
 
         }).done(function (data) {
             $("#myCalendar").show();
-            calendars = data.content;
+            var calendars = data.content;
             calendars.forEach(function (cal) {
                 $("#calendarRow").clone().prop("id", cal.id).appendTo("#calendarList");
                 $("#" + cal.id).find(".calendarName").text(cal.calendarName);
@@ -57,6 +57,7 @@ $(function () {
             bindCheckEvent();
             bindEditCalendar();
             bindDeleteCalendar();
+            bindShareCalendar();
         }).fail(function (data) {
             offset = 0;
             total = -1;
@@ -414,6 +415,59 @@ $(function () {
         $("#" + cal.id).find(".description").text(cal.description);
         $("#" + cal.id).find(".getEvent").attr("attr-cid", cal.id);
         $("#" + cal.id).show();
+    }
+
+    function bindShareCalendar() {
+        $(".shareCalendar").click(function(){
+            calRow = $(this).parent().parent();
+            $("#shareCalendarWindow").modal('show');
+        });
+
+        $("#shareCalendarWindow").on('show.bs.modal', function () {
+            $('#contacts').empty();
+            jQuery.ajax({
+                url: "/api/contacts/" + userId,
+                type: "GET",
+                dataType:"json",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader ("Authorization", token);
+                },
+                contentType: "application/json; charset=utf-8"
+            }).done(function(data){
+                var contacts = data.content;
+                contacts.forEach(function (con) {
+                    $('<input id = "' + con.id + '" type="checkbox" name="contact" value="' + con.email + '">  '
+                        + con.contactName + ': ' + con.email + '<br>').appendTo("#contacts");
+                });
+            });
+
+            $('#saveShareCalendar').click(function(){
+                var recipients = $('#contacts input:checked').map(function () {
+                    return this.value;
+                }).get();
+                var calId = calRow.attr("id");
+                var link = getShareLink(calId);
+                window.location.href = "mailto:"+recipients+"?subject=Checkout my awesome calendar!&body=" + link;
+                $("#shareCalendarWindow").modal('hide');
+            });
+        });
+    }
+
+    function getShareLink(calId) {
+        var link = null;
+        jQuery.ajax({
+            url: "/api/share/encrypt/" + calId,
+            type: "GET",
+            dataType:"json",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader ("Authorization", token);
+            },
+            contentType: "application/json; charset=utf-8",
+            async: false
+        }).done(function(data){
+            link = "http://localhost:8080/share/share.html?calendar=" + data.content;
+        });
+        return link;
     }
 });
 

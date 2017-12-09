@@ -70,6 +70,7 @@
                                 <button type="button" class="btn btn-light getEvent">Check Events</button>
                                 <button type="button" class="btn btn-light editCalendar">Edit</button>
                                 <button type="button" class="btn btn-light deleteCalendar" >Delete</button>
+                                <button type="button" class="btn btn-light shareCalendar" >Share</button>
                             </td>
                         </tr>
                     </table>
@@ -252,6 +253,35 @@
                             <div class="modal-footer">
                                 <button id = "closeEditEvent" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button id = "saveEditEvent" type="button" style="background-color:#7386D5" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="shareCalendarWindow" tabindex="-1" role="dialog"  aria-hidden="true">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Edit event</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label class="form-control-label">Contacts</label>
+                                        <div id="contacts">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button id = "closeShareCalendar" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button id = "saveShareCalendar" type="button" style="background-color:#7386D5" class="btn btn-primary">Share</button>
                             </div>
                         </div>
                     </div>
