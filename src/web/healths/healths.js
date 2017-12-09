@@ -187,7 +187,6 @@ $(function () {
         $('#addHealthWindowDatetimepicker').data("DateTimePicker").clear();
         $("#addHealthWindowGoToBedOnTime").val('true');
         $("#addHealthWindowWakeUpOnTime").val('true');
-
         $("#addHealthWindowHoursOfSleep").val('8');
         $("#addHealthWindowHaveExercise").val('true');
         $("#addHealthWindowThreeMeals").val('');

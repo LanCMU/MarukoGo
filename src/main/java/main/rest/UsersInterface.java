@@ -750,12 +750,7 @@ public class UsersInterface {
         // Todos' category is optional.
         if (json.has("todoCategory")) {
             try {
-                List<String> todoCategoryList = new ArrayList<String>();
-                JSONArray todoCategoryArray = json.getJSONArray("todoCategory");
-                for (int i = 0; i < todoCategoryArray.length(); i++) {
-                    todoCategoryList.add(todoCategoryArray.getString(i));
-                }
-                doc.append("todoCategory", todoCategoryList);
+                doc.append("todoCategory", json.getString("todoCategory"));
             } catch (JSONException e) {
                 throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
                         "Invalid Todo Category!");

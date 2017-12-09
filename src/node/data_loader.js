@@ -1,4 +1,3 @@
-var aesjs = require('aes-js');
 var MongoClient = require('mongodb').MongoClient;
 var dbConnection = null;
 
@@ -332,13 +331,13 @@ function addHealthsToUser(userId, count) {
 
 //generate todos list
 
-todoCategoryList = ['Study', 'Work', 'Life', 'Hobbies', 'Family', 'Others'];
+todoCategoryList = ['Study', 'Work', 'Personal Life', 'Hobbies', 'Family', 'Others'];
 todoContentList = {};
 todoContentList["Study"] = ['APP project', 'SEM report', 'PDV task1', 'FSM outline1'];
 todoContentList["Work"] = ['one on one meeting with the manager', 'take event photos',
     'project presentation', 'Ask for customers\' feedback', 'create the new website',
     'discuss the requirements'];
-todoContentList["Life"] = ['go to the theater', 'go to the concert', 'learn drawing', 'go to the park',
+todoContentList["Personal Life"] = ['go to the theater', 'go to the concert', 'learn drawing', 'go to the park',
     'go to the gym', 'play football'];
 todoContentList["Hobbies"] = ['play piano', 'play violin', 'play tennis', 'reading',
     'listening to music', 'solve maths problems'];

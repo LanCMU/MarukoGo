@@ -65,39 +65,20 @@
                         <td><strong>Is Important?</strong></td>
                         <td><strong>Due Date</strong></td>
                         <td><strong>is Finished?</strong></td>
+                        <td><strong>Operations</strong></td>
                     </tr>
                     <button type="button" id="addTodo">Add New Todos</button>
 
-                    <!-- Split button -->
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default">Sort by</button>
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                            <span class="caret"></span>
-                            <span class="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a href="#" id="todoCreationTimeAsc">Creation Time (Ascending)</a></li>
-                            <li><a href="#" id="todoCreationTimeDesc">Creation Time (Descending)</a></li>
-                            <li><a href="#" id="todoImportantAsc">Is Important? (Yes -> No)</a></li>
-                            <li><a href="#" id="todoImportantDesc">Is Important? (No -> Yes)</a></li>
-                            <li><a href="#" id="todoDueDateAsc">Due Date (Ascending)</a></li>
-                            <li><a href="#" id="todoDueDateDesc">Due Date (Descending)</a></li>
-                            <li><a href="#" id="todoIsFinishedAsc">Is Finished? (Yes -> No)</a></li>
-                            <li><a href="#" id="todoIsFinishedDesc">Is Finished? (No -> Yes)</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#" id="todoSortDefaultWay">Default</a></li>
-                        </ul>
-                    </div>
-
                     <tr align="center" id="todoRow">
-                        <td id="Todo Category"></td>
-                        <td id="Todo Content"></td>
+                        <td id="todoCategory"></td>
+                        <td id="todoContent"></td>
                         <td id="isImportant"></td>
                         <td id="dueDate"></td>
                         <td id="isFinished"></td>
                         <td>
                             <button type="button" class="btn btn-light editTodo">Edit</button>
-                            <button type="button" class="btn btn-light deleteTode">Delete</button>
+                            <button type="button" class="btn btn-light editTodo">Share</button>
+                            <button type="button" class="btn btn-light deleteTodo">Delete</button>
                         </td>
                     </tr>
                 </table>
@@ -121,10 +102,10 @@
                         <form>
                             <div class="form-group">
                                 <label class="form-control-label">Todo Category</label>
-                                <select id="addTodoWindowCategory">
+                                <select id="addTodoWindowTodoCategory">
                                     <option value="Study">Study</option>
                                     <option value="Work">Work</option>
-                                    <option value="Life">Personal Life</option>
+                                    <option value="Personal Life">Personal Life</option>
                                     <option value="Work">Hobbies</option>
                                     <option value="Work">Family</option>
                                     <option value="Others">Others</option>
@@ -132,7 +113,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Todo Content</label>
-                                <input id="addTodoWindowContent" type="text" class="form-control">
+                                <input id="addTodoWindowTodoContent" type="text" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Is Important?</label>
@@ -198,10 +179,10 @@
                         <form>
                             <div class="form-group">
                                 <label class="form-control-label">Todo Category</label>
-                                <select id="editTodoWindowCategory">
+                                <select id="editTodoWindowTodoCategory">
                                     <option value="Study">Study</option>
                                     <option value="Work">Work</option>
-                                    <option value="PersonalLife">Personal Life</option>
+                                    <option value="Personal Life">Personal Life</option>
                                     <option value="Hobbies">Hobbies</option>
                                     <option value="Family">Family</option>
                                     <option value="Others">Others</option>
@@ -209,7 +190,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Todo Content</label>
-                                <input id="editTodoWindowContent" type="text" class="form-control">
+                                <input id="editTodoWindowTodoContent" type="text" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Is Important?</label>
@@ -259,6 +240,14 @@
                 </div>
             </div>
         </div>
+
+        <nav aria-label="...">
+            <ul class="pager">
+                <li id="previousTodo"><a href="#">Previous</a></li>
+                <li id="nextTodo"><a href="#">Next</a></li>
+                <span id="todoPage"></span>
+            </ul>
+        </nav>
     </div>
 </div>
 
