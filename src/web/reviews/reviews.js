@@ -59,6 +59,7 @@ $(function () {
                     });
                 }
 
+                bindShareReview();
                 bindEditReview();
                 bindDeleteReview();
             })
@@ -159,6 +160,7 @@ $(function () {
 
         }).done(function (data) {
             // addReviewToTable(data.content);
+            bindShareReview();
             bindEditReview();
             bindDeleteReview();
 
@@ -210,6 +212,27 @@ $(function () {
         $('#addReviewWindowDatetimepicker').data("DateTimePicker").clear();
     }
 
+    function bindShareReview() {
+        $(".shareReview").click(function () {
+            reviewRow = $(this).parent().parent();
+            reviewId = reviewRow.attr('id');
+
+            jQuery.ajax({
+                url: "/api/shared_reviews/get_share_id/" + reviewId,
+                type: "GET",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", token);
+                }
+            }).done(function (data) {
+                var url = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+                prompt("Share review:", url + "/api/shared_reviews/" + data.content);
+            }).fail(function (jqXHR) {
+                responseTextJson = JSON.parse(jqXHR.responseText);
+                alert(responseTextJson.errorMessage);
+            })
+        });
+    }
+
     function bindDeleteReview() {
         $(".deleteReview").click(function () {
             var row = $(this).parent().parent();
@@ -255,7 +278,6 @@ $(function () {
             } else {
                 $('#editReviewWindowDatetimepicker').data("DateTimePicker").date(new Date(finishTimeCol.text()));
             }
-
 
             reviewId = reviewRow.attr('id');
         });
@@ -349,6 +371,9 @@ $(function () {
 
             $("#editReviewWindow").modal('hide');
             alert("Review modified successfully!");
+        }).fail(function (jqXHR) {
+            responseTextJson = JSON.parse(jqXHR.responseText);
+            alert(responseTextJson.errorMessage);
         });
     });
 })

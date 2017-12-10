@@ -65,7 +65,7 @@ function addUser() {
             "userName": "zmz",
             "phoneNumber": "6692460962",
             "emailAddress": "miaozhenzhang666@gmail.com",
-            "password": "dI0i5BfYUtPMvYkJ//XOhg==",  // zmz1010
+            "password": "dI0i5BfYUtPMvYkJ__XOhg==",  // zmz1010
             "profilePhotoURL": "https://goo.gl/UDjm25",
             "isPrime": true
         },

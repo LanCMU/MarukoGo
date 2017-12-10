@@ -121,20 +121,6 @@ public class ReviewsInterface {
         }
     }
 
-    //    @GET
-//    @Path("share/{id}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    public APPResponse getOne(@Context HttpHeaders headers, @PathParam("id") String id){
-//        // convert share id to _id, and return the data
-//}
-//
-//    @GET
-//    @Path("get_share_id/{id}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    public APPResponse getOne(@Context HttpHeaders headers, @PathParam("id") String id){
-//        // conver _id to share id
-//}
-
     @PATCH
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON})
