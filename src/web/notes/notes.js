@@ -40,7 +40,7 @@ $(function () {
                 noteTotal = data.metadata.total;
 
                 if (data.content.length == 0) {
-                    $("#hasNote").text("Sorry, you don't have notes.");
+                    $("#hasNote").text("You don't have notes. Add one ↓");
                     $("#previousNote").hide();
                     $("#nextNote").hide();
                     $("#notePage").text("");

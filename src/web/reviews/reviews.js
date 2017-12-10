@@ -47,13 +47,23 @@ $(function () {
                 $("#reviewTable").show();
 
                 reviewTotal = data.metadata.total;
-                $("#reviewPage").text("Page " + Math.floor(reviewOffset / reviewCount + 1) + " of "
-                    + (Math.ceil(reviewTotal / reviewCount)));
+
 
                 if (data.content.length == 0) {
-                    $("#hasReview").text("Sorry, you don't have reviews.");
+                    $("#hasReview").text("You don't have reviews. Add one ↓");
+                    $("#previousReview").hide();
+                    $("#nextReview").hide();
+                    $("#reviewPage").hide();
+                    $("#reviewTable").find(".cloned").remove();
+                    $("#reviewTable").hide();
                 } else {
                     $("#hasReview").text("");
+                    $("#previousReview").show();
+                    $("#nextReview").show();
+                    $("#reviewPage").text("Page " + Math.floor(reviewOffset / reviewCount + 1) + " of "
+                        + (Math.ceil(reviewTotal / reviewCount)));
+                    $("#reviewTable").find(".cloned").remove();
+                    $("#reviewTable").show();
                     data.content.forEach(function (item) {
                         addReviewToTable(item);
                     });

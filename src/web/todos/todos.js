@@ -48,13 +48,22 @@ $(function () {
                 $("#todoTable").show();
 
                 todoTotal = data.metadata.total;
-                $("#todoPage").text("Page " + Math.floor(todoOffset / todoCount + 1) + " of "
-                    + (Math.ceil(todoTotal / todoCount)));
 
                 if (data.content.length == 0) {
-                    $("#hasTodo").text("Sorry, you don't have todos.");
+                    $("#hasTodo").text("You don't have todos. Add one ↓");
+                    $("#previousTodo").hide();
+                    $("#nextTodo").hide();
+                    $("#todoPage").hide();
+                    $("#todoTable").find(".cloned").remove();
+                    $("#todoTable").hide();
                 } else {
                     $("#hasTodo").text("");
+                    $("#previousTodo").show();
+                    $("#nextTodo").show();
+                    $("#todoPage").text("Page " + Math.floor(todoOffset / todoCount + 1) + " of "
+                        + (Math.ceil(todoTotal / todoCount)));
+                    $("#todoTable").find(".cloned").remove();
+                    $("#todoTable").show();
                     data.content.forEach(function (item) {
                         addTodoToTable(item);
                     });
