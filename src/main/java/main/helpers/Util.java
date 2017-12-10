@@ -27,6 +27,8 @@ public class Util {
         }
     }
 
+
+
     public static Date getDateFromString(JSONObject json, String key) throws JSONException, ParseException {
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
         return format.parse(json.getString(key));

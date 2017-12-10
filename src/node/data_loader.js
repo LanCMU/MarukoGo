@@ -114,6 +114,7 @@ function addUser() {
                 addNotesToUser(doc.ops[0]._id.toString(), 120);
                 addHealthsToUser(doc.ops[0]._id.toString(), 120);
                 addTodosToUser(doc.ops[0]._id.toString(), 30);
+                addContactsToUser(doc.ops[0]._id.toString(), 3);
             }
         })
         users.insertOne(u[3], function (err, doc) {
@@ -125,6 +126,7 @@ function addUser() {
                 addNotesToUser(doc.ops[0]._id.toString(), 110);
                 addHealthsToUser(doc.ops[0]._id.toString(), 110);
                 addTodosToUser(doc.ops[0]._id.toString(), 40);
+                addContactsToUser(doc.ops[0]._id.toString(), 3);
             }
         })
     users.insertOne(u[4], function (err, doc) {
@@ -139,6 +141,35 @@ function addUser() {
         }
     })
 }
+
+
+//generate contact lists
+
+contactNameList = ['Amy','Allen','Gary','Riah','Hechao','Miaozhen'];
+contactEmailList = ['liulanm518@gmail.com', 'lan.liu@sv.cmu.edu','lan.liu@west.cmu.edu','lanl1@ansrew.cmu.edu'];
+
+function addContactsToUser(userId, count) {
+    var cal = [];
+
+    for (i = 0; i < count; i++) {
+        var contactName = contactNameList[Math.floor(Math.random() * contactNameList.length)];
+        var email = contactEmailList[Math.floor(Math.random() * contactEmailList.length)];
+
+        cal.push({
+            contactName: contactName,
+            email: email,
+            userId: userId
+        });
+    }
+
+    cal.forEach(function (contact) {
+        var contacts = dbConnection.collection('contacts');
+        contacts.insertOne(contact);
+    })
+}
+
+
+
 
 //generate calendar lists
 
@@ -176,10 +207,27 @@ function addCalendarToUser(userId, count) {
 
 //generate event list
 
-eventList = ['Job Fair', 'Seminar', 'Keynote Speech', 'Festival', 'Party', 'Meetup', 'Family and Friends Reunion'];
-eventLocationList = ['School BLVD 23', 'School BLVD 19', 'San Francisco', 'Sunnyvale', 'Santa Clara']
-eventColorList = ['red', 'blue', 'green', 'yellow', 'pink', 'orange', 'purple']
-importantLevelList = ['!', '!!', '!!!']
+eventList = ['Job Fair', 'Seminar', 'Keynote Speech', 'Festival', 'Party', 'Meetup', 'Family and Friends Reunion', 'Vacation Plan', 'Self Study', 'Appointment'];
+eventLocationList = ['School BLVD 23', 'School BLVD 19', 'Home', 'Sunnyvale Friends Home', 'Santa Clara'];
+eventColorList = ['red', 'blue', 'green', 'yellow', 'pink', 'orange', 'purple'];
+importantLevelList = ['!', '!!', '!!!', '!!!!'];
+eventContentList = {};
+eventContentList["Job Fair"] = ['San Francisco','Mountain view','Google','Apple Day'];
+eventContentList["Seminar"] = ['CS', 'Machine Learning', 'distributed System', 'Marketing', 'Business Model', 'Statistics', 'Math'];
+eventContentList["Keynote Speech"] = ['Co-founder from coursera', 'Google speech', 'Bias buster', 'Business Model', 'Exponential Innovation'];
+eventContentList["Festival"] = ['Thanksgiving', 'Mooncake Festival',
+    'Christmas', 'New Year Eve', 'Spring Festival', 'Valentine'];
+eventContentList["Party"] = ['Gary house', 'Friends Theme Party', 'Christmas', 'Red Carpet', 'Thanksgiving'];
+eventContentList["Meetup"] = ['Google', 'Facebook', 'Amazon', 'LinkedIn', 'Apple', 'Oracle'];
+eventContentList["Family and Friends Reunion"] = ['Video with mom','Video with dad', 'Phone with grandpa'];
+eventContentList["Vacation Plan"] = ['Go to LA', 'Pittsburgh', 'Seattle Trip', 'Yosamite', 'Movie', 'Coding', 'Reading', 'Career Plan', 'Shopping'];
+eventContentList["Self Study"] = ['FSM', 'APP', 'SEM', 'PDV'];
+eventContentList["Appointment"] = ['with Gladys', 'with Kriam',
+    'with Tony', 'with Jennifer', 'with Catherine', 'with Stuard'];
+StartTime = 1485852025000;
+EndTime = 1514709625000;
+
+
 
 function addEventsToCalendar(calendarId, count) {
     var eve = [];
@@ -187,17 +235,20 @@ function addEventsToCalendar(calendarId, count) {
         var eventName = eventList[Math.floor(Math.random() * eventList.length)];
         var eventLocation = eventLocationList[Math.floor(Math.random() * eventLocationList.length)];
         var eventColor = eventColorList [Math.floor(Math.random() * eventColorList.length)];
+        var eventStartTime = Number(Math.floor((Math.random()
+            * (EndTime - StartTime) + StartTime) / 100000) * 100000);
         var importantLevel = importantLevelList [Math.floor(Math.random() * importantLevelList.length)];
-        var description = "default description"
+        var descriptionContent = eventContentList[eventName] [Math.floor(Math.random() * eventContentList[eventName].length)];
 
 
         eve.push({
             eventName: eventName,
+            eventStartTime : new Date(eventStartTime),
             eventLocation: eventLocation,
+            eventDescription: descriptionContent,
             eventColor: eventColor,
             importantLevel: importantLevel,
-            calendarId: calendarId,
-            description: description
+            calendarId: calendarId
 
         });
     }

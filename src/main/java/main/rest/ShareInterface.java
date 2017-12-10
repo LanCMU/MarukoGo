@@ -5,10 +5,7 @@ import main.exceptions.ErrorCode;
 import main.helpers.APPCrypt;
 import main.helpers.APPResponse;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 
@@ -31,9 +28,9 @@ public class ShareInterface {
     }
 
     @GET
-    @Path("/decrypt/{encryptedData}")
+    @Path("/decrypt")
     @Produces({MediaType.APPLICATION_JSON})
-    public APPResponse decrypt(@PathParam("encryptedData") String encryptedData) {
+    public APPResponse decrypt(@QueryParam("encryptedData") String encryptedData) {
         String calendarId;
         try {
             calendarId = APPCrypt.decrypt(encryptedData);

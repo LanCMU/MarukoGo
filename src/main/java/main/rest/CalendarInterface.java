@@ -10,10 +10,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import main.exceptions.*;
-import main.helpers.APPCrypt;
-import main.helpers.APPListResponse;
-import main.helpers.APPResponse;
-import main.helpers.PATCH;
+import main.helpers.*;
 import main.models.Calendar;
 import main.models.Event;
 import org.bson.Document;
@@ -26,6 +23,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import java.text.ParseException;
 import java.util.*;
 
 import static main.helpers.Util.checkAuthentication;
@@ -57,8 +55,6 @@ public class CalendarInterface {
         ArrayList<Calendar> calendarList = new ArrayList<>();
 
         //try add sort
-
-
 
         try
         {
@@ -203,8 +199,8 @@ public class CalendarInterface {
             for (Document item : results) {
                 Event event = new Event(
                         item.getString("eventName"),
-                        item.getString("eventStartTime"),
-                        item.getString("eventEndTime"),
+                        Util.getStringFromDate(item, "eventStartTime"),
+                        Util.getStringFromDate(item, "eventEndTime"),
                         item.getString("eventLocation"),
                         item.getString("eventDescription"),
                         item.getString("eventColor"),
@@ -284,7 +280,17 @@ public class CalendarInterface {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
 
-    public APPResponse create(@PathParam("id") String id, Object request) {
+    public APPResponse create(@Context HttpHeaders headers, @PathParam("id") String id, Object request) {
+
+        try {
+            Util.checkAuthentication(headers, id);
+        } catch (APPUnauthorizedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+
         JSONObject json = null;
         try {
             json = new JSONObject(ow.writeValueAsString(request));
@@ -309,25 +315,35 @@ public class CalendarInterface {
             }
         }
 
-        //Event Start time is required.
-
-        if (json.has("eventStartTime"))
-            try{
-                doc.append("eventStartTime", json.getString("eventStartTime"));
-            }catch (JSONException e){
-                throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
-                        "You must choose a start time!");
+        //Event Start time is optional.
+        if (json.has("eventStartTime")) {
+            try {
+                doc.append("eventStartTime", Util.getDateFromString(json, "eventStartTime"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Time!");
+            } catch (ParseException e) {
+                throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                        "Time should be " + Util.DATE_FORMAT);
+            }
         }
 
-        //Event End time is required.
 
-        if (json.has("eventEndTime"))
-            try{
-                doc.append("eventEndTime", json.getString("eventEndTime"));
-            }catch (JSONException e){
-                throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
-                        "You must choose an end time!");
+        //Event End time is optional.
+
+        if (json.has("eventEndTime")) {
+            try {
+                doc.append("eventEndTime", Util.getDateFromString(json, "eventEndTime"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Time!");
+            } catch (ParseException e) {
+                throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                        "Time should be " + Util.DATE_FORMAT);
             }
+        }
+
+
 
         //Event Location is optional
 
@@ -350,6 +366,9 @@ public class CalendarInterface {
                         "Unknown error!");
             }
 
+
+        //Important Level is optional
+
         if (json.has("importantLevel")) {
             try {
                 doc.append("importantLevel", json.getString("importantLevel"));
@@ -368,19 +387,26 @@ public class CalendarInterface {
                 throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                         "Unknown error!");
             }
-        eventCollection.insertOne(doc);
-        Event event = new Event(
-                doc.getString("eventName"),
-                doc.getString("eventStartTime"),
-                doc.getString("eventEndTime"),
-                doc.getString("eventLocation"),
-                doc.getString("eventDescription"),
-                doc.getString("eventColor"),
-                doc.getString("importantLevel"),
-                doc.getString("calendarId")
-        );
-        event.setEventId(doc.getObjectId("_id").toString());
-        return new APPResponse(event);
+
+
+        try {
+            eventCollection.insertOne(doc);
+            Event event = new Event(
+                    doc.getString("eventName"),
+                    Util.getStringFromDate(doc,"eventStartTime"),
+                    Util.getStringFromDate(doc,"eventEndTime"),
+                    doc.getString("eventLocation"),
+                    doc.getString("eventDescription"),
+                    doc.getString("eventColor"),
+                    doc.getString("importantLevel"),
+                    doc.getString("calendarId")
+            );
+            event.setEventId(doc.getObjectId("_id").toString());
+            return new APPResponse(event);
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
     }
 
 
@@ -399,6 +425,8 @@ public class CalendarInterface {
         } catch (JsonProcessingException e) {
             throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
         }
+
+
 
         try {
 

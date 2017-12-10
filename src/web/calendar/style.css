@@ -9,6 +9,107 @@ body {
     background: #fafafa;
 }
 
+/* ---------------------------------------------------
+     CALENDAR
+ ----------------------------------------------------- */
+header {
+    text-align:left;
+}
+
+#calendar {
+    width: 100%;
+
+
+}
+
+#calendar a {
+    color: #7386D5;
+    text-decoration: none;
+}
+
+#calendar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+#calendar li {
+    display: block;
+    float: left;
+    width: 14.342%;
+    padding: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+#calendar ul.weekdays {
+    height: 40px;
+    background: #7386D5;
+}
+
+#calendar ul.weekdays li {
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 20px;
+    border: none !important;
+    padding: 10px 6px;
+    color: #fff;
+    font-size: 13px;
+}
+
+#calendar .days li {
+    height: 180px;
+}
+
+#calendar .days li:hover {
+    background: #d3d3d3;
+}
+
+#calendar .date {
+    text-align: center;
+    margin-bottom: 5px;
+    padding: 4px;
+    background: #333;
+    color: #fff;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    float: left;
+}
+
+#calendar .event {
+    clear: both;
+    display: block;
+    font-size: 13px;
+    border-radius: 4px;
+    padding: 5px;
+    margin-top: 40px;
+    margin-bottom: 5px;
+    line-height: 14px;
+    background: #e4f2f2;
+    border: 1px solid #b5dbdc;
+    color: #009aaf;
+    text-decoration: none;
+}
+
+#calendar .event-desc {
+    color: #666;
+    margin: 3px 0 7px 0;
+    text-decoration: none;
+}
+
+#calendar .other-month {
+    background: #f5f5f5;
+    color: #666;
+}
+
+
+
+
+
 p {
     font-family: 'Poppins', sans-serif;
     font-size: 1.1em;
@@ -22,6 +123,7 @@ a, a:hover, a:focus {
     text-decoration: none;
     transition: all 0.3s;
 }
+
 
 .navbar {
     padding: 15px 10px;
@@ -90,6 +192,7 @@ a, a:hover, a:focus {
     background: #fff;
 }
 
+
 #sidebar ul li.active > a, a[aria-expanded="true"] {
     color: #fff;
     background: #6d7fcc;
@@ -143,14 +246,29 @@ a.article, a.article:hover {
 
 
 
-/* ---------------------------------------------------
-    CONTENT STYLE
------------------------------------------------------ */
+/*!* ---------------------------------------------------*/
+    /*CONTENT STYLE*/
+/*----------------------------------------------------- *!*/
 #content {
     padding: 20px;
+    width: 100%;
     min-height: 100vh;
     transition: all 0.3s;
 }
+
+#addCalendar, #addEvent {
+    background-color: #7386D5;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    margin:10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
 
 /* ---------------------------------------------------
     MEDIAQUERIES
@@ -159,10 +277,14 @@ a.article, a.article:hover {
     #sidebar {
         margin-left: -250px;
     }
+
     #sidebar.active {
         margin-left: 0;
     }
+
     #sidebarCollapse span {
         display: none;
     }
+
+
 }

@@ -12,6 +12,7 @@ import com.mongodb.client.result.DeleteResult;
 import main.exceptions.*;
 import main.helpers.APPResponse;
 import main.helpers.PATCH;
+import main.helpers.Util;
 import main.models.Event;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -23,6 +24,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import java.text.ParseException;
 import java.util.*;
 
 
@@ -69,8 +71,8 @@ public class EventInterface {
                 for (Document item : results) {
                     Event event = new Event(
                             item.getString("eventName"),
-                            item.getString("eventStartTime"),
-                            item.getString("eventEndTime"),
+                            Util.getStringFromDate(item,"eventStartTime"),
+                            Util.getStringFromDate(item,"eventEndTime"),
                             item.getString("eventLocation"),
                             item.getString("eventDescription"),
                             item.getString("eventColor"),
@@ -108,8 +110,8 @@ public class EventInterface {
 
                 Event event = new Event(
                         item.getString("eventName"),
-                        item.getString("eventStartTime"),
-                        item.getString("eventEndTime"),
+                        Util.getStringFromDate(item,"eventStartTime"),
+                        Util.getStringFromDate(item,"eventEndTime"),
                         item.getString("eventLocation"),
                         item.getString("eventDescription"),
                         item.getString("eventColor"),
@@ -148,32 +150,94 @@ public class EventInterface {
                 throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
             }
 
-            try {
-                BasicDBObject query = new BasicDBObject();
-                query.put("_id", new ObjectId(id));
-                Document doc = new Document();
-                if (json.has("eventName"))
-                    doc.append("eventName", json.getString("eventName"));
-                if (json.has("eventStartTime"))
-                    doc.append("eventStartTime", json.getString("eventStartTime"));
-                if (json.has("eventEndTime"))
-                    doc.append("eventEndTime", json.getString("eventEndTime"));
-                if (json.has("eventLocation"))
-                    doc.append("eventLocation", json.getString("eventLocation"));
-                if (json.has("eventDescription"))
-                    doc.append("eventDescription", json.getString("eventDescription"));
-                if (json.has("eventColor"))
-                    doc.append("eventColor", json.getString("eventColor"));
-                if (json.has("importantLevel"))
-                    doc.append("importantLevel", json.getString("importantLevel"));
 
+            BasicDBObject query = new BasicDBObject();
+            query.put("_id", new ObjectId(id));
+            Document doc = new Document();
+
+
+            if (json.has("eventName")) {
+                try {
+                    doc.append("eventName", json.getString("eventName"));
+                } catch (JSONException e) {
+                    throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                            "Invalid eventName!");
+                }
+            }
+
+
+            if (json.has("eventStartTime")) {
+                try {
+                    doc.append("eventStartTime", Util.getDateFromString(json, "eventStartTime"));
+                } catch (JSONException e) {
+                    throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                            "Invalid Time!");
+                } catch (ParseException e) {
+                    throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                            "Event Time should be " + Util.DATE_FORMAT);
+                }
+            }
+
+
+            if (json.has("eventEndTime")){
+                try{
+                    doc.append("eventEndTime", Util.getDateFromString(json, "eventEndTime"));
+                }catch (JSONException e) {
+                    throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                            "Invalid Time!");
+                } catch (ParseException e) {
+                    throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                            "Event Time should be " + Util.DATE_FORMAT);
+                }
+            }
+
+
+            if (json.has("eventLocation")) {
+                try {
+                    doc.append("eventLocation", json.getString("eventLocation"));
+                } catch (JSONException e) {
+                    throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                            "Invalid eventLocation!");
+                }
+            }
+
+            if (json.has("eventDescription")) {
+                try {
+                    doc.append("eventDescription", json.getString("eventDescription"));
+                } catch (JSONException e) {
+                    throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                            "Invalid Description!");
+                }
+            }
+
+            if (json.has("eventColor")) {
+                try {
+                    doc.append("eventColor", json.getString("eventColor"));
+                } catch (JSONException e) {
+                    throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                            "Invalid COLOR!");
+                }
+            }
+
+            if (json.has("importantLevel")) {
+                try {
+                    doc.append("importantLevel", json.getString("importantLevel"));
+                } catch (JSONException e) {
+                    throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                            "Invalid importantLevel!");
+                }
+            }
+
+            try {
                 Document set = new Document("$set", doc);
                 eventCollection.updateOne(query, set);
 
-            } catch (JSONException e) {
-                System.out.println("Failed to create an event!");
+                return new APPResponse();
+            } catch (Exception e) {
+                throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                        "Internal Server Error!");
             }
-            return new APPResponse(request);
+
         }
 
 

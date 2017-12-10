@@ -183,6 +183,8 @@ $(function () {
         editedNoteIsPinned = $("#editNoteWindowIsPinned").val() == "true"
 
         editedNoteRemindTime = null;
+
+
         if ($('#editNoteWindowDatetimepicker').data("DateTimePicker").date() != null) {
             editedNoteRemindTime = $('#editNoteWindowDatetimepicker').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
             queryDate = JSON.stringify({
