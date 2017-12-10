@@ -20,12 +20,12 @@ $(function () {
     $('#helloName').text('Hello, ' + firstName);
     if (isPrime == "true") {
         $('#helloPrime').text("PRIME user!");
+        clearAddTodoWindowFields();
         loadTodos();
     } else {
         $('#helloPrime').text("FREE user!");
         $("#previousTodo").hide();
         $("#nextTodo").hide();
-        $("#todoTable").hide();
         $("#todoTable").hide();
         $("#addTodo").hide();
         $('#todoTitle').text("Sorry, the Todo function is only accessible to PRIME users! ");

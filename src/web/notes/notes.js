@@ -165,7 +165,6 @@ $(function () {
             $("#" + item.id).find("#noteType").text("Memo");
         } else {
             $("#" + item.id).find("#noteType").text("Checklist");
-
         }
         if (item.isPinned) {
             $("#" + item.id).find("#isPinned").text("Yes");

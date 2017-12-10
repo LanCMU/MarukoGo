@@ -320,7 +320,6 @@ $(function () {
             weightCol.text(editedHealthWeight);
             moodDiaryCol.text(editedHealthMoodDiary);
 
-
             $("#editHealthWindow").modal('hide');
             alert("Health modified successfully!");
         });

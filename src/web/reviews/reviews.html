@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Todos</title>
+    <title>Reviews</title>
 
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -36,6 +36,7 @@
             <li><a href="../healths/healths.html">HEALTHS</a></li>
             <li><a href="../notes/notes.html">NOTES</a></li>
             <li><a href="../todos/todos.html">TODOS</a></li>
+            <li><a href="../reviews/reviews.html">REVIEWS</a></li>
             <li><a href="../settings/settings.html">SETTINGS</a></li>
             <li><a href="../index.html">SIGN OUT</a></li>
         </ul>
@@ -56,28 +57,29 @@
 
         <div class="container">
             <table class="table table-striped">
-                <h4 id="todoTitle">My Todos</h4>
+                <h4 id="reviewTitle">My Reviews</h4>
                 </br>
-                <table id="todoTable" class="table table-hover table-bordered">
+                <table id="reviewTable" class="table table-hover table-bordered">
                     <tr align="center">
-                        <td><strong>Todo Category</strong></td>
-                        <td><strong>Todo Content</strong></td>
-                        <td><strong>Is Important?</strong></td>
-                        <td><strong>Due Date</strong></td>
-                        <td><strong>is Finished?</strong></td>
+                        <td><strong>Review Category</strong></td>
+                        <td><strong>Title</strong></td>
+                        <td><strong>Review Content</strong></td>
+                        <td><strong>Rating</strong></td>
+                        <td><strong>finishTime</strong></td>
                         <td><strong>Operations</strong></td>
                     </tr>
-                    <button type="button" id="addTodo">Add New Todos</button>
+                    <button type="button" id="addReview">Add New Reviews</button>
 
-                    <tr align="center" id="todoRow">
-                        <td id="todoCategory"></td>
-                        <td id="todoContent"></td>
-                        <td id="isImportant"></td>
-                        <td id="dueDate"></td>
-                        <td id="isFinished"></td>
+                    <tr align="center" id="reviewRow">
+                        <td id="reviewCategory"></td>
+                        <td id="title"></td>
+                        <td textarea id="reviewContent" align="left"></td>
+                        <td id="rating"></td>
+                        <td id="finishTime"></td>
                         <td>
-                            <button type="button" class="btn btn-light editTodo">Edit</button>
-                            <button type="button" class="btn btn-light deleteTodo">Delete</button>
+                            <button type="button" class="btn btn-light editReview">Edit</button>
+                            <button type="button" class="btn btn-light shareReview">Share</button>
+                            <button type="button" class="btn btn-light deleteReview">Delete</button>
                         </td>
                     </tr>
                 </table>
@@ -85,13 +87,12 @@
         </div>
 
         <!--pop out window of add-->
-
-        <div class="modal fade" id="addTodoWindow" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal fade" id="addReviewWindow" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Add a Todo</h3>
+                        <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Add a Review</h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -100,34 +101,39 @@
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
-                                <label class="form-control-label">Todo Category</label>
-                                <select id="addTodoWindowTodoCategory">
-                                    <option value="Study">Study</option>
-                                    <option value="Work">Work</option>
-                                    <option value="Personal Life">Personal Life</option>
-                                    <option value="Work">Hobbies</option>
-                                    <option value="Work">Family</option>
+                                <label class="form-control-label">Review Category</label>
+                                <select id="addReviewWindowReviewCategory">
+                                    <option value="Movie">Movie</option>
+                                    <option value="Book">Book</option>
+                                    <option value="Music">Music</option>
                                     <option value="Others">Others</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-control-label">Todo Content</label>
-                                <input id="addTodoWindowTodoContent" type="text" class="form-control">
+                                <label class="form-control-label">Title</label>
+                                <input id="addReviewWindowTitle" type="text" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label class="form-control-label">Is Important?</label>
-                                <select id="addTodoWindowIsImportant">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
+                                <label class="form-control-label">Review Content</label>
+                                <textarea id="addReviewWindowReviewContent" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Rating</label>
+                                <select id="addReviewWindowRating">
+                                    <option value="1 Star">1 Star</option>
+                                    <option value="2 Stars">2 Stars</option>
+                                    <option value="3 Stars">3 Stars</option>
+                                    <option value="4 Stars">4 Stars</option>
+                                    <option value="5 Stars">5 Stars</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-control-label">Due Date</label>
+                                <label class="form-control-label">Finish Time</label>
                                 <div class="container">
                                     <div class="row">
                                         <div class='col-sm-6'>
                                             <div class="form-group">
-                                                <div class='input-group date' id='addTodoWindowDatetimepicker'>
+                                                <div class='input-group date' id='addReviewWindowDatetimepicker'>
                                                     <input type='text' class="form-control"/>
                                                     <span class="input-group-addon">
                                                     <span class="glyphicon glyphicon-calendar"></span>
@@ -137,23 +143,16 @@
                                         </div>
                                         <script type="text/javascript">
                                             $(function () {
-                                                $('#addTodoWindowDatetimepicker').datetimepicker();
+                                                $('#addReviewWindowDatetimepicker').datetimepicker();
                                             });
                                         </script>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-control-label">Is Finished?</label>
-                                <select id="addTodoWindowIsFinished">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-                            <button id="closeAddTodoWindow" type="button" class="btn btn-secondary"
+                            <button id="closeAddReviewWindow" type="button" class="btn btn-secondary"
                                     data-dismiss="modal">Close
                             </button>
-                            <button id="saveAddTodoWindow" type="button" style="background-color:#7386D5"
+                            <button id="saveAddReviewWindow" type="button" style="background-color:#7386D5"
                                     class="btn btn-primary">Save
                             </button>
                         </form>
@@ -163,12 +162,12 @@
         </div>
 
         <!--pop out window of editing-->
-        <div class="modal fade" id="editTodoWindow" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal fade" id="editReviewWindow" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Edit the Todo</h3>
+                        <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Edit the Review</h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -177,34 +176,39 @@
                     <div class="modal-body">
                         <form>
                             <div class="form-group">
-                                <label class="form-control-label">Todo Category</label>
-                                <select id="editTodoWindowTodoCategory">
-                                    <option value="Study">Study</option>
-                                    <option value="Work">Work</option>
-                                    <option value="Personal Life">Personal Life</option>
-                                    <option value="Hobbies">Hobbies</option>
-                                    <option value="Family">Family</option>
+                                <label class="form-control-label">Review Category</label>
+                                <select id="editReviewWindowReviewCategory">
+                                    <option value="Movie">Movie</option>
+                                    <option value="Book">Book</option>
+                                    <option value="Music">Music</option>
                                     <option value="Others">Others</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-control-label">Todo Content</label>
-                                <input id="editTodoWindowTodoContent" type="text" class="form-control">
+                                <label class="form-control-label">Title</label>
+                                <input id="editReviewWindowTitle" type="text" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label class="form-control-label">Is Important?</label>
-                                <select id="editTodoWindowIsImportant">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
+                                <label class="form-control-label">Review Content</label>
+                                <textarea id="editReviewWindowReviewContent" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-control-label">Rating</label>
+                                <select id="editReviewWindowRating">
+                                    <option value="1 Star">1 Star</option>
+                                    <option value="2 Stars">2 Stars</option>
+                                    <option value="3 Stars">3 Stars</option>
+                                    <option value="4 Stars">4 Stars</option>
+                                    <option value="5 Stars">5 Stars</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-control-label">Due Date</label>
+                                <label class="form-control-label">Finish Time</label>
                                 <div class="container">
                                     <div class="row">
                                         <div class='col-sm-6'>
                                             <div class="form-group">
-                                                <div class='input-group date' id='editTodoWindowDatetimepicker'>
+                                                <div class='input-group date' id='editReviewWindowDatetimepicker'>
                                                     <input type='text' class="form-control"/>
                                                     <span class="input-group-addon">
                                                     <span class="glyphicon glyphicon-calendar"></span>
@@ -214,24 +218,16 @@
                                         </div>
                                         <script type="text/javascript">
                                             $(function () {
-                                                $('#editTodoWindowDatetimepicker').datetimepicker();
+                                                $('#editReviewWindowDatetimepicker').datetimepicker();
                                             });
                                         </script>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-control-label">Is Finished?</label>
-                                <select id="editTodoWindowIsFinished">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-
-                            <button id="closeEditTodoWindow" type="button" class="btn btn-secondary"
+                            <button id="closeEditReviewWindow" type="button" class="btn btn-secondary"
                                     data-dismiss="modal">Close
                             </button>
-                            <button id="saveEditTodoWindow" type="button" style="background-color:#7386D5"
+                            <button id="saveEditReviewWindow" type="button" style="background-color:#7386D5"
                                     class="btn btn-primary">Save
                             </button>
                         </form>
@@ -242,9 +238,9 @@
 
         <nav aria-label="...">
             <ul class="pager">
-                <li id="previousTodo"><a href="#">Previous</a></li>
-                <li id="nextTodo"><a href="#">Next</a></li>
-                <span id="todoPage"></span>
+                <li id="previousReview"><a href="#">Previous</a></li>
+                <li id="nextReview"><a href="#">Next</a></li>
+                <span id="reviewPage"></span>
             </ul>
         </nav>
     </div>
@@ -257,7 +253,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<script src="todos.js"></script>
+<script src="reviews.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {

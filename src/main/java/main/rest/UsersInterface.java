@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 
 
-
 @Path("users")
 public class UsersInterface {
 
@@ -37,6 +36,7 @@ public class UsersInterface {
     private MongoCollection<Document> noteCollection;
     private MongoCollection<Document> healthCollection;
     private MongoCollection<Document> todoCollection;
+    private MongoCollection<Document> reviewCollection;
 
     private ObjectWriter ow;
 
@@ -50,6 +50,7 @@ public class UsersInterface {
         this.noteCollection = database.getCollection("notes");
         this.healthCollection = database.getCollection("healths");
         this.todoCollection = database.getCollection("todos");
+        this.reviewCollection = database.getCollection("reviews");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
     }
 
@@ -174,9 +175,9 @@ public class UsersInterface {
     @Path("{id}/healths")
     @Produces({MediaType.APPLICATION_JSON})
     public APPListResponse getHealthsForUser(@Context HttpHeaders headers, @PathParam("id") String id,
-                                           @DefaultValue("_id") @QueryParam("sort") String sortArg,
-                                           @DefaultValue("20") @QueryParam("count") int count,
-                                           @DefaultValue("0") @QueryParam("offset") int offset) {
+                                             @DefaultValue("_id") @QueryParam("sort") String sortArg,
+                                             @DefaultValue("20") @QueryParam("count") int count,
+                                             @DefaultValue("0") @QueryParam("offset") int offset) {
 
         ArrayList<Health> healthList = new ArrayList<Health>();
 
@@ -227,9 +228,9 @@ public class UsersInterface {
     @Path("{id}/todos")
     @Produces({MediaType.APPLICATION_JSON})
     public APPListResponse getTodosForUser(@Context HttpHeaders headers, @PathParam("id") String id,
-                                             @DefaultValue("_id") @QueryParam("sort") String sortArg,
-                                             @DefaultValue("20") @QueryParam("count") int count,
-                                             @DefaultValue("0") @QueryParam("offset") int offset) {
+                                           @DefaultValue("_id") @QueryParam("sort") String sortArg,
+                                           @DefaultValue("20") @QueryParam("count") int count,
+                                           @DefaultValue("0") @QueryParam("offset") int offset) {
 
         ArrayList<Todo> todoList = new ArrayList<Todo>();
 
@@ -263,6 +264,57 @@ public class UsersInterface {
                 todoList.add(todo);
             }
             return new APPListResponse(todoList, resultCount, offset, todoList.size());
+        } catch (APPBadRequestException e) {
+            throw e;
+        } catch (APPUnauthorizedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+    }
+
+    @GET
+    @Path("{id}/reviews")
+    @Produces({MediaType.APPLICATION_JSON})
+    public APPListResponse getReviewsForUser(@Context HttpHeaders headers, @PathParam("id") String id,
+                                             @DefaultValue("_id") @QueryParam("sort") String sortArg,
+                                             @DefaultValue("2") @QueryParam("count") int count,
+                                             @DefaultValue("0") @QueryParam("offset") int offset) {
+
+        ArrayList<Review> reviewList = new ArrayList<Review>();
+
+        BasicDBObject sortParams = new BasicDBObject();
+        List<String> sortList = Arrays.asList(sortArg.split(","));
+        sortList.forEach(sortItem -> {
+            if (sortItem.startsWith("-")) {
+                sortParams.put(sortItem.substring(1, sortItem.length()), -1); // Descending order.
+            } else {
+                sortParams.put(sortItem, 1); // Ascending order.
+            }
+        });
+
+        try {
+            Util.checkAuthentication(headers, id);
+            BasicDBObject query = new BasicDBObject();
+            query.put("userId", id);
+
+            long resultCount = reviewCollection.count(query);
+            FindIterable<Document> results = reviewCollection.find(query).sort(sortParams).skip(offset).limit(count);
+
+            for (Document item : results) {
+                Review review = new Review(
+                        item.getString("userId"),
+                        item.getInteger("reviewCategory"),
+                        item.getString("title"),
+                        item.getString("reviewContent"),
+                        item.getInteger("rating"),
+                        Util.getStringFromDate(item, "finishTime")
+                );
+                review.setId(item.getObjectId("_id").toString());
+                reviewList.add(review);
+            }
+            return new APPListResponse(reviewList, resultCount, offset, reviewList.size());
         } catch (APPBadRequestException e) {
             throw e;
         } catch (APPUnauthorizedException e) {
@@ -739,14 +791,6 @@ public class UsersInterface {
 
         Document doc = new Document("userId", id);
 
-        // share Id
-        if (json.has("shareId")) {
-            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
-                    "You should not pass Share Id!");
-        }
-
-        Document docShare = new Document("shareId", id);
-
         // Todos' category is optional.
         if (json.has("todoCategory")) {
             try {
@@ -822,6 +866,126 @@ public class UsersInterface {
             );
             todo.setId(doc.getObjectId("_id").toString());
             return new APPResponse(todo);
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+    }
+
+    @POST
+    @Path("{id}/reviews")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public APPResponse createReview(@Context HttpHeaders headers, @PathParam("id") String id, Object request) {
+        try {
+            Util.checkAuthentication(headers, id);
+        } catch (APPUnauthorizedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+                    "Internal Server Error!");
+        }
+
+        JSONObject json = null;
+        try {
+            json = new JSONObject(ow.writeValueAsString(request));
+        } catch (JsonProcessingException e) {
+            throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
+        }
+
+        if (json.has("userId")) {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "You should not pass User Id!");
+        }
+
+        Document doc = new Document("userId", id);
+
+        // Review Category is required, and its value should be 0(Movie), 1(Book), 2(Music), or 3(Others).
+        // Its default value is 0 (Movie).
+        int reviewCategory = 0;
+        if (json.has("reviewCategory")) {
+            try {
+                reviewCategory = json.getInt("reviewCategory");
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Review Category!");
+            }
+        }
+        if (reviewCategory != 0 && reviewCategory != 1 && reviewCategory != 2 && reviewCategory != 3) {
+            throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                    "Review Category must be 0(Movie), 1(Book), 2(Music), or 3(Others)!");
+        } else {
+            doc.append("reviewCategory", reviewCategory);
+        }
+
+        // Title is required.
+        if (json.has("title")) {
+            try {
+                doc.append("title", json.getString("title"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Title!");
+            }
+        } else {
+            throw new APPBadRequestException(ErrorCode.MISSING_PROPERTIES.getErrorCode(),
+                    "Missing Title!");
+        }
+
+        // Review Content is optional.
+        if (json.has("reviewContent")) {
+            try {
+                doc.append("reviewContent", json.getString("reviewContent"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Review Content!");
+            }
+        }
+
+        // Rating is optional, and its value should be 1(Very Bad), 2(Bad), 3(Average), 4(Good), or 5(Very Good).
+        // Its default value is 3(Stars).
+        int rating = 0;
+        if (json.has("rating")) {
+            try {
+                rating = json.getInt("rating");
+                if (rating < 1 || rating > 5) {
+                    throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                            "Rating must be the value between 1(lowest) to 5(highest)!");
+                }
+                doc.append("rating", json.getInt("rating"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Rating!");
+            } catch (APPBadRequestException e) {
+                throw e;
+            }
+        }
+
+
+        // Finish Time is optional.
+        if (json.has("finishTime")) {
+            try {
+                doc.append("finishTime", Util.getDateFromString(json, "finishTime"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid Finish Time!");
+            } catch (ParseException e) {
+                throw new APPBadRequestException(ErrorCode.INVALID_VALUES.getErrorCode(),
+                        "Finish Time should be " + Util.DATE_FORMAT);
+            }
+        }
+
+        try {
+            reviewCollection.insertOne(doc);
+            Review review = new Review(
+                    doc.getString("userId"),
+                    doc.getInteger("reviewCategory"),
+                    doc.getString("title"),
+                    doc.getString("reviewContent"),
+                    doc.getInteger("rating"),
+                    Util.getStringFromDate(doc, "finishTime")
+            );
+            review.setId(doc.getObjectId("_id").toString());
+            return new APPResponse(review);
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                     "Internal Server Error!");
@@ -1011,13 +1175,13 @@ public class UsersInterface {
         healthQuery.put("userId", id);
         BasicDBObject todoQuery = new BasicDBObject();
         todoQuery.put("userId", id);
+        BasicDBObject reviewQuery = new BasicDBObject();
+        reviewQuery.put("userId", id);
 
         DeleteResult deleteResult;
         try {
             deleteResult = collection.deleteOne(query);
 
-            // Deletes all the notes owned by the user.
-            noteCollection.deleteMany(noteQuery);
 
             // Deletes all the calendars owned by the user.
             calendarCollection.deleteMany(calendarQuery);
@@ -1025,8 +1189,14 @@ public class UsersInterface {
             // Deletes all the healths owned by the user.
             healthCollection.deleteMany(healthQuery);
 
+            // Deletes all the notes owned by the user.
+            noteCollection.deleteMany(noteQuery);
+
             // Deletes all the todos owned by the user.
             todoCollection.deleteMany(todoQuery);
+
+            // Deletes all the reviews owned by the user.
+            reviewCollection.deleteMany(reviewQuery);
         } catch (Exception e) {
             throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
                     "Internal Server Error!");
