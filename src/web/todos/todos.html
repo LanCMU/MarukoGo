@@ -37,7 +37,6 @@
             <li><a href="../notes/notes.html">NOTES</a></li>
             <li><a href="../todos/todos.html">TODOS</a></li>
             <li><a href="../reviews/reviews.html">REVIEWS</a></li>
-            <li><a href="../settings/settings.html">SETTINGS</a></li>
             <li><a href="../index.html">SIGN OUT</a></li>
         </ul>
     </nav>
@@ -69,7 +68,10 @@
                         <td><strong>is Finished?</strong></td>
                         <td><strong>Operations</strong></td>
                     </tr>
-                    <button type="button" id="addTodo">Add New Todos</button>
+
+                    <div class="form-group">
+                        <button type="button" id="addTodo">Add New Todos</button>
+                    </div>
 
                     <tr align="center" id="todoRow">
                         <td id="todoCategory"></td>
@@ -82,6 +84,16 @@
                             <button type="button" class="btn btn-light deleteTodo">Delete</button>
                         </td>
                     </tr>
+
+                    <div class="form-group" id="showEntryForm">
+                        <label class="form-control-label">Show </label>
+                        <select id="showTodoEntries">
+                            <option id="showAllTodoEntries" value="All" align="left">All</option>
+                            <option id="showUnfinishedTodoEntries" value="Unfinished" align="left">Unfinished</option>
+                            <option id="showFinishedTodoEntries" value="Finished" align="left">Finished</option>
+                        </select>
+                        <label class="form-control-label"> Entries</label>
+                    </div>
                 </table>
             </table>
         </div>

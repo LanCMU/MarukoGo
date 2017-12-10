@@ -37,7 +37,6 @@
             <li><a href="../notes/notes.html">NOTES</a></li>
             <li><a href="../todos/todos.html">TODOS</a></li>
             <li><a href="../reviews/reviews.html">REVIEWS</a></li>
-            <li><a href="../settings/settings.html">SETTINGS</a></li>
             <li><a href="../index.html">SIGN OUT</a></li>
         </ul>
     </nav>
@@ -69,7 +68,10 @@
                         <td><strong>Remind Time</strong></td>
                         <td><strong>Operations</strong></td>
                     </tr>
-                    <button type="button" id="addNote">Add New Notes</button>
+
+                    <div class="form-group">
+                        <button type="button" id="addNote">Add New Notes</button>
+                    </div>
 
                     <!-- Split button -->
                     <div class="btn-group" id="sortBy">
@@ -96,7 +98,7 @@
 
                     <tr align="center" id="noteRow">
                         <td id="noteCaption"></td>
-                        <td textarea id="noteContent"></td>
+                        <td textarea id="noteContent" align="left"></td>
                         <td id="noteType"></td>
                         <td id="isPinned"></td>
                         <td id="remindTime"></td>
@@ -130,7 +132,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Note Content</label>
-                                <textarea id="addNoteWindowContent" class="form-control"></textarea>
+                                <textarea id="addNoteWindowContent" class="form-control" align="left"></textarea>
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Note Type</label>

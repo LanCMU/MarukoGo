@@ -230,7 +230,8 @@ public class UsersInterface {
     public APPListResponse getTodosForUser(@Context HttpHeaders headers, @PathParam("id") String id,
                                            @DefaultValue("_id") @QueryParam("sort") String sortArg,
                                            @DefaultValue("20") @QueryParam("count") int count,
-                                           @DefaultValue("0") @QueryParam("offset") int offset) {
+                                           @DefaultValue("0") @QueryParam("offset") int offset,
+                                           @DefaultValue("all") @QueryParam("finished") String isFinished) {
 
         ArrayList<Todo> todoList = new ArrayList<Todo>();
 
@@ -248,6 +249,12 @@ public class UsersInterface {
             Util.checkAuthentication(headers, id);
             BasicDBObject query = new BasicDBObject();
             query.put("userId", id);
+
+            if (isFinished.compareTo("true") == 0) {
+                query.put("isFinished", true);
+            } else if (isFinished.compareTo("false") == 0) {
+                query.put("isFinished", false);
+            }
 
             long resultCount = todoCollection.count(query);
             FindIterable<Document> results = todoCollection.find(query).sort(sortParams).skip(offset).limit(count);

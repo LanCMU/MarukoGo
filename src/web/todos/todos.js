@@ -7,6 +7,7 @@ $(function () {
     var todoOffset = 0;
     var todoCount = 20;
     var todoTotal = -1;
+    var todoFilter = "all";
 
     var todoId;
     var todoRow;
@@ -28,13 +29,14 @@ $(function () {
         $("#nextTodo").hide();
         $("#todoTable").hide();
         $("#addTodo").hide();
+        $("#showEntryForm").hide();
         $('#todoTitle').text("Sorry, the Todo function is only accessible to PRIME users! ");
 
     }
 
     function loadTodos() {
         jQuery.ajax({
-            url: "/api/users/" + userId + "/todos?offset=" + todoOffset + "&count=" + todoCount,
+            url: "/api/users/" + userId + "/todos?offset=" + todoOffset + "&count=" + todoCount + "&finished=" + todoFilter,
             type: "GET",
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("Authorization", token);
@@ -49,21 +51,27 @@ $(function () {
 
                 todoTotal = data.metadata.total;
 
-                if (data.content.length == 0) {
+                if (data.content.length == 0 && todoFilter == "all") {
                     $("#hasTodo").text("You don't have todos. Add one ↓");
                     $("#previousTodo").hide();
                     $("#nextTodo").hide();
                     $("#todoPage").hide();
                     $("#todoTable").find(".cloned").remove();
                     $("#todoTable").hide();
+                    $("#showEntryForm").hide();
                 } else {
                     $("#hasTodo").text("");
                     $("#previousTodo").show();
                     $("#nextTodo").show();
-                    $("#todoPage").text("Page " + Math.floor(todoOffset / todoCount + 1) + " of "
-                        + (Math.ceil(todoTotal / todoCount)));
+                    if (todoTotal == 0) {
+                        $("#todoPage").text("Page 0 of 0");
+                    } else {
+                        $("#todoPage").text("Page " + Math.floor(todoOffset / todoCount + 1) + " of "
+                            + (Math.ceil(todoTotal / todoCount)));
+                    }
                     $("#todoTable").find(".cloned").remove();
                     $("#todoTable").show();
+                    $("#showEntryForm").show();
                     data.content.forEach(function (item) {
                         addTodoToTable(item);
                     });
@@ -294,7 +302,22 @@ $(function () {
             }
 
             $("#editTodoWindow").modal('hide');
-            alert("Todo modified successfully!");
+            alert("Todo modified successfully! We'll go back to the first page!");
+            todoOffset = 0;
+            loadTodos();
         });
+    });
+
+    $("#showTodoEntries").change(function () {
+        if ($("#showTodoEntries").val() == 'All') {
+            todoFilter = "all";
+        } else if ($("#showTodoEntries").val() == 'Unfinished') {
+            todoFilter = "false";
+        } else if ($("#showTodoEntries").val() == 'Finished') {
+            todoFilter = "true";
+        }
+
+        todoOffset = 0;
+        loadTodos();
     });
 })
