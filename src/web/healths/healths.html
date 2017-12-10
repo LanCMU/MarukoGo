@@ -36,7 +36,7 @@
             <li><a href="../healths/healths.html">HEALTHS</a></li>
             <li><a href="../notes/notes.html">NOTES</a></li>
             <li><a href="../todos/todos.html">TODOS</a></li>
-            <li><a href="../settings/settings.html">SETTINGS</a></li>
+            <li><a href="../reviews/reviews.html">REVIEWS</a></li>
             <li><a href="../index.html">SIGN OUT</a></li>
         </ul>
     </nav>
@@ -57,6 +57,7 @@
         <div class="container">
             <table class="table table-striped">
                 <h4>My Health Information</h4>
+                <h5 id="hasHealth"></h5>
                 </br>
                 <table id="healthTable" class="table table-hover table-bordered">
                     <tr align="center">
@@ -70,14 +71,19 @@
                         <td><strong>Mood Diary</strong></td>
                         <td><strong>Operations</strong></td>
                     </tr>
-                    <button type="button" id="addHealth">Add New Health Information</button>
+
+
+                    <div class="form-group">
+                        <button type="button" id="addHealth">Add New Health Information</button>
+                    </div>
+
                     <tr align="center" id="healthRow">
                         <td id="recordTime"></td>
                         <td id="goToBedOnTime"></td>
                         <td id="wakeUpOnTime"></td>
                         <td id="hoursOfSleep"></td>
                         <td id="haveExercise"></td>
-                        <td textarea id="threeMeals"></td>
+                        <td textarea id="threeMeals" align="left"></td>
                         <td id="weight"></td>
                         <td id="moodDiary"></td>
                         <td>
@@ -86,11 +92,11 @@
                         </td>
                     </tr>
 
-                    <div class="form-group">
+                    <div class="form-group" id="showEntryForm">
                         <label class="form-control-label">Show </label>
                         <select id="showHealthEntries">
-                            <option id="show20HealthEntries" value="20">20</option>
-                            <option id="show50HealthEntries" value="50">50</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
                             <option value="100">100</option>
                             <option value="200">200</option>
                         </select>
@@ -189,7 +195,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Three Meals</label>
-                                <textarea id="addHealthWindowThreeMeals" class="form-control"></textarea>
+                                <textarea id="addHealthWindowThreeMeals" class="form-control" align="left"></textarea>
                             </div>
                             <div class="form-group">
                                 <label class="form-control-label">Weight(kg)</label>

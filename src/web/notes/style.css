@@ -17,6 +17,10 @@ p {
     color: #999;
 }
 
+tr td {
+    white-space: pre-wrap;
+}
+
 a, a:hover, a:focus {
     color: inherit;
     text-decoration: none;

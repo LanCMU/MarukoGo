@@ -65,7 +65,7 @@ function addUser() {
             "userName": "zmz",
             "phoneNumber": "6692460962",
             "emailAddress": "miaozhenzhang666@gmail.com",
-            "password": "dI0i5BfYUtPMvYkJ//XOhg==",  // zmz1010
+            "password": "dI0i5BfYUtPMvYkJ__XOhg==",  // zmz1010
             "profilePhotoURL": "https://goo.gl/UDjm25",
             "isPrime": true
         },
@@ -82,53 +82,57 @@ function addUser() {
     ];
     var users = dbConnection.collection('users');
 
-    // add calendars, notes, healths, todos
+    // add calendars, notes, healths, todos, reviews
     users.insertOne(u[0], function (err, doc) {
         if (err) {
-                console.log("Could not add user 1.");
-            }
-            else {
-                addCalendarToUser(doc.ops[0]._id.toString(), 5);
-                addNotesToUser(doc.ops[0]._id.toString(), 100);
-                addHealthsToUser(doc.ops[0]._id.toString(), 100);
-                addTodosToUser(doc.ops[0]._id.toString(), 10);
-            }
-        })
-        users.insertOne(u[1], function (err, doc) {
-            if (err) {
-                console.log("Could not add user 2.");
-            }
-            else {
-                addCalendarToUser(doc.ops[0]._id.toString(), 5);
-                addNotesToUser(doc.ops[0]._id.toString(), 110);
-                addHealthsToUser(doc.ops[0]._id.toString(), 110);
-                addTodosToUser(doc.ops[0]._id.toString(), 20);
-            }
-        })
-        users.insertOne(u[2], function (err, doc) {
-            if (err) {
-                console.log("Could not add user 3.");
-            }
-            else {
-                addCalendarToUser(doc.ops[0]._id.toString(), 5);
-                addNotesToUser(doc.ops[0]._id.toString(), 120);
-                addHealthsToUser(doc.ops[0]._id.toString(), 120);
-                addTodosToUser(doc.ops[0]._id.toString(), 30);
-                addContactsToUser(doc.ops[0]._id.toString(), 3);
-            }
-        })
-        users.insertOne(u[3], function (err, doc) {
-            if (err) {
-                console.log("Could not add user 4.");
-            }
-            else {
-                addCalendarToUser(doc.ops[0]._id.toString(), 5);
-                addNotesToUser(doc.ops[0]._id.toString(), 110);
-                addHealthsToUser(doc.ops[0]._id.toString(), 110);
-                addTodosToUser(doc.ops[0]._id.toString(), 40);
-                addContactsToUser(doc.ops[0]._id.toString(), 3);
-            }
-        })
+            console.log("Could not add user 1.");
+        }
+        else {
+            addCalendarToUser(doc.ops[0]._id.toString(), 5);
+            addNotesToUser(doc.ops[0]._id.toString(), 100);
+            addHealthsToUser(doc.ops[0]._id.toString(), 100);
+            addTodosToUser(doc.ops[0]._id.toString(), 10);
+            addReviewsToUser(doc.ops[0]._id.toString(), 10);
+        }
+    })
+    users.insertOne(u[1], function (err, doc) {
+        if (err) {
+            console.log("Could not add user 2.");
+        }
+        else {
+            addCalendarToUser(doc.ops[0]._id.toString(), 5);
+            addNotesToUser(doc.ops[0]._id.toString(), 110);
+            addHealthsToUser(doc.ops[0]._id.toString(), 110);
+            addTodosToUser(doc.ops[0]._id.toString(), 20);
+            addReviewsToUser(doc.ops[0]._id.toString(), 10);
+        }
+    })
+    users.insertOne(u[2], function (err, doc) {
+        if (err) {
+            console.log("Could not add user 3.");
+        }
+        else {
+            addCalendarToUser(doc.ops[0]._id.toString(), 5);
+            addNotesToUser(doc.ops[0]._id.toString(), 120);
+            addHealthsToUser(doc.ops[0]._id.toString(), 120);
+            addTodosToUser(doc.ops[0]._id.toString(), 30);
+            addReviewsToUser(doc.ops[0]._id.toString(), 10);
+            addContactsToUser(doc.ops[0]._id.toString(),3);
+        }
+    })
+    users.insertOne(u[3], function (err, doc) {
+        if (err) {
+            console.log("Could not add user 4.");
+        }
+        else {
+            addCalendarToUser(doc.ops[0]._id.toString(), 5);
+            addNotesToUser(doc.ops[0]._id.toString(), 110);
+            addHealthsToUser(doc.ops[0]._id.toString(), 110);
+            addTodosToUser(doc.ops[0]._id.toString(), 40);
+            addReviewsToUser(doc.ops[0]._id.toString(), 20);
+            addContactsToUser(doc.ops[0]._id.toString(),3);
+        }
+    })
     users.insertOne(u[4], function (err, doc) {
         if (err) {
             console.log("Could not add user 5.");
@@ -138,6 +142,7 @@ function addUser() {
             addNotesToUser(doc.ops[0]._id.toString(), 120);
             addHealthsToUser(doc.ops[0]._id.toString(), 120);
             addTodosToUser(doc.ops[0]._id.toString(), 50);
+            addReviewsToUser(doc.ops[0]._id.toString(), 30);
         }
     })
 }
@@ -286,8 +291,6 @@ endRemindTime = 33042812400000;
 
 
 function addNotesToUser(userId, count) {
-    sequence = Array(count);
-    console.log("sequence", sequence);
     var n = [];
     for (i = 0; i < count; i++) {
         console.log("Trying")
@@ -339,8 +342,6 @@ weightList = [50.0, 51.1, 52.2, 53.3, 54.4, 55.5, 56.6, 57.7, 58.8, 59.9, 60.0, 
 moodDiaryList = ['Very Happy', 'Happy', 'Normal', 'Unhappy', 'Very Unhappy'];
 
 function addHealthsToUser(userId, count) {
-    sequence = Array(count);
-    console.log("sequence", sequence);
     var h = [];
     for (i = 0; i < count; i++) {
         console.log("Trying")
@@ -401,8 +402,6 @@ startDueDate = 1485903600000;
 endDueDate = 33042812400000;
 
 function addTodosToUser(userId, count) {
-    sequence = Array(count);
-    console.log("sequence", sequence);
     var t = [];
     for (i = 0; i < count; i++) {
         console.log("Trying")
@@ -430,7 +429,79 @@ function addTodosToUser(userId, count) {
     })
 }
 
+//generate review list
+reviewCategoryList = [0, 1, 2, 3];
+titleList = ['Star Wars', 'Wonder Woman', 'Spider Man', 'Dunkirk', 'Coco', 'Logan', 'Blade Runner',
+    'Anything Is Possible', 'The Leavers', 'The Hate U Give', 'Exit West', 'Pachinko', 'Turtles All the Way Down',
+    'Shape of You', 'Unforgettable', 'Feels', 'Despacito', 'Perfect', 'Thunder', 'New Rules',
+    'Concert Review', 'Symphony Review', 'Drama Review', 'TV show Review', 'Arts Review'];
+reviewContentList = ['Cat ipsum dolor sit amet, swat turds around the house so toy mouse squeak roll over, ' +
+'pushes butt to face. Annoy kitten brother with poking walk on car leaving trail of paw prints on hood and ' +
+'windshield intently sniff hand, and cats go for world domination mark territory, for play riveting piece on ' +
+'synthesizer keyboard, but sit on the laptop. Howl on top of tall thing make meme, make cute face or ask to ' +
+'go outside and ask to come inside and ask to go outside and ask to come inside small kitty warm kitty little ' +
+'balls of fur. Throw down all the stuff in the kitchen. Groom yourself 4 hours - checked, have your beauty sleep ' +
+'18 hours - checked, be fabulous for the rest of the day - checked chew on cable. Sit in box plop down in the middle ' +
+'where everybody walks yet munch on tasty moths. When in doubt, wash give me attention or face the wrath of my claws ' +
+'yet caticus cuteicus try to hold own back foot to clean it but foot reflexively kicks you in face, go into a ' +
+'rage and bite own foot, hard sit on the laptop. Scream at teh bath. Eat plants, meow, and throw up because i ' +
+'ate plants meow loudly just to annoy owners lick arm hair present belly, scratch hand when stroked so man ' +
+'running from cops stops to pet cats, goes to jail. Drink water out of the faucet. Wake up human for food ' +
+'at 4am find a way to fit in tiny box. Knock dish off table head butt cant eat out of my own dish stare out ' +
+'the window. Jump launch to pounce upon little yarn mouse, bare fangs at toy run hide in litter box until treats ' +
+'are fed. Groom yourself 4 hours - checked, have your beauty sleep 18 hours - checked, be fabulous for the rest of ' +
+'the day - checked cats making all the muffins annoy owner until he gives you food say meow repeatedly until ' +
+'belly rubs, feels good. Munch on tasty moths lick the plastic bag. Small kitty warm kitty little balls of fur ' +
+'meow meow, i tell my human scratch at the door then walk away but going to catch the red dot today going to ' +
+'catch the red dot today for kitty ipsum dolor sit amet, shed everywhere shed everywhere stretching attack your ' +
+'ankles chase the red dot, hairball run catnip eat the grass sniff. Purr hiss at vacuum cleaner so rub whiskers ' +
+'on bare skin act innocent. Proudly present butt to human peer out window, chatter at birds, lure them to mouth ' +
+'for soft kitty warm kitty little ball of furr and mesmerizing birds but under the bed. Drink water out of the ' +
+'faucet attack feet, yet i shredded your linens for you meowing chowing and wowing, plop down in the middle where ' +
+'everybody walks for lies down so eat the fat cats food. Under the bed cats making all the muffins yet meow for ' +
+'food, then when human fills food dish, take a few bites of food and continue meowing present belly, scratch ' +
+'hand when stroked and licks paws. You are a captive audience while sitting on the toilet, pet me spill litter ' +
+'box, scratch at owner, destroy all furniture, especially couch so meowzer ask for petting eat and than sleep ' +
+'on your face i just saw other cats inside the house and nobody ask me before using my litter box yet thinking ' +
+'longingly about tuna brine. See owner, run in terror wack the mini furry mouse yet cat dog hate mouse eat ' +
+'string barf pillow no baths hate everything, or burrow under covers, roll over and sun my belly hit you ' +
+'unexpectedly relentlessly pursues moth. Slap owner\'s face at 5am until human fills food dish ooh, are ' +
+'those your $250 dollar sandals? lemme use that as my litter box and chase imaginary bugs, but put toy ' +
+'mouse in food bowl run out of litter box at full speed . Russian blue eat and than sleep on your face ' +
+'kitty poochy, yet mew yet poop in a handbag look delicious and drink the soapy mopping up water then puke ' +
+'giant foamy fur-balls for massacre a bird in the living room and then look like the cutest and most innocent ' +
+'animal on the planet. Ask for petting this human feeds me, i should be a god yet burrow under covers i like ' +
+'big cats and i can not lie but present belly, scratch hand when stroked for my left donut is missing, ' +
+'as is my right. '];
+ratingList = [1, 2, 3, 4, 5];
+// finishTime range: 2017-01-01 00:00 to 3017-01-01 00:00.
+startFinishTime = 1485903600000;
+endFinishTime = 33042812400000;
 
+function addReviewsToUser(userId, count) {
+    var r = [];
+    for (i = 0; i < count; i++) {
+        console.log("Trying")
 
+        var reviewCategory = reviewCategoryList[Math.floor(Math.random() * reviewCategoryList.length)];
+        var title = titleList[Math.floor(Math.random() * titleList.length)];
+        var reviewContent = reviewContentList[Math.floor(Math.random() * reviewContentList.length)];
+        var rating = ratingList[Math.floor(Math.random() * ratingList.length)];
+        var finishTime = Number(Math.floor((Math.random()
+            * (endFinishTime - startFinishTime) + startFinishTime) / 100000) * 100000);
 
+        r.push({
+            userId: userId,
+            reviewCategory: reviewCategory,
+            title: title,
+            reviewContent: reviewContent,
+            rating: rating,
+            finishTime: new Date(finishTime)
+        });
+    }
 
+    r.forEach(function (review) {
+        var reviews = dbConnection.collection('reviews');
+        reviews.insertOne(review);
+    })
+}

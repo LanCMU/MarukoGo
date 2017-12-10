@@ -30,6 +30,7 @@ public class SessionsInterface {
     private MongoCollection<Document> calendarCollection;
     private MongoCollection<Document> healthCollection;
     private MongoCollection<Document> todoCollection;
+    private MongoCollection<Document> reviewCollection;
     private ObjectWriter ow;
 
 
@@ -42,6 +43,7 @@ public class SessionsInterface {
         this.noteCollection = database.getCollection("notes");
         this.healthCollection = database.getCollection("healths");
         this.todoCollection = database.getCollection("todos");
+        this.reviewCollection = database.getCollection("reviews");
         ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
     }
 

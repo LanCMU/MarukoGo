@@ -45,13 +45,24 @@ $(function () {
                 $("#healthTable").show();
 
                 healthTotal = data.metadata.total;
-                $("#healthPage").text("Page " + Math.floor(healthOffset / healthCount + 1) + " of "
-                    + (Math.ceil(healthTotal / healthCount)));
 
                 if (data.content.length == 0) {
-                    $("#hasHealth").text("Sorry, you don't have health information.");
+                    $("#hasHealth").text("You don't have health information. Add one ↓");
+                    $("#previousHealth").hide();
+                    $("#nextHealth").hide();
+                    $("#healthPage").hide();
+                    $("#healthTable").find(".cloned").remove();
+                    $("#healthTable").hide();
+                    $("#showEntryForm").hide();
                 } else {
                     $("#hasHealth").text("");
+                    $("#previousHealth").show();
+                    $("#nextHealth").show();
+                    $("#healthPage").text("Page " + Math.floor(healthOffset / healthCount + 1) + " of "
+                        + (Math.ceil(healthTotal / healthCount)));
+                    $("#healthTable").find(".cloned").remove();
+                    $("#healthTable").show();
+                    $("#showEntryForm").show();
                     data.content.forEach(function (item) {
                         addHealthToTable(item);
                     });
@@ -319,7 +330,6 @@ $(function () {
             threeMealsCol.text(editedHealthThreeMeals.join("\n"));
             weightCol.text(editedHealthWeight);
             moodDiaryCol.text(editedHealthMoodDiary);
-
 
             $("#editHealthWindow").modal('hide');
             alert("Health modified successfully!");
