@@ -474,6 +474,25 @@ public class UsersInterface {
             }
         }
 
+        // Whether the user is prime or not.
+        if (json.has("isPrime")) {
+            try {
+                doc.append("isPrime", json.getBoolean("isPrime"));
+            } catch (JSONException e) {
+                throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                        "Invalid isPrime!");
+            }
+        }
+
+        // Verify that the user name is not used.
+        BasicDBObject userQuery = new BasicDBObject();
+        userQuery.put("userName", json.getString("userName"));
+        Document userItem = collection.find(userQuery).first();
+        if (userItem != null) {
+            throw new APPBadRequestException(ErrorCode.BAD_REQUEST.getErrorCode(),
+                    "The username is already taken!");
+        }
+
         try {
             collection.insertOne(doc);
             return new APPResponse();

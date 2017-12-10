@@ -36,18 +36,25 @@ $(function () {
         })
             .done(function (data) {
                 $("#noteRow").hide();
-                $("#previousNote").show();
-                $("#nextNote").show();
-                $("#noteTable").find(".cloned").remove();
-                $("#noteTable").show();
 
                 noteTotal = data.metadata.total;
-                $("#notePage").text("Page " + Math.floor(noteOffset / noteCount + 1) + " of " + (Math.ceil(noteTotal / noteCount)));
 
                 if (data.content.length == 0) {
                     $("#hasNote").text("Sorry, you don't have notes.");
+                    $("#previousNote").hide();
+                    $("#nextNote").hide();
+                    $("#notePage").text("");
+                    $("#noteTable").find(".cloned").remove();
+                    $("#noteTable").hide();
+                    $("#sortBy").hide();
                 } else {
                     $("#hasNote").text("");
+                    $("#previousNote").show();
+                    $("#nextNote").show();
+                    $("#notePage").text("Page " + Math.floor(noteOffset / noteCount + 1) + " of " + (Math.ceil(noteTotal / noteCount)));
+                    $("#noteTable").find(".cloned").remove();
+                    $("#noteTable").show();
+                    $("#sortBy").show();
                     data.content.forEach(function (item) {
                         addNoteToTable(item);
                     });
@@ -62,6 +69,7 @@ $(function () {
                 $("#nextNote").hide();
                 $("#noteTable").find(".cloned").remove();
                 $("#noteTable").hide();
+                $("#sortBy").hide();
             })
     }
 
