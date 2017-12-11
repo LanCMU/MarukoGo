@@ -10,8 +10,8 @@ import javax.ws.rs.core.MediaType;
 
 
 @Path("share")
-public class ShareInterface {
-    public ShareInterface() {
+public class SharedCalendarInterface {
+    public SharedCalendarInterface() {
     }
 
     @GET
