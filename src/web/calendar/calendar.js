@@ -19,6 +19,12 @@ $(function () {
     var eventLevelCol;
 
     $("#eventHeader").hide();
+    $("#eventDetail").hide();
+    $("#eventTable").hide();
+    $("#page").hide();
+    $("#eventTitle").hide();
+    $("#myEvents").hide();
+
 
     // Greetings
     $('#helloName').text('Hello, ' + firstName);
@@ -298,6 +304,7 @@ $(function () {
         }
         setPageStyle();
         loadEvents(nowCalendarId);
+
     });
 
     $("#previousEvent").click(function (e) {
@@ -308,7 +315,6 @@ $(function () {
         setPageStyle();
         loadEvents(nowCalendarId);
     });
-
 
     // Add event Button
     $("#addEvent").click(function(){
@@ -323,6 +329,11 @@ $(function () {
         newLocation = $("#addEventLocationText").val();
         newColor = $("#addEventColorText").val();
         newLevel = $("#addEventLevelText").val();
+
+        if(newName == "" || newDesc == "" || newLocation =="" || newColor == "" || newLevel == ""){
+            alert("Please input sth");
+            return;
+        }
 
         if ($('#addEventStartTimeText').data("DateTimePicker").date() != null) {
             newStart = $('#addEventStartTimeText').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
@@ -374,7 +385,7 @@ $(function () {
         });
     });
 
-
+    var eventMapData = {};
 
     // Load Events for a calendar
     function loadEvents(calendarId) {
@@ -392,23 +403,62 @@ $(function () {
         var offset = (nowPage - 1) * pageSize;
 
 
+        $("#days-wrapper .event").remove(); //clear the leftover data
+
+
+
+        // get canvas data
         jQuery.ajax({
-            url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
+            url: "/api/calendars/" + calendarId + "/events?offset=0&count=1000" ,
             type: "GET",
             dataType: "json",
             contentType: "application/json; charset=utf-8"
 
         }).done(function (data) {
-            if(data.content == ''){
-                alert("You don't have any events in this calendar, try to add some~");
-                $("#myEvents").hide();
-                $("#eventHeader").show();
-            }else{
-                $("#eventHeader").show();
-                $("#myEvents").show();
+
+                if(data.content == ''){
+                    alert("You don't have any events in this calendar, try to add some~");
+                    $("#eventHeader").show();
+                }else{
+                    $("#eventHeader").show();
+                    $("#eventDetail").show();
+
+                data.content.forEach(function (item) {
+                    //insert event to calendar canvas
+                    eventMapData[item.id] = item;
+                    var calId = item.eventStartTime.substring(5,10);
+                    var calTm = item.eventStartTime.substring(11);
+                    addEventToCalendar(calId,item.eventName,calTm,item);
+                    });
+
+                adjustCalendarHeight();
+                bindEditEvent();
+                bindDeleteEvent();
+                }
+        })
+
+
+        $("#detailEvent").click(function() {
+
+            $("#eventTitle").show();
+            $("#eventTable").show();
+            $("#page").show();
+        })
+
+        // Get table data
+        jQuery.ajax({
+            url: "/api/calendars/" + calendarId + "/events?offset=" + offset + "&count=" + pageSize,
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8"
+             })
+            .done(function (data) {
+
                 total = data.metadata.total;
                 maxPage = Math.ceil(total / pageSize);
+
                 setPageStyle();
+
                 $("#eventPage").text("Page " + Math.floor(offset / count + 1) + " of " + (Math.ceil(total / count)));
 
                 if (data.content.length == 0) {
@@ -416,9 +466,11 @@ $(function () {
                     $("#previousEvent").hide();
                     $("#nextEvent").hide();
                 }
+
                 $("#myEvents").show();
 
                 $("#eventTable").find(".cloned").remove();
+
                 data.content.forEach(function (item) {
                     $("#eventCard").clone().prop("id", item.id).appendTo("#eventTable");
                     $("#" + item.id).find(".eventName").text(item.eventName);
@@ -430,19 +482,97 @@ $(function () {
                     $("#" + item.id).prop("class", "cloned");
                     $("#" + item.id).show();
                 });
-
                 bindEditEvent();
                 bindDeleteEvent();
-            }
 
-        }).fail(function (data) {
+            }).fail(function (data) {
             $("#previousEvent").hide();
             $("#nextEvent").hide();
             $("#myEvents").hide();
         })
+
     }
 
+
+    // Calendar canvas
+
+    function drawCalendarTable() {
+
+        //current time
+        var today = new Date();
+        var year  = today.getFullYear();
+        var month = today.getMonth()+1;
+        var day   = today.getDate();
+
+
+        var firstDay = new Date(year,month-1,1).getDay();//本月第一天是周几
+        var dayNums  = new Date(year,month,0).getDate();//本月有几天
+        var dayNumsLastMon = new Date(year,month-1,0).getDate();//上个月有几天
+
+        //draw last month
+        if(firstDay > 1 ){
+            for(i=1;i<firstDay;i++){
+                var tmpDayTxt = dayNumsLastMon - (firstDay-1) + i ; //
+                drawCalendarTableRow(tmpDayTxt,month-1," other-month");
+            }
+        }
+
+        //draw this month
+        for(showDayTxt=1; showDayTxt<=dayNums; showDayTxt++){
+            drawCalendarTableRow(showDayTxt,month,"");
+        }
+
+        //draw next month
+        var tmpNextDay = 1;
+        for(i=drawCalendarIdex;i<=35;i++){
+            drawCalendarTableRow(tmpNextDay,month+1," other-month");
+            tmpNextDay++;
+        }
+        adjustCalendarHeight();
+    }
+
+    var drawCalendarIdex = 1;
+
+    function drawCalendarTableRow(daytxt,month,addClass){
+        var rowNum = Math.ceil(drawCalendarIdex / 7);
+        //日期前置补0
+        if((month+"").length == 1){month = "0" + month;}
+        if((daytxt+"").length == 1){daytxt = "0" + daytxt;}
+        $("#day-row-"+rowNum).append('<li class="day'+addClass+'" id="'+ month + "-"+daytxt+'"><div class="date">' + daytxt + '</div></li>');
+        if(drawCalendarIdex % 7 == 0){
+            $("#days-wrapper").append('<ul class="days clearfix" id="day-row-' + (rowNum+1-0) + '"></ul>');
+        }
+        drawCalendarIdex++;
+
+    }
+
+    function adjustCalendarHeight(){
+        for(i=1;i<=6;i++) {
+            $("#day-row-" + i + " li").css("min-height", $("#day-row-" + i).height());
+        }
+    }
+
+
+    //add event to calendar
+    function addEventToCalendar(id,desc,tm,item) {
+        var eventHtml = ' <div class="event">\n' +
+            '<div class="event-desc" id="event-desc-'+item.id+'">' +desc +'</div>' +
+            '<div class="event-time" id="event-time-'+item.id+'">' +tm + '</div>' +
+            '<div class="event-btns" data-id="'+item.id+'">' +
+                '<a class="editEvent" href="javascript:void(0);">Edit</a> ' +
+                '<a class="deleteEvent" href="javascript:void(0);">Delete</a>' +
+            '</div>'
+            '</div>'
+        $("#"+id).append(eventHtml);
+    }
+
+    drawCalendarTable();
+    
+
     // Click "edit", show edit event window
+    var nowEditItem = null;
+    var editlock = false;
+
     function bindEditEvent() {
 
         // Click "edit", data loaded, show window
@@ -454,6 +584,14 @@ $(function () {
             eventDescCol = eventRow.find('td.eventDescription');
             eventColorCol = eventRow.find('td.eventColor');
             eventLevelCol = eventRow.find('td.importantLevel');
+
+
+            // get EVT ID
+            var evtId = $(this).parent().attr("data-id")
+            nowEditItem  = eventMapData[evtId];
+
+
+
             $("#editFieldEvent").modal('show');
         });
 
@@ -461,27 +599,41 @@ $(function () {
 
          //edit and assign
         $("#editFieldEvent").on('show.bs.modal', function () {
-                $("#editEventNameText").val(eventNameCol.text());
-                $("#editEventStartTimeText").val(eventTimeCol.text());
-                $("#editEventLocationText").val(eventLocationCol.text());
-                $("#editEventDescriptionText").val(eventDescCol.text());
-                $("#editEventColorText").val(eventColorCol.text());
-                $("#editEventLevelText").val(eventLevelCol.text());
+                // $("#editEventNameText").val(eventNameCol.text());
+                // $("#editEventStartTimeText").val(eventTimeCol.text());
+                // $("#editEventLocationText").val(eventLocationCol.text());
+                // $("#editEventDescriptionText").val(eventDescCol.text());
+                // $("#editEventColorText").val(eventColorCol.text());
+                // $("#editEventLevelText").val(eventLevelCol.text());
 
-                if (eventTimeCol.text() == '') {
+                $("#editEventNameText").val(nowEditItem.eventName);
+                $("#editEventStartTimeText").val(nowEditItem.eventStartTime);
+                $("#editEventLocationText").val(nowEditItem.eventLocation);
+                $("#editEventDescriptionText").val(nowEditItem.eventDescription);
+                console.log("~~~~",nowEditItem.eventColor)
+                $("#editEventColorText").val(nowEditItem.eventColor.toLowerCase());
+                $("#editEventLevelText").val(nowEditItem.importantLevel);
+
+                if (nowEditItem.eventStartTime == '') {
                     $('#editEventStartTimeText').data("DateTimePicker").clear();
                 } else {
-                    $('#editEventStartTimeText').data("DateTimePicker").date(new Date(eventTimeCol.text()));
+                    $('#editEventStartTimeText').data("DateTimePicker").date(new Date(nowEditItem.eventStartTime));
                 }
 
                 $('#saveEditEvent').click(function(){
-                    newName = $("#editEventNameText").val();
-                    newStart = $("#editEventStartTimeText").val();
-                    newLocation = $("#editEventLocationText").val();
-                    newDesc = $('#editEventDescriptionText').val();
-                    newColor = $("#editEventColorText").val();
-                    newLevel = $("#editEventLevelText").val();
-                    eveId = eventRow.attr('id');
+
+                    if(editlock){
+                        return ;
+                    }
+                    editlock = true;
+
+                    eveId = nowEditItem.id;//eventRow.attr('id');
+                    eventMapData[eveId].eventName = newName = $("#editEventNameText").val();
+                    eventMapData[eveId].eventStartTime = newStart = $("#editEventStartTimeText").val();
+                    eventMapData[eveId].eventLocation = newLocation = $("#editEventLocationText").val();
+                    eventMapData[eveId].eventDescription = newDesc = $('#editEventDescriptionText').val();
+                    eventMapData[eveId].eventColor = newColor = $("#editEventColorText").val();
+                    eventMapData[eveId].importantLevel = newLevel = $("#editEventLevelText").val();
 
 
                     if ($('#editEventStartTimeText').data("DateTimePicker").date() != null) {
@@ -516,6 +668,7 @@ $(function () {
                         contentType: "application/json; charset=utf-8"
 
                     }).done(function(data){
+                        $("#event-desc-"+ eveId).html(newName);
                         // Update immediately
                         eventNameCol.text(newName);
                         eventTimeCol.text(newStart);
@@ -530,6 +683,7 @@ $(function () {
 
                         $("#editFieldEvent").modal('hide');
                         alert("Successful!");
+                        editlock = false;
                     });
                 });
             });
@@ -540,12 +694,17 @@ $(function () {
     // Click "delete", pop out a window asking deletion -> event
     function bindDeleteEvent() {
         $(".deleteEvent").click(function(){
-            var row = $(this).parent().parent();
-            var name = row.find('td.eventName').text();
+
+            //Get EVT ID
+            var evtId = $(this).parent().attr("data-id")
+            nowEditItem  = eventMapData[evtId];
+            var eventDom = $(this).parent().parent();
+            //var row = $(this).parent().parent();
+            var name = nowEditItem.eventName;
             if (confirm('Are you sure you want to delete event: '+name+'?')) {
-                eveId = row.attr('id');
+                //eveId = row.attr('id');
                 jQuery.ajax({
-                    url: "/api/events/" + eveId,
+                    url: "/api/events/" + evtId,
                     type: "DELETE",
                     dataType:"json",
                     beforeSend: function (xhr) {
@@ -554,8 +713,7 @@ $(function () {
                     contentType: "application/json; charset=utf-8"
 
                 }).done(function(data){
-                    row.remove();
-
+                    eventDom.remove();
 
                 });
             }
@@ -589,7 +747,6 @@ $(function () {
             $(".page-item").removeClass("disabled");
         }
     }
-
 
 });
 

@@ -61,7 +61,7 @@ header {
 }
 
 #calendar .days li {
-    height: 180px;
+    min-height: 180px;
 }
 
 #calendar .days li:hover {
@@ -86,7 +86,6 @@ header {
     font-size: 13px;
     border-radius: 4px;
     padding: 5px;
-    margin-top: 40px;
     margin-bottom: 5px;
     line-height: 14px;
     background: #e4f2f2;
@@ -106,7 +105,13 @@ header {
     color: #666;
 }
 
-
+.clearfix:after {
+    content: "";
+    display: block;
+    clear: both;
+    height: 0;
+    visibility: hidden
+}
 
 
 
@@ -256,7 +261,7 @@ a.article, a.article:hover {
     transition: all 0.3s;
 }
 
-#addCalendar, #addEvent {
+#addCalendar, #addEvent, #detailEvent, #addContact {
     background-color: #7386D5;
     border: none;
     color: white;
@@ -269,7 +274,8 @@ a.article, a.article:hover {
     border-radius: 4px;
 }
 
-
+#days-wrapper .event-btns{padding-top:5px;}
+days-wrapper .event-btns a{margin-right:5px;}
 /* ---------------------------------------------------
     MEDIAQUERIES
 ----------------------------------------------------- */

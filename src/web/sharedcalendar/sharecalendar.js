@@ -20,10 +20,7 @@ $(function () {
         }
     };
 
-    var myDate = new Date();
-    alert(myDate.getFullYear());
-    var timestamp =Date.parse(new Date());
-    alert(timestamp);
+
 
 
    //Get Calendar Id and show contents
@@ -62,8 +59,8 @@ $(function () {
             });
 
         loadEvents(calendarId);
-
     })
+
 
 
     //Pagination
@@ -110,7 +107,6 @@ $(function () {
                  $("#previousEvent").hide();
                  $("#nextEvent").hide();
              }
-
 
              // Show event data;
              $("#shareEvents").show();
