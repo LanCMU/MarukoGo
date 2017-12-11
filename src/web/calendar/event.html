@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Calendar</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+<body>
+
+
+<div class="jumbotron" >
+    <div id="calendarSummary">
+        <h1 class="display-3">Welcome！</h1>
+        <p class="lead" id="lead"></p>
+
+        <hr class="my-4">
+
+        <h4 id="calendarName"></h4>
+        <h4 id="calendarDescription"></h4>
+        <p class="lead">
+            <a class="btn btn-primary btn-lg" href="#" role="button" id="signupButton">Sign Up for Maruko</a>
+        </p>
+    </div>
+</div>
+
+<div class="container" >
+
+    <h4> Event List </h4>
+    <div id="shareEvents">
+        <table class="table table-striped" id="shareTable">
+
+            </br>
+            <tr align="center">
+                <td>Event</td>
+                <td>Time</td>
+                <td>Location</td>
+                <td>Description</td>
+                <td>Important Level</td>
+            </tr>
+
+
+            <tr align="center" id="shareEventCard">
+                <td class="shareEventName"></td>
+                <td class="shareEventStartTime"></td>
+                <td class="shareEventLocation"></td>
+                <td class="shareEventDescription"></td>
+                <td class="shareEventImporLvl"></td>
+            </tr>
+        </table>
+
+        <!--Pagination-->
+        <nav aria-label="...">
+            <ul class="pagination justify-content-end">
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" tabindex="-1" id="previousEvent">Previous</a>
+                </li>
+                <li><span id="eventPage"></span></li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" id="nextEvent">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="event.js"></script>
+</body>
+
+</html>

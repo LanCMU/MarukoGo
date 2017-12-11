@@ -10,14 +10,14 @@ import javax.ws.rs.core.MediaType;
 
 
 @Path("share")
-public class ShareInterface {
-    public ShareInterface() {
+public class SharedCalendarInterface {
+    public SharedCalendarInterface() {
     }
 
     @GET
-    @Path("/encrypt/{calendarId}")
+    @Path("/encrypt")
     @Produces({MediaType.APPLICATION_JSON})
-    public APPResponse encrypt(@PathParam("calendarId") String calendarId) {
+    public APPResponse encrypt(@QueryParam("calendarId") String calendarId) {
         String encryptedData = null;
         try {
             encryptedData = APPCrypt.encrypt(calendarId);
