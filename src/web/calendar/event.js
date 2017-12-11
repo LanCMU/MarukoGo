@@ -265,7 +265,7 @@ $(function () {
     function getShareLink(calId) {
         var link = null;
         jQuery.ajax({
-            url: "/api/share/encrypt/" + calId,
+            url: "/api/share/encrypt?calendarId=" + calId,
             type: "GET",
             dataType:"json",
             beforeSend: function (xhr) {
@@ -274,7 +274,7 @@ $(function () {
             contentType: "application/json; charset=utf-8",
             async: false
         }).done(function(data){
-            link = "http://127.0.0.1:8080/share/share.html?calendar=" + data.content;
+            link = "http://127.0.0.1:8080/sharedcalendar/share.html?calendar=" + data.content;
         });
         return link;
     }

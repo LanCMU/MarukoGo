@@ -15,9 +15,9 @@ public class SharedCalendarInterface {
     }
 
     @GET
-    @Path("/encrypt/{calendarId}")
+    @Path("/encrypt")
     @Produces({MediaType.APPLICATION_JSON})
-    public APPResponse encrypt(@PathParam("calendarId") String calendarId) {
+    public APPResponse encrypt(@QueryParam("calendarId") String calendarId) {
         String encryptedData = null;
         try {
             encryptedData = APPCrypt.encrypt(calendarId);
