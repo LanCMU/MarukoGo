@@ -8,14 +8,21 @@ $(function () {
     var conEmailCol;
     var conRow;
 
+    $('#myContacts').hide();
+
     $('#helloName').text('Hello, ' + firstName);
-    if (isPrime === "true") {
+    if (isPrime == "true") {
         $('#helloPrime').text("PRIME user!");
+        clearAddContactFields();
+        getAllContacts();
     } else {
         $('#helloPrime').text("FREE user!");
+        $('#myContacts').hide();
+        $('#primeAlert').text("Sorry, the function is only accessible to PRIME users! ");
+
     }
 
-    getAllContacts();
+
     //get all contacts info
     function getAllContacts() {
         jQuery.ajax({
@@ -48,14 +55,25 @@ $(function () {
         $('#sidebar').toggleClass('active');
     });
 
-
     $("#addContact").click(function(){
         $("#addFieldContact").modal('show');
     });
 
     $("#saveAddContact").click(function () {
+
         var newName = $("#addContactNameText").val();
         var newEmail = $("#addEmailText").val();
+
+        if (newName == "") {
+            alert("Please input contact name!");
+            return;
+        }
+
+        if (newEmail == "") {
+            alert("Please input email address!");
+            return;
+        }
+
         jQuery.ajax({
             url: "/api/contacts",
             type: "POST",
@@ -71,13 +89,12 @@ $(function () {
             contentType: "application/json; charset=utf-8"
 
         }).done(function(data){
-            addContact(data.content);
+                addContact(data.content);
+                bindEditContact();
+                bindDeleteContact();
+                $("#addFieldContact").modal('hide');
+                clearAddContactFields();
 
-            bindEditContact();
-            bindDeleteContact();
-
-            $("#addFieldContact").modal('hide');
-            clearAddContactFields();
         }).fail(function (error) {
             alert(error.responseJSON.errorMessage);
         });
@@ -88,6 +105,10 @@ $(function () {
         $("#addEmailText").val('');
     }
 
+    function clearEditContactFields() {
+        $("#editContactNameText").val('');
+        $("#editEmailText").val('');
+    }
 
     function bindDeleteContact() {
         $(".deleteContact").click(function(){
@@ -123,10 +144,22 @@ $(function () {
             $("#editContactNameText").val(conNameCol.text());
             $("#editEmailText").val(conEmailCol.text());
 
+
             var conId = conRow.attr('id');
             $('#updateContact').click(function(){
                 var newName = $("#editContactNameText").val();
                 var newEmail = $("#editEmailText").val();
+
+                if (newName == "") {
+                    alert("Please input contact name!");
+                    return;
+                }
+
+                if (newEmail == "") {
+                    alert("Please input email address!");
+                    return;
+                }
+
                 jQuery.ajax({
                     url: "/api/contacts/" + conId,
                     type: "PUT",
@@ -143,9 +176,12 @@ $(function () {
 
                 }).done(function(data){
                     // Update immediately
+
                     conNameCol.text(newName);
                     conEmailCol.text(newEmail);
                     $("#editFieldContact").modal('hide');
+
+
                 });
             });
         });
@@ -157,6 +193,8 @@ $(function () {
         $("#" + con.id).find(".email").text(con.email);
         $("#" + con.id).show();
     }
+
+
 });
 
 

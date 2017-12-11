@@ -2,9 +2,11 @@
     DEMO STYLE
 */
 
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
 body {
     font-family: 'Poppins', sans-serif;
-    background: #fafafa;
+    background: #fff;
 }
 
 p {
@@ -148,6 +150,12 @@ a.article, a.article:hover {
     padding: 20px;
     min-height: 100vh;
     transition: all 0.3s;
+    width: 80%;
+}
+
+#primeAlert {
+
+    font-size: 18px;
 }
 
 
