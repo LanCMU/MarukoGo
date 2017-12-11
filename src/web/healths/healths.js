@@ -333,6 +333,9 @@ $(function () {
 
             $("#editHealthWindow").modal('hide');
             alert("Health modified successfully!");
+        }).fail(function (jqXHR) {
+            responseTextJson = JSON.parse(jqXHR.responseText);
+            alert(responseTextJson.errorMessage);
         });
     });
 
