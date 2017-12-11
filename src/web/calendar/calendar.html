@@ -216,7 +216,7 @@
 
                 <div class="container">
 
-                    <div id="Event header">
+                    <div id="eventHeader">
 
                         <h4 style="margin-left: 10px; margin-top: 20px"> My Events </h4>
                         <button type="button" id="addEvent">Add a new event</button>
@@ -283,7 +283,6 @@
                     <div class="modal-dialog">
 
                         <!-- Modal content-->
-
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3 class="modal-title" style="font-family: 'Poppins', sans-serif">Add a event</h3>
@@ -292,50 +291,95 @@
                                 </button>
                             </div>
                             <div class="modal-body">
+
                                 <form>
+                                    <!--&lt;!&ndash;calendar name&ndash;&gt;-->
+                                    <!--<div class="form-group">-->
+                                        <!--<label class="form-control-label">Calendar Name</label>-->
+                                        <!--<select id="addEventChooseCalendar" class="form-control">-->
+                                            <!--<option value="School">School</option>-->
+                                            <!--<option value="Study Plan">Study Plan</option>-->
+                                            <!--<option value="Self Improvement">Self Improvement</option>-->
+                                            <!--<option value="With friends">With friends</option>-->
+                                            <!--<option value="Others">Others</option>-->
 
+                                        <!--</select>-->
+                                    <!--</div>-->
+
+                                    <!--event name-->
                                     <div class="form-group">
-                                        <select id="addEventChooseCalendar" class="form-control">
-                                            <option value="School">School</option>
-                                            <option value="Study Plan">Study Plan</option>
-                                            <option value="Self Improvement">Self Improvement</option>
-                                            <option value="With friends">With friends</option>
-                                            <option value="Others">Others</option>
-
-                                        </select>
                                         <label class="form-control-label">Event Name</label>
                                         <input id = "addEventNameText" type="text" class="form-control">
                                     </div>
 
+                                    <!--time-->
                                     <div class="form-group">
-                                        <label class="form-control-label">Event Name</label>
-                                        <input id = "addEventNameText" type="text" class="form-control">
+                                        <label class="form-control-label">Time</label>
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class='col-sm-6'>
+                                                    <div class="form-group">
+                                                        <div class='input-group date' id="addEventStartTimeText">
+                                                            <input type='text' class="form-control"/>
+                                                            <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <script type="text/javascript">
+                                                    $(function () {
+                                                        $('#addEventStartTimeText').datetimepicker();
+                                                    });
+                                                </script>
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    <!--Description-->
                                     <div class="form-group">
                                         <label class="form-control-label">Description</label>
                                         <textarea id = "addEventDescriptionText" class="form-control"></textarea>
                                     </div>
+
+                                    <!--Location-->
                                     <div class="form-group">
                                         <label class="form-control-label">Location</label>
                                         <input id = "addEventLocationText" type="text" class="form-control">
                                     </div>
+
+                                    <!--Color-->
                                     <div class="form-group">
                                         <label class="form-control-label">Color</label>
-                                        <input id = "addEventColorText" type="text" class="form-control">
-                                    </div>
+                                        <select id="addEventColorText" class="form-control">
+                                            <option value="Red">Red</option>
+                                            <option value="Orange">Orange</option>
+                                            <option value="Pink">Pink</option>
+                                            <option value="Yellow">Yellow</option>
+                                            <option value="Blue">Blue</option>
+                                            <option value="Green">Green</option>
+                                            <option value="Cyan">Cyan</option>
+                                            <option value="Purple">Purple</option>
+                                            <option value="Grey">Grey</option>
+                                            <option value="Black">black</option>
+
+                                        </select>
+                                     </div>
+
+                                    <!--important level-->
                                     <div class="form-group">
                                         <label class="form-control-label">Important Level</label>
-                                        <input id = "addEventLevelText" type="text" class="form-control">
+                                        <select id = "addEventLevelText" type="text" class="form-control">
+                                            <option value="!">!</option>
+                                            <option value="!!">!!</option>
+                                            <option value="!!!">!!!</option>
+                                            <option value="!!!!">!!!!</option>
+                                            <option value="None">None</option>
+                                        </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-control-label">Start Time</label>
-                                        <input id = "addEventStartTimeText" type="text" class="form-control">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-control-label">End Time</label>
-                                        <input id = "addEventEndTimeText" type="text" class="form-control">
-                                    </div>
+
                                 </form>
+
                             </div>
                             <div class="modal-footer">
                                 <button id = "closeAddEvent" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -421,6 +465,8 @@
 
                                         </select>
                                     </div>
+
+
 
                                     <!--<div class="form-group row" >-->
                                         <!--<label for="example-color-input" class="col-2 col-form-label" style="margin-left:15px">Color</label>-->

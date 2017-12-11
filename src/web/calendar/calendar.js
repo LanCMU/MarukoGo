@@ -18,6 +18,7 @@ $(function () {
     var eventColorCol;
     var eventLevelCol;
 
+    $("#eventHeader").hide();
 
     // Greetings
     $('#helloName').text('Hello, ' + firstName);
@@ -135,6 +136,10 @@ $(function () {
         $("#" + cal.id).find(".description").text(cal.description);
         $("#" + cal.id).find(".getEvent").attr("attr-cid", cal.id);
         $("#" + cal.id).show();
+
+        bindEditCalendar();
+        bindDeleteCalendar();
+        bindShareCalendar();
     }
 
     // Click "check events", show event table
@@ -265,7 +270,7 @@ $(function () {
     function getShareLink(calId) {
         var link = null;
         jQuery.ajax({
-            url: "/api/share/encrypt/" + calId,
+            url: "/api/share/encrypt?calendarId=" + calId,
             type: "GET",
             dataType:"json",
             beforeSend: function (xhr) {
@@ -313,37 +318,55 @@ $(function () {
     // Save event Button
     $("#saveAddEvent").click(function () {
         newName = $("#addEventNameText").val();
+        newStart = $("#addEventStartTimeText").val();
         newDesc = $('#addEventDescriptionText').val();
         newLocation = $("#addEventLocationText").val();
         newColor = $("#addEventColorText").val();
         newLevel = $("#addEventLevelText").val();
-        newStart = $("#addEventStartTimeText").val();
-        newEnd = $("#addEventEndTimeText").val();
+
+        if ($('#addEventStartTimeText').data("DateTimePicker").date() != null) {
+            newStart = $('#addEventStartTimeText').data("DateTimePicker").date().format('YYYY-MM-DD HH:mm');
+            queryData = JSON.stringify({
+                eventName: newName,
+                eventStartTime: newStart,
+                eventDescription: newDesc,
+                eventLocation: newLocation,
+                eventColor: newColor,
+                importantLevel: newLevel
+            });
+        } else {
+            queryData = JSON.stringify({
+                eventName: newName,
+                eventDescription: newDesc,
+                eventLocation: newLocation,
+                eventColor: newColor,
+                importantLevel: newLevel
+            });
+        }
 
         calId = $('#eventTable').attr('calendarId');
         jQuery.ajax({
             url: "/api/calendars/" + calId + "/events",
             type: "POST",
             dataType:"json",
-            data: JSON.stringify({
-                eventName: newName,
-                eventStartTime: newStart,
-                eventEndTime: newEnd,
-                eventLocation: newLocation,
-                eventDescription: newDesc,
-                eventColor: newColor,
-                importantLevel: newLevel
-            }),
+            data: queryData,
             beforeSend: function (xhr) {
-                xhr.setRequestHeader ("Authorization", token);
+                xhr.setRequestHeader("Authorization", token);
             },
             contentType: "application/json; charset=utf-8"
 
         }).done(function(data){
-            newEvent = data.content;
-            loadEvents(calId);
-            $("#addFieldEvent").modal('hide');
-            clearAddEventFields();
+             if(data.content.eventName == ''){
+                 alert("Missing a event name!");
+             }else{
+                 newEvent = data.content;
+                 loadEvents(calId);
+                 $("#addFieldEvent").modal('hide');
+                 clearAddEventFields();
+
+                 bindEditEvent();
+                 bindDeleteEvent();
+             }
 
         }).fail(function(jqXHR, textStatus, error){
             response = jqXHR.responseJSON;
@@ -379,7 +402,9 @@ $(function () {
             if(data.content == ''){
                 alert("You don't have any events in this calendar, try to add some~");
                 $("#myEvents").hide();
+                $("#eventHeader").show();
             }else{
+                $("#eventHeader").show();
                 $("#myEvents").show();
                 total = data.metadata.total;
                 maxPage = Math.ceil(total / pageSize);
@@ -530,6 +555,8 @@ $(function () {
 
                 }).done(function(data){
                     row.remove();
+
+
                 });
             }
         });

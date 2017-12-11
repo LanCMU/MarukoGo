@@ -282,14 +282,14 @@ public class CalendarInterface {
 
     public APPResponse create(@Context HttpHeaders headers, @PathParam("id") String id, Object request) {
 
-        try {
-            Util.checkAuthentication(headers, id);
-        } catch (APPUnauthorizedException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
-                    "Internal Server Error!");
-        }
+//        try {
+//            Util.checkAuthentication(headers, id);
+//        } catch (APPUnauthorizedException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            throw new APPInternalServerException(ErrorCode.INTERNAL_SERVER_ERROR.getErrorCode(),
+//                    "Internal Server Error!");
+//        }
 
         JSONObject json = null;
         try {
